@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import csi305db
+import psdevices
 import math
 
 
@@ -8,7 +8,7 @@ class POWERSUPPLY:
     def __init__(self):
         self.voltage = "0.0"
         self.amperage = "0.0"
-        self.powersupply = csi305db.CSI305DB()
+        self.powersupply = psdevices.PSDEVICES()
 
     def setParameters(self):
         try:
@@ -25,6 +25,11 @@ class POWERSUPPLY:
             self.milliAmps = 0
 
     def control(self):
-        while True:
-                self.powersupply.set(self.volts, self.hectoVolts,
-                                 self.amps, self.milliAmps)
+        if(self.powersupply.device == "CSI305DB"):
+            while True:
+                    self.powersupply.set(self.volts, self.hectoVolts,
+                                    self.amps, self.milliAmps)
+        elif(self.powersupply.device == "PPS2116A"):
+            self.powersupply.set(self.volts, self.hectoVolts,
+                                    self.amps, self.milliAmps)
+            self.powersupply.turnON()

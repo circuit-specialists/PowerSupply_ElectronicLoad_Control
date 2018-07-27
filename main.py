@@ -9,6 +9,7 @@ import sys
 device = powersupply.POWERSUPPLY()
 keys = keyboard.KEYBOARD()
 
+print(device.powersupply.device)
 try:
     print("Input Volts in Volts.hectoVolts")
     device.voltage = input()
@@ -23,8 +24,8 @@ except:
 
 print('Voltage: ' + device.voltage)
 print('Amps: ' + device.amperage)
-print("Change Voltage with 'v'")
-print("Change Amps with 'a'")
+#print("Change Voltage with 'v'")
+#print("Change Amps with 'a'")
 print("Terminate with 'q'")
 device.setParameters()
 
