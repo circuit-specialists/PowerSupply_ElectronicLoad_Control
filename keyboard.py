@@ -11,6 +11,5 @@ class KEYBOARD:
             if msvcrt.kbhit():
                 self.input_buf = msvcrt.getch().decode('UTF-8')
                 self.null = msvcrt.getch()
-                print(self.input_buf)
-                if(self.input_buf == 'q'):
+                if(self.input_buf == "q"):
                     exit()
