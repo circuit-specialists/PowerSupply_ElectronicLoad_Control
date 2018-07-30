@@ -25,6 +25,7 @@ class PPS2116A:
                 time.sleep(.02)
                 self.com_device.read_all()
                 self.name = "PPS2116A"
+                print("Press 'o' for output and 'f' to turn off")
 
         if self.com_device is None:
             raise ValueError('Device not found')

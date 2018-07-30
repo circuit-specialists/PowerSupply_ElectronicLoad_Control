@@ -16,3 +16,5 @@ One script to rule them all, one script to find the device, and one script to bi
 
 ## Documentation
 You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. Download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo, unzip the repo to folder, open your command terminal, and navigate to that unzipped folder. Once arrived, simple type 'python main.py' to run program.
+
+Current control structures are printed for each device assuming there are required extra steps, or extra functions. Each device is coded to expose a function for each possible control structure, but not each function is accesible. A menu system may be added, or wait until GUI is operational.
