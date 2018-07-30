@@ -33,7 +33,6 @@ class PSDEVICES:
                 time.sleep(.01)
                 self.com_device.read_all()
 
-
         if self.com_device is None:
             raise ValueError('Device not found')
 
@@ -64,6 +63,21 @@ class PSDEVICES:
             time.sleep(.01)
             self.com_device.read_all()
 
+    def setCPU(self, ADDR, Data):
+        if(self.device == "PPS2116A"):
+            self.key = 'sa'
+            self.key += '{:04}'.format(ADDR)
+            self.key += "\n"
+            self.com_device.write(self.key.encode())
+            time.sleep(.01)
+            self.com_device.read_all()
+            self.key = 'si'
+            self.key += '{:04}'.format(Data)
+            self.key += "\n"
+            self.com_device.write(self.key.encode())
+            time.sleep(.01)
+            self.com_device.read_all()
+
     def turnON(self):
         if(self.device == "PPS2116A"):
             self.key = "o1\n"
@@ -82,7 +96,7 @@ class PSDEVICES:
         if(self.device == "PPS2116A"):
             measureVoltage()
             measureAmperage()
-            measureS()
+            measureStatus()
 
     def measureVoltage(self):
         if(self.device == "PPS2116A"):
@@ -98,13 +112,40 @@ class PSDEVICES:
             time.sleep(.01)
             self.measured_amperage = self.com_device.read_all()
 
-    def measureS(self):
+    def presetVoltage(self):
+        if(self.device == "PPS2116A"):
+            self.key = "ru\n"
+            self.com_device.write(self.key.encode())
+            time.sleep(.01)
+            self.measured_amperage = self.com_device.read_all()
+
+    def presetCurrent(self):
+        if(self.device == "PPS2116A"):
+            self.key = "ri\n"
+            self.com_device.write(self.key.encode())
+            time.sleep(.01)
+            self.measured_amperage = self.com_device.read_all()
+
+    def getAddress(self):
+        if(self.device == "PPS2116A"):
+            self.key = "re\n"
+            self.com_device.write(self.key.encode())
+            time.sleep(.01)
+            self.measured_amperage = self.com_device.read_all()
+
+    def getDeviceSafeguard(self):
+        if(self.device == "PPS2116A"):
+            self.key = "rp\n"
+            self.com_device.write(self.key.encode())
+            time.sleep(.01)
+            self.measured_amperage = self.com_device.read_all()
+
+    def measureStatus(self):
         if(self.device == "PPS2116A"):
             self.key = "rs\n"
             self.com_device.write(self.key.encode())
             time.sleep(.01)
             self.measured_s = self.com_device.read_all()
-
 
         #self.buf_read = self.com_device.read(100)
         # print(self.buf_read)
