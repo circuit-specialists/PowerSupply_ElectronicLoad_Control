@@ -27,7 +27,10 @@ if(selection == 'o'):
     t1.start()
     device.powersupply.setParameters(device.voltage, device.amperage)
     device.powersupply.control()
-    device.powersupply.turnON()
+    try:
+        device.powersupply.turnON()
+    except:
+        pass
     for i in file_lines:
         if(keys.input_buf > ""):
             if(keys.input_buf == "q"):
