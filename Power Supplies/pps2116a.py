@@ -53,30 +53,24 @@ class PPS2116A:
 
     def setParameters(self, voltage, amperage):
         if(voltage != "."):
-            if(voltage > "1."):
+            try:
                 self.volts = int(voltage.split('.')[0])
-            else:
+                try:
+                    self.hectoVolts = int(voltage.split('.')[1])
+                except:
+                    self.hectoVolts = 0
+            except:
                 self.volts = 0
-            if(voltage < "."):
-                self.hectoVolts = int(voltage.split('.')[1])
-            else:
-                self.hectoVolts = 0
-        else:
-            self.volts = 0
-            self.hectoVolts = 0
 
         if(amperage != "."):
-            if(amperage > "1."):
+            try:
                 self.amps = int(amperage.split('.')[0])
-            else:
-                self.amps = 0
-            if(amperage < "."):
-                self.milliAmps = int(amperage.split('.')[1])
-            else:
-                self.milliAmps = 0
-        else:
-            self.amps = 0
-            self.milliAmps = 0
+                try:
+                    self.milliAmps = int(amperage.split('.')[1])
+                except:
+                    self.milliAmps = 0
+            except:
+                self.volts = 0
 
         self.control()
 
@@ -84,48 +78,54 @@ class PPS2116A:
         self.key = 'sa'
         self.key += '{:04}'.format(ADDR)
         self.key += "\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def setCPUData(self, Data):
         self.key += 'si'
         self.key += '{:04}'.format(Data)
         self.key += "\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def turnON(self):
         self.key = "o1\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def turnOFF(self):
         self.key = "o0\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def measureVoltage(self):
         self.key = "rv\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def measureAmperage(self):
         self.key = "ra\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def presetVoltage(self):
         self.key = "ru\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def presetCurrent(self):
         self.key = "ri\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def getAddress(self):
         self.key = "re\n"
+        self.writeFunction()
 
     def getDeviceSafeguard(self):
         self.key = "rp\n"
-        return self.key.encode()
+        self.writeFunction()
 
     def measureStatus(self):
         self.key = "rs\n"
-        return self.key.encode()
+        self.writeFunction()
+
+    def writeFunction(self):
+        self.com_device.write(self.key.encode())
+        time.sleep(.01)
+        self.com_device.read_all()
 
     def quit(self):
         self.turnOFF()

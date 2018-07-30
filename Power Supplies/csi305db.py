@@ -23,30 +23,24 @@ class CSI305DB:
 
     def setParameters(self, voltage, amperage):
         if(voltage != "."):
-            if(voltage > "1."):
+            try:
                 self.volts = int(voltage.split('.')[0])
-            else:
+                try:
+                    self.hectoVolts = int(voltage.split('.')[1])
+                except:
+                    self.hectoVolts = 0
+            except:
                 self.volts = 0
-            if(voltage < "."):
-                self.hectoVolts = int(voltage.split('.')[1])
-            else:
-                self.hectoVolts = 0
-        else:
-            self.volts = 0
-            self.hectoVolts = 0
 
         if(amperage != "."):
-            if(amperage > "1."):
+            try:
                 self.amps = int(amperage.split('.')[0])
-            else:
-                self.amps = 0
-            if(amperage < "."):
-                self.milliAmps = int(amperage.split('.')[1])
-            else:
-                self.milliAmps = 0
-        else:
-            self.amps = 0
-            self.milliAmps = 0
+                try:
+                    self.milliAmps = int(amperage.split('.')[1])
+                except:
+                    self.milliAmps = 0
+            except:
+                self.volts = 0
 
     def control(self):
         while True:
