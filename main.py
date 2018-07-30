@@ -18,7 +18,7 @@ selection = str(input())
 if(selection == 'o'):
     print("Auto Mode")
     print()
-    file = open("auto_run_test.txt", "r")
+    file = open("auto_run.txt", "r")
     file_lines = file.readlines()
     file_lines = file_lines[1:]
     count = 0
