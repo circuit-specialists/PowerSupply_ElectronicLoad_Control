@@ -13,3 +13,6 @@ class KEYBOARD:
                 self.null = msvcrt.getch()
                 if(self.input_buf == "q"):
                     exit()
+
+    def quit(self):
+        exit()

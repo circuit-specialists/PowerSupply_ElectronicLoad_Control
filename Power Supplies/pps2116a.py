@@ -75,6 +75,11 @@ class PPS2116A:
 
         self.control()
 
+    def writeFunction(self):
+        self.com_device.write(self.key.encode())
+        time.sleep(.01)
+        self.com_device.read_all()
+
     def setCPUADDR(self, ADDR):
         self.key = 'sa'
         self.key += '{:04}'.format(ADDR)
@@ -122,11 +127,6 @@ class PPS2116A:
     def measureStatus(self):
         self.key = "rs\n"
         self.writeFunction()
-
-    def writeFunction(self):
-        self.com_device.write(self.key.encode())
-        time.sleep(.01)
-        self.com_device.read_all()
 
     def quit(self):
         self.turnOFF()

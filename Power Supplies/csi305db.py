@@ -7,8 +7,8 @@ import time
 
 class CSI305DB:
     def __init__(self):
-        self.pid = "0403"
-        self.vid = "6001"
+        self.pid = "6001"
+        self.vid = "0403"
         self.com_ports = list(serial.tools.list_ports.comports())
         for p in self.com_ports:
             if self.pid and self.vid in p.hwid:
