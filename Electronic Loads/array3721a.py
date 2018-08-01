@@ -1,58 +1,40 @@
 #!/usr/bin/python
 
-import serial
-import serial.tools.list_ports
+import visa
 import time
 
 
 class ARRAY3721A:
-    def __init__(self, com_port):
+    def __init__(self, visa_instance):
         # Connection to port
-        self.com_device = serial.Serial(
-            port=com_port, baudrate=9600, timeout=500, dsrdtr=1)
+        self.inst = visa_instance
         self.name = "Array3721A"
-        self.key = "SYST:REM"
-        self.writeFunction()
-
-    def writeFunction(self):
-        self.com_device.write(str(self.key + "\r\n").encode())
-        time.sleep(.01)
+        self.inst.write("SYST:REM")
 
     def getCurrent(self):
-        self.key = ":MEAS:CURR?"
-        self.writeFunction()
-        self.current = self.com_device.read_all()
+        self.current = self.inst.query(":MEAS:CURR?")[:-1]
         return self.current
 
     def getVoltage(self):
-        self.key = ":MEAS:VOLT?"
-        self.writeFunction()
-        self.voltage = self.com_device.read_all()
+        self.voltage = self.inst.query(":MEAS:VOLT?")[:-1]
         return self.voltage
 
     def getIdentifier(self):
-        self.key = "*IDN?"
-        self.writeFunction()
-        self.indentifier = self.com_device.read_all()
-        return self.indentifier
+        return self.name
 
     def getPower(self):
-        self.key = "MEAS:POW?"
-        self.writeFunction()
-        self.power = self.com_device.read_all()
+        self.power = self.inst.query(":MEAS:POW?")[:-1]
         return self.power
 
     def unknown(self):
-        self.key = "*cls"
-        self.writeFunction()
+        self.unknown = self.inst.query("*cls")
+        return self.unknown
 
-    def unknown2(self):
-        self.key = "SYST:LOC"
-        self.writeFunction()
+    def setLock(self):
+        self.lock = self.inst.write("SYST:LOC")
 
     def setMode(self, mode):
         mode = str(mode).upper()
-        print(mode)
         if(mode == "CCH"):
             self.key = "MODE CCH"
         elif(mode == "CCL"):
@@ -63,32 +45,32 @@ class ARRAY3721A:
             self.key = "MODE CRM"
         else:
             return
-        self.writeFunction()
+        self.inst.write(self.key)
 
     def setResistance(self, ohms):
         self.key = "RES " + str(ohms)
-        self.writeFunction()
+        self.inst.write(self.key)
 
     def setVoltageTrig(self, voltage):
         self.key = "VOLT:TRIG " + str(voltage)
-        self.writeFunction()
+        self.inst.write(self.key)
 
     def setTrigExt(self):
         self.key = "TRIG:SOUR EXT"
-        self.writeFunction()
+        self.inst.write(self.key)
 
     def setCurrent(self, current):
         self.key = "CURR " + str(current)
-        self.writeFunction()
+        self.inst.write(self.key)
 
     def turnON(self):
         self.key = "INP ON"
-        self.writeFunction()
+        self.inst.write(self.key)
 
     def turnOFF(self):
         self.key = "INP OFF"
-        self.writeFunction()
+        self.inst.write(self.key)
 
     def quit(self):
-        self.com_device.close()
+        self.inst.close()
         exit()

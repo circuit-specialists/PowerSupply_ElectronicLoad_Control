@@ -12,16 +12,18 @@ class PPS2116A:
         self.com_ports = list(serial.tools.list_ports.comports())
         for p in self.com_ports:
             if self.pid and self.vid in p.hwid:
-                print(p)
                 # Connection to port
                 self.com_device = serial.Serial(
                     port=p.device, baudrate=9600, timeout=500, parity=serial.PARITY_EVEN, rtscts=0)
                 self.key = "a\n"
                 self.com_device.write(self.key.encode())
                 time.sleep(.02)
-                self.com_device.read_all()
-                self.key = "o0\n"
-                self.com_device.write(self.key.encode())
+                self.spec = self.com_device.read_all()
+                if("32V/5000mA\r\n".encode() in self.spec):
+                    print(str(self.spec)[2:-2])
+                else:
+                    self.com_device.close()
+                    raise ValueError("Not right device")
                 time.sleep(.02)
                 self.com_device.read_all()
                 self.name = "PPS2116A"

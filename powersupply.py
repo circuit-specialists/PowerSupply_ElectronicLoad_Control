@@ -12,6 +12,7 @@ and constructor to this file as seen below
 
 import csi305db
 import pps2116a
+import pps3e004
 
 
 class POWERSUPPLY:
@@ -24,5 +25,9 @@ class POWERSUPPLY:
             pass
         try:
             self.powersupply = pps2116a.PPS2116A()
+        except:
+            pass
+        try:
+            self.powersupply = pps3e004.PPS3E004()
         except:
             pass

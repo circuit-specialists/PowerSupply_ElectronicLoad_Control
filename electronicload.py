@@ -3,6 +3,7 @@
 import os
 import visa
 import sys
+import time
 sys.path.insert(0, './Electronic Loads')
 
 """
@@ -18,19 +19,31 @@ import array3721a
 
 class ELECTRONICLOAD:
     def __init__(self):
+        # find all devices defined
+        self.files = []
+        for files in os.listdir():
+            self.files.append(files)
+
         self.rm = visa.ResourceManager()
+        self.idn = []
+        self.threads = []
+        # find all scpi devices
+        self.device_count = 0
         for i in self.rm.list_resources():
             self.inst = self.rm.open_resource(i)
+            self.inst.timeout = 100
             try:
                 self.idn = self.inst.query("*IDN?")
-                for device in os.listdir():
-                    if(device[:-3] in self.idn):
-                        self.el = self.idn
+                if(self.idn in self.files):
+                    break
             except:
                 pass
-        self.name = str(self.el).split(',')[0] + str(self.el).split(',')[1]
+
+        self.inst.timeout = 500
+        self.name = str(self.idn).split(',')[0] + str(self.idn).split(',')[1]
         self.com_port = "COM" + str(self.inst.interface_number)
-        self.rm.close()
 
         if(self.name == "ARRAY3721A"):
-            self.electronicload = array3721a.ARRAY3721A(self.com_port)
+            self.electronicload = array3721a.ARRAY3721A(self.inst)
+        else:
+            self.electronicload = generic_scpi.GENERIC_SCPI(self.inst)
