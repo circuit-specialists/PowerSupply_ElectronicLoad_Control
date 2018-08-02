@@ -16,7 +16,7 @@ One script to rule them all, one script to find the device, and one script to bi
 * (future) Graph Voltage, Amperage, Power
 
 ## Documentation
-*Install Instructions*
+**_Install Instructions_**
 You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. You'll also need to install a few packages within python to communicate with the devices. These packages include, 'pyusb', 'pyvisa', and 'pyserial'. Each one of these can easily be install by using your command terminal, and the 'pip install' command. The last step is to download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo. Once you have the repo, unzip the repo to folder, open your command terminal, and navigate to the repo unzipped folder. To run the program, run main.py by executing 'python main.py' from the command terminal.
 
 When program first runs, the option for either running a power supply or electronic load is given. Once the type of device is selected, the type of run usage needs to be selected. If you choose 'Auto-Mode', you'll need to have a .csv file titled 'auto_run_el.csv' for electronic loads, or 'auto_run_ps.csv' for power supplies. The format for each type is the first line in the provided example files.
