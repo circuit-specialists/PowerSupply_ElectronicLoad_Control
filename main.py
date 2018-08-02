@@ -39,10 +39,6 @@ if(device_selection == 'p'):
         t1.start()
         device.powersupply.setParameters(device.voltage, device.amperage)
         device.powersupply.control()
-        try:
-            device.powersupply.turnON()
-        except:
-            pass
         for i in file_lines:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
@@ -52,6 +48,10 @@ if(device_selection == 'p'):
             device.amperage = line.split(',')[2]
             device.powersupply.setParameters(device.voltage, device.amperage)
             device.powersupply.control()
+            if(int(line.split(',')[3]))
+                device.powersupply.turnON()
+            else:
+                device.powersupply.turnON()
             time.sleep(float(line.split(',')[0]))
             count += 1
 
@@ -125,10 +125,6 @@ elif(device_selection == 'l'):
         threads.append(t1)
         t1.start()
         device.electronicload.setCurrent(0)
-        try:
-            device.electronicload.turnON()
-        except:
-            pass
         print("Running script")
         wait_read_time = 0.0
         last_read_time = time.time()
