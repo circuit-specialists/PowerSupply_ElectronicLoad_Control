@@ -46,12 +46,7 @@ if(device_selection == 'p'):
         for i in file_lines:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("Quitting Early...")
-                    keys.quit()
-                    device.powersupply.quit()
-                    t0.join()
-                    t1.join()
-                    sys.exit()
+                    quit()
             line = file_lines[count]
             device.voltage = line.split(',')[1]
             device.amperage = line.split(',')[2]

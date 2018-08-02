@@ -26,9 +26,9 @@ class ARRAY3721A:
         self.power = self.inst.query(":MEAS:POW?")[:-1]
         return self.power
 
-    def unknown(self):
-        self.unknown = self.inst.query("*cls")
-        return self.unknown
+    def getCLS(self):
+        self.cls = self.inst.query("*cls")
+        return self.cls
 
     def setLock(self):
         self.lock = self.inst.write("SYST:LOC")
