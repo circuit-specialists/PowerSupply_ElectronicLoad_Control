@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+"""
+written by Jake Pring from CircuitSpecialists.com
+licensed as GPLv3
+"""
+
 import sys
 sys.path.insert(0, './Power Supplies')
 

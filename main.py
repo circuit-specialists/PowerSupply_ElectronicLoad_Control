@@ -1,5 +1,10 @@
 #!/usr/bin/python
 
+"""
+written by Jake Pring from CircuitSpecialists.com
+licensed as GPLv3
+"""
+
 import time
 import threading
 import keyboard
@@ -20,7 +25,6 @@ if(device_selection == 'p'):
         device = powersupply.POWERSUPPLY()
     except:
         print("exiting...")
-        device.powersupply.quit()
         keys.quit()
         sys.exit()
     print(device.powersupply.name)
@@ -45,13 +49,12 @@ if(device_selection == 'p'):
         t1.start()
         device.powersupply.setParameters(device.voltage, device.amperage)
         for i in file_lines:
-            if(keys.input_buf > ""):
-                if(keys.input_buf == "q"):
-                    print("exiting...")
-                    device.powersupply.quit()
-                    keys.quit()
-                    t1.join()
-                    sys.exit()
+            if(keys.input_buf == "q"):
+                print("exiting...")
+                device.powersupply.quit()
+                keys.quit()
+                t0.join()
+                sys.exit()
             line = file_lines[count]
             device.voltage = line.split(',')[1]
             device.amperage = line.split(',')[2]
@@ -88,7 +91,6 @@ if(device_selection == 'p'):
                     device.powersupply.quit()
                     keys.quit()
                     t0.join()
-                    t1.join()
                     sys.exit()
                 elif(keys.input_buf == "o"):
                     device.powersupply.turnON()
@@ -108,7 +110,6 @@ elif(device_selection == 'l'):
         device = electronicload.ELECTRONICLOAD()
     except:
         print("exiting...")
-        device.electronicload.quit()
         keys.quit()
         sys.exit()
     print(device.electronicload.name)
@@ -145,14 +146,12 @@ elif(device_selection == 'l'):
         last_write_time = time.time()
         start_time = time.time()
         while True:
-            if(keys.input_buf > ""):
-                if(keys.input_buf == "q"):
-                    print("exiting...")
-                    device.electronicload.quit()
-                    keys.quit()
-                    t0.join()
-                    t1.join()
-                    sys.exit()
+            if(keys.input_buf == "q"):
+                print("exiting...")
+                device.electronicload.quit()
+                keys.quit()
+                t0.join()
+                sys.exit()
             if(last_read_time + wait_read_time < time.time()):
                 last_read_time = time.time()
                 line = file_lines[count]
@@ -195,15 +194,10 @@ elif(device_selection == 'l'):
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
                     print("exiting...")
-                    try:
-                        device.powersupply.quit()
-                    except:
-                        device.electronicload.quit()
-                        keys.quit()
-                        device.electronicload.quit()
-                        t0.join()
-                        t1.join()
-                        sys.exit()
+                    device.electronicload.quit()
+                    keys.quit()
+                    t0.join()
+                    sys.exit()
                 elif(keys.input_buf == "o"):
                     device.electronicload.turnON()
                 elif(keys.input_buf == "f"):
@@ -221,11 +215,8 @@ elif(device_selection == 'q'):
         device.powersupply.quit()
     except:
         device.electronicload.quit()
-        keys.quit()
-        device.electronicload.quit()
-        t0.join()
-        t1.join()
-        sys.exit()
+    keys.quit()
+    sys.exit()
 
 else:
     print("Invalid Option")
