@@ -11,7 +11,7 @@ class PPS3E004:
         self.vid = "10C4"
         self.com_ports = list(serial.tools.list_ports.comports())
         for p in self.com_ports:
-            if self.pid and self.vid in p.hwid:
+            if self.pid and self.vid in p.hwid:                
                 # Connection to port
                 self.com_device = serial.Serial(
                     port=p.device, baudrate=38400, timeout=500, parity=serial.PARITY_EVEN, rtscts=0)
