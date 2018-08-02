@@ -105,6 +105,11 @@ if(device_selection == 'p'):
                 keys.input_buf = ""
                 device.powersupply.setParameters(
                     device.voltage, device.amperage)
+    elif(operation_selection == 'q'):
+        device = powersupply.POWERSUPPLY()
+        print("exiting...")
+        keys.quit()
+        sys.exit()
 elif(device_selection == 'l'):
     try:
         device = electronicload.ELECTRONICLOAD()
@@ -207,6 +212,12 @@ elif(device_selection == 'l'):
                     device.electronicload.setCurrent = str(input())
                 keys.input_buf = ""
             print(device.electronicload.getCurrent())
+
+    elif(operation_selection == 'q'):
+        print("exiting...")
+        device.electronicload.quit()
+        keys.quit()
+        sys.exit()
 
 
 elif(device_selection == 'q'):
