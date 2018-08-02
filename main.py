@@ -16,7 +16,10 @@ device_selection = str(input())
 
 
 if(device_selection == 'p'):
-    device = powersupply.POWERSUPPLY()
+    try:
+        device = powersupply.POWERSUPPLY()
+    except:
+        quit()
     print(device.powersupply.name)
     threads = []
     print("Open CSV file to run auto loop   press:'a'")
@@ -81,12 +84,7 @@ if(device_selection == 'p'):
         while True:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("exiting...")
-                    keys.quit()
-                    device.powersupply.quit()
-                    t0.join()
-                    t1.join()
-                    sys.exit()
+                    quit()
                 elif(keys.input_buf == "o"):
                     device.powersupply.turnON()
                 elif(keys.input_buf == "f"):
@@ -101,7 +99,10 @@ if(device_selection == 'p'):
                 device.powersupply.setParameters(
                     device.voltage, device.amperage)
 elif(device_selection == 'l'):
-    device = electronicload.ELECTRONICLOAD()
+    try:
+        device = electronicload.ELECTRONICLOAD()
+    except:
+        quit()
     print(device.electronicload.name)
     threads = []
     print("Open CSV file to run auto loop   press:'a'")
@@ -142,12 +143,7 @@ elif(device_selection == 'l'):
         while True:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("Quitting Early...")
-                    keys.quit()
-                    device.electronicload.quit()
-                    t0.join()
-                    t1.join()
-                    sys.exit()
+                    quit()
             if(last_read_time + wait_read_time < time.time()):
                 last_read_time = time.time()
                 line = file_lines[count]
@@ -192,12 +188,7 @@ elif(device_selection == 'l'):
         while True:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("exiting...")
-                    keys.quit()
-                    device.electronicload.quit()
-                    t0.join()
-                    t1.join()
-                    sys.exit()
+                    quit()
                 elif(keys.input_buf == "o"):
                     device.electronicload.turnON()
                 elif(keys.input_buf == "f"):
@@ -210,6 +201,13 @@ elif(device_selection == 'l'):
 
 
 elif(device_selection == 'q'):
+    quit()
+
+else:
+    print("Invalid Option")
+
+
+def quit(self):
     print("exiting...")
     try:
         device.powersupply.quit()
@@ -220,6 +218,3 @@ elif(device_selection == 'q'):
     t0.join()
     t1.join()
     sys.exit()
-
-else:
-    print("Invalid Option")

@@ -40,8 +40,11 @@ class ELECTRONICLOAD:
                 pass
 
         self.inst.timeout = 500
-        self.name = str(self.idn).split(',')[0] + str(self.idn).split(',')[1]
-        self.com_port = "COM" + str(self.inst.interface_number)
+        try:
+            self.name = str(self.idn).split(',')[0] + str(self.idn).split(',')[1]
+            self.com_port = "COM" + str(self.inst.interface_number)
+        except:
+            raise ValueError('No Electronic loads found')
 
         if(self.name == "ARRAY3721A"):
             self.electronicload = array3721a.ARRAY3721A(self.inst)
