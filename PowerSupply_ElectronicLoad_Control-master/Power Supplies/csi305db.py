@@ -56,18 +56,6 @@ class CSI305DB:
             time.sleep(.02)
             self.com_device.read_all()
 
-    def turnON(self):
-        print()
-
-    def turnOFF(self):
-        print()
-
-    def setOutput(self, state):
-        if(state):
-            self.turnON()
-        else:
-            self.turnOFF()
-
     def quit(self):
         self.com_device.close()
         exit()

@@ -2,6 +2,7 @@
 
 import time
 import threading
+from multiprocessing import process
 import keyboard
 import powersupply
 import electronicload
@@ -16,13 +17,7 @@ device_selection = str(input())
 
 
 if(device_selection == 'p'):
-    try:
-        device = powersupply.POWERSUPPLY()
-    except:
-        print("exiting...")
-        device.powersupply.quit()
-        keys.quit()
-        sys.exit()
+    device = powersupply.POWERSUPPLY()
     print(device.powersupply.name)
     threads = []
     print("Open CSV file to run auto loop   press:'a'")
@@ -37,26 +32,29 @@ if(device_selection == 'p'):
         file_lines = file.readlines()
         file_lines = file_lines[1:]
         count = 0
-        t0 = threading.Thread(target=device.powersupply.control)
-        threads.append(t0)
-        t0.start()
         t1 = threading.Thread(target=keys.getInput)
         threads.append(t1)
         t1.start()
         device.powersupply.setParameters(device.voltage, device.amperage)
+        device.powersupply.control()
+        try:
+            device.powersupply.turnON()
+        except:
+            pass
         for i in file_lines:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("exiting...")
-                    device.powersupply.quit()
+                    print("Quitting Early...")
                     keys.quit()
+                    device.powersupply.quit()
+                    t0.join()
                     t1.join()
                     sys.exit()
             line = file_lines[count]
             device.voltage = line.split(',')[1]
             device.amperage = line.split(',')[2]
             device.powersupply.setParameters(device.voltage, device.amperage)
-            device.powersupply.setOutput(int(line.split(',')[3]))
+            device.powersupply.control()
             time.sleep(float(line.split(',')[0]))
             count += 1
 
@@ -85,8 +83,8 @@ if(device_selection == 'p'):
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
                     print("exiting...")
-                    device.powersupply.quit()
                     keys.quit()
+                    device.powersupply.quit()
                     t0.join()
                     t1.join()
                     sys.exit()
@@ -104,13 +102,7 @@ if(device_selection == 'p'):
                 device.powersupply.setParameters(
                     device.voltage, device.amperage)
 elif(device_selection == 'l'):
-    try:
-        device = electronicload.ELECTRONICLOAD()
-    except:
-        print("exiting...")
-        device.electronicload.quit()
-        keys.quit()
-        sys.exit()
+    device = electronicload.ELECTRONICLOAD()
     print(device.electronicload.name)
     threads = []
     print("Open CSV file to run auto loop   press:'a'")
@@ -138,6 +130,10 @@ elif(device_selection == 'l'):
         threads.append(t1)
         t1.start()
         device.electronicload.setCurrent(0)
+        try:
+            device.electronicload.turnON()
+        except:
+            pass
         print("Running script")
         wait_read_time = 0.0
         last_read_time = time.time()
@@ -147,9 +143,9 @@ elif(device_selection == 'l'):
         while True:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("exiting...")
-                    device.electronicload.quit()
+                    print("Quitting Early...")
                     keys.quit()
+                    device.electronicload.quit()
                     t0.join()
                     t1.join()
                     sys.exit()
@@ -158,7 +154,10 @@ elif(device_selection == 'l'):
                 line = file_lines[count]
                 device.electronicload.setMode(line.split(',')[1])
                 device.electronicload.setCurrent(line.split(',')[2])
-                device.electronicload.setOutput(int(line.split(',')[3]))
+                if(int(line.split(',')[3])):
+                    device.electronicload.turnON()
+                else:
+                    device.electronicload.turnOFF()
                 wait_read_time = float(line.split(',')[0])
                 count += 1
                 print("Line: " + str(count))
@@ -195,15 +194,11 @@ elif(device_selection == 'l'):
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
                     print("exiting...")
-                    try:
-                        device.powersupply.quit()
-                    except:
-                        device.electronicload.quit()
-                        keys.quit()
-                        device.electronicload.quit()
-                        t0.join()
-                        t1.join()
-                        sys.exit()
+                    keys.quit()
+                    device.electronicload.quit()
+                    t0.join()
+                    t1.join()
+                    sys.exit()
                 elif(keys.input_buf == "o"):
                     device.electronicload.turnON()
                 elif(keys.input_buf == "f"):
@@ -221,11 +216,11 @@ elif(device_selection == 'q'):
         device.powersupply.quit()
     except:
         device.electronicload.quit()
-        keys.quit()
-        device.electronicload.quit()
-        t0.join()
-        t1.join()
-        sys.exit()
+    keys.quit()
+    device.electronicload.quit()
+    t0.join()
+    t1.join()
+    sys.exit()
 
 else:
     print("Invalid Option")

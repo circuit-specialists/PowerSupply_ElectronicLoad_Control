@@ -63,6 +63,12 @@ class ARRAY3721A:
         self.key = "CURR " + str(current)
         self.inst.write(self.key)
 
+    def setOutput(self, state):
+        if(state):
+            self.turnON()
+        else:
+            self.turnOFF()
+
     def turnON(self):
         self.key = "INP ON"
         self.inst.write(self.key)

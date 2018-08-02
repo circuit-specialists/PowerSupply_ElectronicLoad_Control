@@ -63,12 +63,6 @@ class GENERIC_SCPI:
         self.key = "CURR " + str(current)
         self.inst.write(self.key)
 
-    def setOutput(self, state):
-        if(state):
-            self.turnON()
-        else:
-            self.turnOFF()
-
     def turnON(self):
         self.key = "INP ON"
         self.inst.write(self.key)
@@ -78,5 +72,6 @@ class GENERIC_SCPI:
         self.inst.write(self.key)
 
     def quit(self):
-        self.inst.close()
+        self.com_device.close()
+        self.rm.close()
         exit()

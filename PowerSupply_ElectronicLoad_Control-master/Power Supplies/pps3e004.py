@@ -42,7 +42,7 @@ class PPS3E004:
 
     def setAmperage(self):
         self.key = 'si'
-        self.key += '{:04}'.format(self.milliAmps)
+        self.key += '0' + '{:04}'.format(self.milliAmps)
         self.key += "\n"
         return self.key.encode()
 
@@ -101,12 +101,6 @@ class PPS3E004:
     def turnOFF(self):
         self.key = "so0\n"
         self.writeFunction()
-
-    def setOutput(self, state):
-        if(state):
-            self.turnON()
-        else:
-            self.turnOFF()
 
     def measureAmperage(self):
         self.key = "ra\n"

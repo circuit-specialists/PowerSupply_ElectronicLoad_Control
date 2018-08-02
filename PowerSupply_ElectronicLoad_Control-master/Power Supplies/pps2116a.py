@@ -94,12 +94,6 @@ class PPS2116A:
         self.key += "\n"
         self.writeFunction()
 
-    def setOutput(self, state):
-        if(state):
-            self.turnON()
-        else:
-            self.turnOFF()
-
     def turnON(self):
         self.key = "o1\n"
         self.writeFunction()

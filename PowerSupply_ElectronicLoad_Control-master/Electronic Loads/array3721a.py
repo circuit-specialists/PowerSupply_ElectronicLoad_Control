@@ -4,26 +4,26 @@ import visa
 import time
 
 
-class GENERIC_SCPI:
+class ARRAY3721A:
     def __init__(self, visa_instance):
         # Connection to port
         self.inst = visa_instance
-        self.name = self.inst.query("*IDN?")
+        self.name = "Array3721A"
         self.inst.write("SYST:REM")
 
     def getCurrent(self):
-        self.current = self.inst.query(":MEAS:CURR?")
+        self.current = self.inst.query(":MEAS:CURR?")[:-1]
         return self.current
 
     def getVoltage(self):
-        self.voltage = self.inst.query(":MEAS:VOLT?")
+        self.voltage = self.inst.query(":MEAS:VOLT?")[:-1]
         return self.voltage
 
     def getIdentifier(self):
         return self.name
 
     def getPower(self):
-        self.power = self.inst.query(":MEAS:POW?")
+        self.power = self.inst.query(":MEAS:POW?")[:-1]
         return self.power
 
     def unknown(self):
@@ -62,12 +62,6 @@ class GENERIC_SCPI:
     def setCurrent(self, current):
         self.key = "CURR " + str(current)
         self.inst.write(self.key)
-
-    def setOutput(self, state):
-        if(state):
-            self.turnON()
-        else:
-            self.turnOFF()
 
     def turnON(self):
         self.key = "INP ON"
