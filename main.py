@@ -57,6 +57,7 @@ if(device_selection == 'p'):
                 device.powersupply.quit()
                 keys.quit()
                 t0.join()
+                t1.join()
                 sys.exit()
             line = file_lines[count]
             device.powersupply.setVoltage(line.split(',')[1])
@@ -66,6 +67,13 @@ if(device_selection == 'p'):
             count += 1
 
         print("Finished auto run mode")
+        print("exiting...")
+        device.powersupply.turnOFF()
+        keys.quit()
+        device.powersupply.quit()
+        t0.join()
+        t1.join()
+        sys.exit()
 
     elif(operation_selection == 'm'):
         print("Manual Mode")
@@ -92,8 +100,8 @@ if(device_selection == 'p'):
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
                     print("exiting...")
-                    device.powersupply.quit()
                     keys.quit()
+                    device.powersupply.quit()
                     t0.join()
                     sys.exit()
                 elif(keys.input_buf == "o"):
@@ -108,10 +116,11 @@ if(device_selection == 'p'):
                     device.powersupply.setAmperage(str(input()))
                 keys.input_buf = ""
     elif(operation_selection == 'q'):
-        device = powersupply.POWERSUPPLY()
         print("exiting...")
         keys.quit()
+        device.powersupply.quit()
         sys.exit()
+
 elif(device_selection == 'l'):
     try:
         device = electronicload.ELECTRONICLOAD()
@@ -156,9 +165,10 @@ elif(device_selection == 'l'):
         while True:
             if(keys.input_buf == "q"):
                 print("exiting...")
-                device.electronicload.quit()
                 keys.quit()
+                device.electronicload.quit()
                 t0.join()
+                t1.join()
                 sys.exit()
             if(last_read_time + wait_read_time < time.time()):
                 last_read_time = time.time()
@@ -184,6 +194,8 @@ elif(device_selection == 'l'):
         print("exiting...")
         keys.quit()
         device.electronicload.quit()
+        t0.join()
+        t1.join()
         sys.exit()
 
     elif(operation_selection == 'm'):
@@ -201,10 +213,11 @@ elif(device_selection == 'l'):
         while True:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("exiting...")
-                    device.electronicload.quit()
+                    print("exiting...")                    
                     keys.quit()
+                    device.electronicload.quit()
                     t0.join()
+                    t1.join()
                     sys.exit()
                 elif(keys.input_buf == "o"):
                     device.electronicload.turnON()
@@ -218,8 +231,8 @@ elif(device_selection == 'l'):
 
     elif(operation_selection == 'q'):
         print("exiting...")
-        device.electronicload.quit()
         keys.quit()
+        device.electronicload.quit()
         sys.exit()
 
 

@@ -58,16 +58,13 @@ class PPS3E004:
     def setAmperage(self, amperage):
         if(amperage != "."):
             try:
-                self.amps = int(amperage.split('.')[0])
-            except:
-                self.amps = 0
-            try:
                 self.milliAmps = int(amperage.split('.')[1])
             except:
                 self.milliAmps = 0
 
+        print('0' + '{:<04}'.format(self.milliAmps))
         self.key = 'si'
-        self.key += '{:04}'.format(self.milliAmps)
+        self.key += '0' + '{:<04}'.format(self.milliAmps)
         self.key += "\n"
         self.writeFunction()
 
