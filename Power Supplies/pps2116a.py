@@ -37,50 +37,39 @@ class PPS2116A:
         if self.com_device is None:
             raise ValueError('Device not found')
 
-    def setVoltage(self):
+    def setVoltage(self, voltage):
+        if(voltage != "."):
+            try:
+                self.volts = int(voltage.split('.')[0])
+            except:
+                self.volts = 0
+            try:
+                self.hectoVolts = int(voltage.split('.')[1])
+            except:
+                self.hectoVolts = 0
+
         self.key = 'su'
         self.key += '{:02}'.format(self.volts)
         self.key += '{:<02}'.format(self.hectoVolts)
         self.key += "\n"
-        return self.key.encode()
+        self.writeFunction()
 
-    def setAmperage(self):
+    def setAmperage(self, amperage):
+        if(amperage != "."):
+            try:
+                self.amps = int(amperage.split('.')[0])
+            except:
+                self.amps = 0
+            try:
+                self.milliAmps = int(amperage.split('.')[1])
+            except:
+                self.milliAmps = 0
+
         self.key = 'si'
         self.key += '{:01}'.format(self.amps)
         self.key += '{:<03}'.format(self.milliAmps)
         self.key += "\n"
-        return self.key.encode()
-
-    def control(self):
-        self.com_device.write(self.setVoltage())
-        time.sleep(.02)
-        self.com_device.read_all()
-        self.com_device.write(self.setAmperage())
-        time.sleep(.02)
-        self.com_device.read_all()
-
-    def setParameters(self, voltage, amperage):
-        if(voltage != "."):
-            try:
-                self.volts = int(voltage.split('.')[0])
-                try:
-                    self.hectoVolts = int(voltage.split('.')[1])
-                except:
-                    self.hectoVolts = 0
-            except:
-                self.volts = 0
-
-        if(amperage != "."):
-            try:
-                self.amps = int(amperage.split('.')[0])
-                try:
-                    self.milliAmps = int(amperage.split('.')[1])
-                except:
-                    self.milliAmps = 0
-            except:
-                self.volts = 0
-
-        self.control()
+        self.writeFunction()
 
     def writeFunction(self):
         self.com_device.write(self.key.encode())

@@ -16,7 +16,7 @@ class PPS3E004:
         self.vid = "10C4"
         self.com_ports = list(serial.tools.list_ports.comports())
         for p in self.com_ports:
-            if self.pid and self.vid in p.hwid:                
+            if self.pid and self.vid in p.hwid:
                 # Connection to port
                 self.com_device = serial.Serial(
                     port=p.device, baudrate=38400, timeout=500, parity=serial.PARITY_EVEN, rtscts=0)
@@ -38,28 +38,7 @@ class PPS3E004:
         if self.com_device is None:
             raise ValueError('Device not found')
 
-    def setVoltage(self):
-        self.key = 'su'
-        self.key += '{:04}'.format(self.volts)
-        self.key += '{:01}'.format(self.hectoVolts)
-        self.key += "\n"
-        return self.key.encode()
-
-    def setAmperage(self):
-        self.key = 'si'
-        self.key += '{:04}'.format(self.milliAmps)
-        self.key += "\n"
-        return self.key.encode()
-
-    def control(self):
-        self.com_device.write(self.setVoltage())
-        time.sleep(.02)
-        self.com_device.read_all()
-        self.com_device.write(self.setAmperage())
-        time.sleep(.02)
-        self.com_device.read_all()
-
-    def setParameters(self, voltage, amperage):
+    def setVoltage(self, voltage):
         if(voltage != "."):
             try:
                 self.volts = int(voltage.split('.')[0])
@@ -70,6 +49,13 @@ class PPS3E004:
             except:
                 self.hectoVolts = 0
 
+        self.key = 'su'
+        self.key += '{:04}'.format(self.volts)
+        self.key += '{:01}'.format(self.hectoVolts)
+        self.key += "\n"
+        self.writeFunction()
+
+    def setAmperage(self, amperage):
         if(amperage != "."):
             try:
                 self.amps = int(amperage.split('.')[0])
@@ -80,7 +66,10 @@ class PPS3E004:
             except:
                 self.milliAmps = 0
 
-        self.control()
+        self.key = 'si'
+        self.key += '{:04}'.format(self.milliAmps)
+        self.key += "\n"
+        self.writeFunction()
 
     def writeFunction(self):
         self.com_device.write(self.key.encode())

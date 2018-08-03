@@ -24,6 +24,7 @@ if(device_selection == 'p'):
     try:
         device = powersupply.POWERSUPPLY()
     except:
+        print("No Supported Power Supplies connected to computer bus")
         print("exiting...")
         keys.quit()
         sys.exit()
@@ -41,13 +42,15 @@ if(device_selection == 'p'):
         file_lines = file.readlines()
         file_lines = file_lines[1:]
         count = 0
-        t0 = threading.Thread(target=device.powersupply.control)
-        threads.append(t0)
-        t0.start()
+        try:
+            t0 = threading.Thread(target=device.powersupply.control)
+            threads.append(t0)
+            t0.start()
+        except:
+            pass
         t1 = threading.Thread(target=keys.getInput)
         threads.append(t1)
         t1.start()
-        device.powersupply.setParameters(device.voltage, device.amperage)
         for i in file_lines:
             if(keys.input_buf == "q"):
                 print("exiting...")
@@ -56,9 +59,8 @@ if(device_selection == 'p'):
                 t0.join()
                 sys.exit()
             line = file_lines[count]
-            device.voltage = line.split(',')[1]
-            device.amperage = line.split(',')[2]
-            device.powersupply.setParameters(device.voltage, device.amperage)
+            device.powersupply.setVoltage(line.split(',')[1])
+            device.powersupply.setAmperage(line.split(',')[2])
             device.powersupply.setOutput(int(line.split(',')[3]))
             time.sleep(float(line.split(',')[0]))
             count += 1
@@ -69,17 +71,19 @@ if(device_selection == 'p'):
         print("Manual Mode")
         print()
         print("Input Volts in Volts.hectoVolts")
-        device.voltage = str(input())
+        device.powersupply.setVoltage(str(input()))
         print("Input Amps in Amps.milliAmps")
-        device.amperage = str(input())
-        print('Voltage: ' + device.voltage)
-        print('Amps: ' + device.amperage)
+        device.powersupply.setAmperage(str(input()))
+        print('Voltage: ' + device.powersupply.voltage)
+        print('Amps: ' + device.powersupply.amperage)
         print("Change Voltage with 'v'")
         print("Change Amps with 'a'")
-        device.powersupply.setParameters(device.voltage, device.amperage)
-        t0 = threading.Thread(target=device.powersupply.control)
-        threads.append(t0)
-        t0.start()
+        try:
+            t0 = threading.Thread(target=device.powersupply.control)
+            threads.append(t0)
+            t0.start()
+        except:
+            pass
         t1 = threading.Thread(target=keys.getInput)
         threads.append(t1)
         t1.start()
@@ -98,13 +102,11 @@ if(device_selection == 'p'):
                     device.powersupply.turnOFF()
                 elif(keys.input_buf == "v"):
                     print("Input Volts in Volts.hectoVolts")
-                    device.voltage = input()
+                    device.powersupply.setVoltage(str(input()))
                 elif(keys.input_buf == "a"):
                     print("Input Amps in Amps.milliAmps")
-                    device.amperage = input()
+                    device.powersupply.setAmperage(str(input()))
                 keys.input_buf = ""
-                device.powersupply.setParameters(
-                    device.voltage, device.amperage)
     elif(operation_selection == 'q'):
         device = powersupply.POWERSUPPLY()
         print("exiting...")
@@ -114,6 +116,7 @@ elif(device_selection == 'l'):
     try:
         device = electronicload.ELECTRONICLOAD()
     except:
+        print("No Supported Electronic Loads connected to computer bus")
         print("exiting...")
         keys.quit()
         sys.exit()
@@ -222,10 +225,6 @@ elif(device_selection == 'l'):
 
 elif(device_selection == 'q'):
     print("exiting...")
-    try:
-        device.powersupply.quit()
-    except:
-        device.electronicload.quit()
     keys.quit()
     sys.exit()
 

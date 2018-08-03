@@ -26,7 +26,8 @@ class CSI305DB:
             if self.com_device is None:
                 raise ValueError('Device not found')
 
-    def setParameters(self, voltage, amperage):
+    def setVoltage(self, voltage):
+        self.voltage = voltage
         if(voltage != "."):
             try:
                 self.volts = int(voltage.split('.')[0])
@@ -37,6 +38,8 @@ class CSI305DB:
             except:
                 self.volts = 0
 
+    def setAmperage(self, amperage):
+        self.amperage = amperage
         if(amperage != "."):
             try:
                 self.amps = int(amperage.split('.')[0])

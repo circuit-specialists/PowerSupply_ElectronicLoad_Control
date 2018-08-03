@@ -22,8 +22,6 @@ import pps3e004
 
 class POWERSUPPLY:
     def __init__(self):
-        self.voltage = "0.0"
-        self.amperage = "0.0"
         try:
             self.powersupply = csi305db.CSI305DB()
         except:
