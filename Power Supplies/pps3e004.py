@@ -25,9 +25,8 @@ class PPS3E004:
                     self.com_device.write(self.key.encode())
                     time.sleep(.02)
                     self.spec = self.com_device.read_all()
-                if("300V/0400mA\r\n".encode() in self.spec):
+                if("300V/0400mA".encode() not in self.spec):
                     print(str(self.spec)[2:-5])
-                else:
                     self.com_device.close()
                     raise ValueError("Not right device")
                 time.sleep(.02)

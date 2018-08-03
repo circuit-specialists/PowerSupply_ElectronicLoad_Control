@@ -54,8 +54,8 @@ if(device_selection == 'p'):
         for i in file_lines:
             if(keys.input_buf == "q"):
                 print("exiting...")
-                device.powersupply.quit()
                 keys.quit()
+                device.powersupply.quit()
                 t0.join()
                 t1.join()
                 sys.exit()

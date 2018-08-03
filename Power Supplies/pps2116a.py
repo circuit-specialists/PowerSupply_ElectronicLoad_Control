@@ -24,9 +24,8 @@ class PPS2116A:
                 self.com_device.write(self.key.encode())
                 time.sleep(.02)
                 self.spec = self.com_device.read_all()
-                if("32V/5000mA\r\n".encode() in self.spec):
+                if("DPS3205U".encode() not in self.spec):
                     print(str(self.spec)[2:-2])
-                else:
                     self.com_device.close()
                     raise ValueError("Not right device")
                 time.sleep(.02)
