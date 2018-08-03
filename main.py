@@ -60,12 +60,11 @@ if(device_selection == 'p'):
                 t1.join()
                 sys.exit()
             line = file_lines[count]
-            device.powersupply.setVoltage(line.split(',')[1])
-            device.powersupply.setAmperage(line.split(',')[2])
-            device.powersupply.setOutput(int(line.split(',')[3]))
+            device.powersupply.setVoltage(line.split(',')[1], i)
+            device.powersupply.setAmperage(line.split(',')[2], i)
+            device.powersupply.setOutput(int(line.split(',')[3]), i)
             time.sleep(float(line.split(',')[0]))
             count += 1
-
         print("Finished auto run mode")
         print("exiting...")
         device.powersupply.turnOFF()
@@ -78,12 +77,14 @@ if(device_selection == 'p'):
     elif(operation_selection == 'm'):
         print("Manual Mode")
         print()
-        print("Input Volts in Volts.hectoVolts")
-        device.powersupply.setVoltage(str(input()))
-        print("Input Amps in Amps.milliAmps")
-        device.powersupply.setAmperage(str(input()))
-        print('Voltage: ' + device.powersupply.voltage)
-        print('Amps: ' + device.powersupply.amperage)
+        for i in range(1, device.powersupply.channels):
+            print("Setting Channel:" + str(i))
+            print("Input Volts in Volts.hectoVolts")
+            device.powersupply.setVoltage(str(input()), i)
+            print("Input Amps in Amps.milliAmps")
+            device.powersupply.setAmperage(str(input()), i)
+            print('Voltage: ' + device.powersupply.voltage)
+            print('Amps: ' + device.powersupply.amperage)
         print("Change Voltage with 'v'")
         print("Change Amps with 'a'")
         try:
@@ -109,11 +110,23 @@ if(device_selection == 'p'):
                 elif(keys.input_buf == "f"):
                     device.powersupply.turnOFF()
                 elif(keys.input_buf == "v"):
-                    print("Input Volts in Volts.hectoVolts")
-                    device.powersupply.setVoltage(str(input()))
+                    if(device.powersupply.channels > 1):
+                        print("Which Channel?")
+                        channel = str(input())
+                        print("Input Volts in Volts.hectoVolts")
+                        device.powersupply.setVoltage(str(input()), channel)
+                    else:
+                        print("Input Volts in Volts.hectoVolts")
+                        device.powersupply.setVoltage(str(input()), 1)
                 elif(keys.input_buf == "a"):
-                    print("Input Amps in Amps.milliAmps")
-                    device.powersupply.setAmperage(str(input()))
+                    if(device.powersupply.channels > 1):
+                        print("Which Channel?")
+                        channel = str(input())
+                        print("Input Amps in Amps.milliAmps")
+                        device.powersupply.setVoltage(str(input()), channel)
+                    else:
+                        print("Input Amps in Amps.milliAmps")
+                        device.powersupply.setAmperage(str(input()), 1)
                 keys.input_buf = ""
     elif(operation_selection == 'q'):
         print("exiting...")
@@ -213,7 +226,7 @@ elif(device_selection == 'l'):
         while True:
             if(keys.input_buf > ""):
                 if(keys.input_buf == "q"):
-                    print("exiting...")                    
+                    print("exiting...")
                     keys.quit()
                     device.electronicload.quit()
                     t0.join()

@@ -11,33 +11,11 @@ import time
 
 
 class PPS3E004:
-    def __init__(self):
-        self.pid = "EA60"
-        self.vid = "10C4"
-        self.com_ports = list(serial.tools.list_ports.comports())
-        for p in self.com_ports:
-            if self.pid and self.vid in p.hwid:
-                # Connection to port
-                self.com_device = serial.Serial(
-                    port=p.device, baudrate=38400, timeout=500, parity=serial.PARITY_EVEN, rtscts=0)
-                self.key = "a\n"
-                for i in range(0, 3):
-                    self.com_device.write(self.key.encode())
-                    time.sleep(.02)
-                    self.spec = self.com_device.read_all()
-                if("300V/0400mA".encode() not in self.spec):
-                    print(str(self.spec)[2:-5])
-                    self.com_device.close()
-                    raise ValueError("Not right device")
-                time.sleep(.02)
-                self.com_device.read_all()
-                self.name = "PPS3E004"
-                print("Press 'o' for output and 'f' to turn off")
+    def __init__(self, com_device):
+        self.name = "PPS3E004"
+        self.channels = 1
 
-        if self.com_device is None:
-            raise ValueError('Device not found')
-
-    def setVoltage(self, voltage):
+    def setVoltage(self, voltage, channel):
         if(voltage != "."):
             try:
                 self.volts = int(voltage.split('.')[0])
@@ -54,7 +32,7 @@ class PPS3E004:
         self.key += "\n"
         self.writeFunction()
 
-    def setAmperage(self, amperage):
+    def setAmperage(self, amperage, channel):
         if(amperage != "."):
             try:
                 self.milliAmps = int(amperage.split('.')[1])
@@ -69,7 +47,7 @@ class PPS3E004:
 
     def writeFunction(self):
         self.com_device.write(self.key.encode())
-        time.sleep(.01)
+        time.sleep(.02)
         return self.com_device.read_all()
 
     def setCPUADDR(self, ADDR):
@@ -106,24 +84,8 @@ class PPS3E004:
         self.key = "rb\n"
         self.writeFunction()
 
-    def unknownRC(self):
-        self.key = "rc\n"
-        self.writeFunction()
-
-    def unknownRD(self):
-        self.key = "rd\n"
-        self.writeFunction()
-
     def getAddress(self):
         self.key = "re\n"
-        self.writeFunction()
-
-    def unknownRF(self):
-        self.key = "rf\n"
-        self.writeFunction()
-
-    def unknownRG(self):
-        self.key = "rg\n"
         self.writeFunction()
 
     def unknownRH(self):
@@ -155,32 +117,12 @@ class PPS3E004:
         self.key = "rm\n"
         self.writeFunction()
 
-    def unknownRN(self):
-        self.key = "rn\n"
-        self.writeFunction()
-
-    def unknownRO(self):
-        self.key = "ro\n"
-        self.writeFunction()
-
     def getDeviceSafeguard(self):
         self.key = "rp\n"
         self.writeFunction()
 
-    def unknownRQ(self):
-        self.key = "rq\n"
-        self.writeFunction()
-
-    def unknownRR(self):
-        self.key = "rr\n"
-        self.writeFunction()
-
     def measureStatus(self):
         self.key = "rs\n"
-        self.writeFunction()
-
-    def unknownRT(self):
-        self.key = "rt\n"
         self.writeFunction()
 
     def presetVoltage(self):
@@ -203,10 +145,6 @@ class PPS3E004:
     def unknownRY(self):
         # gets same result rx
         self.key = "ry\n"
-        self.writeFunction()
-
-    def unknownRZ(self):
-        self.key = "rz\n"
         self.writeFunction()
 
     def quit(self):

@@ -11,22 +11,11 @@ import time
 
 
 class CSI305DB:
-    def __init__(self):
-        self.pid = "6001"
-        self.vid = "0403"
-        self.com_ports = list(serial.tools.list_ports.comports())
-        for p in self.com_ports:
-            if self.pid and self.vid in p.hwid:
-                print(p)
-                # Connection to port
-                self.com_device = serial.Serial(
-                    port=p.device, baudrate=9600, timeout=500, parity=serial.PARITY_EVEN, rtscts=0)
-                self.name = "CSI305DB"
+    def __init__(self, com_device):
+        self.name = "CSI305DB"
+        self.channels = 1
 
-            if self.com_device is None:
-                raise ValueError('Device not found')
-
-    def setVoltage(self, voltage):
+    def setVoltage(self, voltage, channel):
         self.voltage = voltage
         if(voltage != "."):
             try:
@@ -38,7 +27,7 @@ class CSI305DB:
             except:
                 self.volts = 0
 
-    def setAmperage(self, amperage):
+    def setAmperage(self, amperage, channel):
         self.amperage = amperage
         if(amperage != "."):
             try:
@@ -77,5 +66,6 @@ class CSI305DB:
             self.turnOFF()
 
     def quit(self):
+        self.turnOFF()
         self.com_device.close()
         exit()
