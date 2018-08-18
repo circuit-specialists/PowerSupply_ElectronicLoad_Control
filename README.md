@@ -24,10 +24,9 @@ You first need to have python installed. If you don't, [download](https://www.py
 
 * There are two modes. 
     * The GUI version is current as of v1.3 alpha.
+        * To run the GUI version, run `python gui.py`.
     * The command line version is current as of v1.2.
-    
-To run the GUI version, run `python gui.py`. 
-To run the command line version, run `python cmd.py`.
+        * To run the command line version, run `python cmd.py`.
 
 ###### GUI Help
 To access the GUI help, run the GUI and select the help menu item.
