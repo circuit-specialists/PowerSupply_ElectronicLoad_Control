@@ -20,13 +20,16 @@ One script to rule them all, one script to find the device, and one script to bi
 
 You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. Next, download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo. Once you have the repo, unzip the repo to a folder run 'pip install -r example-requirements.txt' from the command line to install the dependencies. Once finish you can run the main.py.
 
-**_Command Line Program Usage_**
+**_Program Usage_**
 
-There are two modes. The command version is current as of v1.2. The gui version is current as of v1.3.
-To run the gui version, run `python gui.py`. To run the command line version, run `python cmd.py`.
+* There are two modes. 
+    * The command version is current as of v1.2. 
+    * The GUI version is current as of v1.3 alpha.
+To run the GUI version, run `python gui.py`. 
+To run the command line version, run `python cmd.py`.
 
 ###### GUI Help
-To access the gui help, run the gui and select the help menu item.
+To access the GUI help, run the GUI and select the help menu item.
 
 ###### Command Line Help
 When the program first runs, the option for either running a power supply or electronic load is given. Once the type of device is selected, the type of run usage also needs to be selected. If you choose 'Auto-Mode', you'll need to have a .csv file titled 'auto_run_el.csv' for electronic loads, or 'auto_run_ps.csv' for power supplies. The format for each type is the first line in the provided example files. (future - when multiple channels, use 'auto_run_??_advanced.csv')
