@@ -32,9 +32,11 @@ You first need to have python installed. If you don't, [download](https://www.py
 To access the GUI help, run the GUI and select the help menu item.
 
 ###### Command Line Help
-When the program first runs, the option for either running a power supply or electronic load is given. Once the type of device is selected, the type of run usage also needs to be selected. If you choose 'Auto-Mode', you'll need to have a .csv file titled 'auto_run_el.csv' for electronic loads, or 'auto_run_ps.csv' for power supplies. The format for each type is the first line in the provided example files. (future - when multiple channels, use 'auto_run_??_advanced.csv')
+When the program first runs, the option for either running a power supply or electronic load is given. Once the type of device is selected, the type of run usage also needs to be selected. 
 
-If you chose manual mode, the program will prompt for the input values. Make sure to give full values, such as 0.123, 1, or 1.123. The program very likely will not be able to interpret truncated values such as .123.
+If you choose `Auto-Mode`, you'll need to have a .csv file titled `auto_run_el.csv` for electronic loads, or `auto_run_ps.csv` for power supplies. The format for each type is diplayed in the first line of the provided example files.
+
+If you chose `manual mode`, the program will prompt for the input values. Make sure to give full values, such as 0.123, 1, or 1.123. The program very likely will not be able to interpret truncated values such as .123.
 
 **_Device Additions_**
 
