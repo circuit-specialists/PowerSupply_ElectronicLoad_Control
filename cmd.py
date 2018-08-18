@@ -14,12 +14,11 @@ import sys
 
 keys = keyboard.KEYBOARD()
 
+# last update v1.2
 print("Select Device Type")
 print("Power Supply                     press:'p'")
 print("Electronic Load                  press:'l'")
 device_selection = str(input())
-
-
 if(device_selection == 'p'):
     try:
         device = powersupply.POWERSUPPLY()
@@ -114,7 +113,8 @@ if(device_selection == 'p'):
                         print("Which Channel?")
                         channel = str(input())
                         print("Input Volts in Volts.hectoVolts")
-                        device.powersupply.setVoltage(str(input()), channel)
+                        device.powersupply.setVoltage(
+                            str(input()), channel)
                     else:
                         print("Input Volts in Volts.hectoVolts")
                         device.powersupply.setVoltage(str(input()), 1)
@@ -123,7 +123,8 @@ if(device_selection == 'p'):
                         print("Which Channel?")
                         channel = str(input())
                         print("Input Amps in Amps.milliAmps")
-                        device.powersupply.setVoltage(str(input()), channel)
+                        device.powersupply.setVoltage(
+                            str(input()), channel)
                     else:
                         print("Input Amps in Amps.milliAmps")
                         device.powersupply.setAmperage(str(input()), 1)
@@ -247,7 +248,6 @@ elif(device_selection == 'l'):
         keys.quit()
         device.electronicload.quit()
         sys.exit()
-
 
 elif(device_selection == 'q'):
     print("exiting...")

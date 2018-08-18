@@ -9,20 +9,27 @@ One script to rule them all, one script to find the device, and one script to bi
 ## Features
 
 * Autofinding on COM bus
-* Run from command line (future:GUI)
+* Run from GUI or command line (GUI currently in alpha)
 * Manual Voltage and Amperage control
 * Run predined csv with timing and power specs
 * Control Vendor specific functions
-* (future) Graph Voltage, Amperage, Power
+* (future) GUI graph for Voltage, Amperage, Power
 
 ## Documentation
 **_Install Instructions_**
 
-You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. You'll also need to install a few packages within python to communicate with the devices. These packages include, 'pyusb', 'pyvisa', and 'pyserial'. Each one of these can easily be install by using your command terminal, and the 'pip install' command. The last step is to download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo. Once you have the repo, unzip the repo to folder, open your command terminal, and navigate to the repo unzipped folder. To run the program, run main.py by executing 'python main.py' from the command terminal.
+You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. Next, download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo. Once you have the repo, unzip the repo to a folder run 'pip install -r example-requirements.txt' from the command line to install the dependencies. Once finish you can run the main.py.
 
-**_Program Usage_**
+**_Command Line Program Usage_**
 
-When program first runs, the option for either running a power supply or electronic load is given. Once the type of device is selected, the type of run usage needs to be selected. If you choose 'Auto-Mode', you'll need to have a .csv file titled 'auto_run_el.csv' for electronic loads, or 'auto_run_ps.csv' for power supplies. The format for each type is the first line in the provided example files. (future - when multiple channels, use 'auto_run_??_advanced.csv')
+There are two modes. The command version is current as of v1.2. The gui version is current as of v1.3.
+To run the gui version, run `python gui.py`. To run the command line version, run `python cmd.py`.
+
+###### GUI Help
+To access the gui help, run the gui and select the help menu item.
+
+###### Command Line Help
+When the program first runs, the option for either running a power supply or electronic load is given. Once the type of device is selected, the type of run usage also needs to be selected. If you choose 'Auto-Mode', you'll need to have a .csv file titled 'auto_run_el.csv' for electronic loads, or 'auto_run_ps.csv' for power supplies. The format for each type is the first line in the provided example files. (future - when multiple channels, use 'auto_run_??_advanced.csv')
 
 If you chose manual mode, the program will prompt for the input values. Make sure to give full values, such as 0.123, 1, or 1.123. The program very likely will not be able to interpret truncated values such as .123.
 
