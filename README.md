@@ -23,8 +23,9 @@ You first need to have python installed. If you don't, [download](https://www.py
 **_Program Usage_**
 
 * There are two modes. 
-    * The command version is current as of v1.2. 
     * The GUI version is current as of v1.3 alpha.
+    * The command line version is current as of v1.2.
+    
 To run the GUI version, run `python gui.py`. 
 To run the command line version, run `python cmd.py`.
 
