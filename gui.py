@@ -6,12 +6,14 @@ licensed as GPLv3
 """
 
 # gui classes
-import tkinter
-from tkinter import Menu
-from tkinter import filedialog
-from tkinter import Toplevel
-from tkinter import Button
-from tkinter import messagebox
+try: # windows
+    import tkinter
+    from tkinter import Menu, filedialog, Toplevel, Button, messagebox
+except: # unix
+    import Tkinter, os
+    import tkFileDialog as filedialog
+    import tkMessageBox as messagebox
+    from Tkinter import Menu, Toplevel, Button
 
 # devices classes
 import powersupply
@@ -31,9 +33,14 @@ class GUI:
         self.variable_count = 0
         self.programme_file = []
         self.help_url = "https://github.com/circuit-specialists/PowerSupply_ElectronicLoad_Control/wiki"
-
-        self.floor = tkinter.Tk()
-        self.floor.iconbitmap('CircuitSpecialists.ico')
+        try: # python3
+            self.floor = tkinter.Tk()
+        except: # python2.7
+            self.floor = Tkinter.Tk()
+        try: # windows
+            self.floor.iconbitmap('CircuitSpecialists.ico')
+        except: # unix
+            self.floor.iconbitmap('@CircuitSpecialists.xbm')
         self.floor.title('Circuit Specialists')
         self.setWindowSize()
         self.setMenuBar()
@@ -101,8 +108,11 @@ class GUI:
     def openCSVFile(self):
         self.csv_filename = filedialog.askopenfilename(
             initialdir="./", title="Select file", filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
-        with open(self.csv_filename, "r") as f:
-            self.programme_file = f.readlines
+        try:
+            with open(self.csv_filename, "r") as f:
+                self.programme_file = f.readlines
+        except:
+            pass
 
     def save(self):
         self.save_filename = filedialog.asksaveasfilename(
@@ -112,10 +122,13 @@ class GUI:
     def save_AS_CSVFile(self):
         self.save_filename = filedialog.asksaveasfilename(
             initialdir="./", title="Select file", filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
-        self.log_file = open(self.csv_filename + ".csv", "w")
-        for i in range(0, self.variable_count):
-            self.log_file.writelines(
-                "%d, %d, %d, %d" % self.timestamp[i], self.voltage[i], self.current[i], self.output[i])
+        try:
+            self.log_file = open(self.csv_filename + ".csv", "w")
+            for i in range(0, self.variable_count):
+                self.log_file.writelines(
+                    "%d, %d, %d, %d" % self.timestamp[i], self.voltage[i], self.current[i], self.output[i])
+        except:
+            pass
 
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
         self.timestamp.append(Timestamp)
