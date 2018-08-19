@@ -2,8 +2,8 @@
 
 One script to rule them all, one script to find the device, and one script to bind them all together
 
-* Tested operating systems: Windows
-* Tested Power Supplies: CSI305DB, PPS2116A, PPS3E004, PPS2320A
+* Tested operating systems: Windows, Linux
+* Tested Power Supplies: CSI305DB, PPS2116A, PPS2320A, PPS3E004
 * Tested Electronic Loads: Array 3721A
 
 ## Features
