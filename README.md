@@ -18,7 +18,7 @@ One script to rule them all, one script to find the device, and one script to bi
 ## Documentation
 **_Install Instructions_**
 
-You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. Next, download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo. Once you have the repo, unzip the repo to a folder run `pip install -r requirements.txt` from the command line to install the dependencies. Once finish you can run the main.py.
+You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. Next, download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo. Once you have the repo, unzip the repo to a folder run `pip install -r requirements.txt` to install the dependencies. Once finish you can run the main.py.
 
 **_Program Usage_**
 
