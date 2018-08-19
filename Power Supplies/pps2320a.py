@@ -21,7 +21,7 @@ class PPS2320A:
 
     def setVoltage(self, voltage, channel):
         self.voltage = voltage
-        if(voltage != "."):
+        if("." in voltage):
             try:
                 self.volts = int(voltage.split('.')[0])
             except:
@@ -30,6 +30,9 @@ class PPS2320A:
                 self.hectoVolts = int(voltage.split('.')[1])
             except:
                 self.hectoVolts = 0
+        else:
+            self.volts = int(voltage)
+            self.hectoVolts = 0
 
         if(channel == 2):
             self.key = 'sa'
@@ -42,15 +45,19 @@ class PPS2320A:
 
     def setAmperage(self, amperage, channel):
         self.amperage = amperage
-        if(amperage != "."):
+        if("." in amperage):
             try:
                 self.amps = int(amperage.split('.')[0])
             except:
                 self.amps = 0
             try:
-                self.milliAmps = int(amperage.split('.')[1])
+                self.milliamps = int(amperage.split('.')[1])
             except:
-                self.milliAmps = 0
+                self.milliamps = 0
+        else:
+            self.amps = int(amperage)
+            self.milliamps = 0
+
         if(channel == 2):
             self.key = 'sd'
         else:

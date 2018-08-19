@@ -12,11 +12,12 @@ import time
 
 class PPS2116A:
     def __init__(self, com_device):
+        self.com_device = com_device
         self.name = "PPS2116A"
         self.channels = 1
 
-    def setVoltage(self, voltage, channel):
-        if(voltage != "."):
+    def setVoltage(self, voltage):
+        if("." in voltage):
             try:
                 self.volts = int(voltage.split('.')[0])
             except:
@@ -25,6 +26,9 @@ class PPS2116A:
                 self.hectoVolts = int(voltage.split('.')[1])
             except:
                 self.hectoVolts = 0
+        else:
+            self.volts = int(voltage)
+            self.hectoVolts = 0
 
         self.key = 'su'
         self.key += '{:02}'.format(self.volts)
@@ -32,16 +36,19 @@ class PPS2116A:
         self.key += "\n"
         self.writeFunction()
 
-    def setAmperage(self, amperage, channel):
-        if(amperage != "."):
+    def setAmperage(self, amperage):
+        if("." in amperage):
             try:
                 self.amps = int(amperage.split('.')[0])
             except:
                 self.amps = 0
             try:
-                self.milliAmps = int(amperage.split('.')[1])
+                self.milliamps = int(amperage.split('.')[1])
             except:
-                self.milliAmps = 0
+                self.milliamps = 0
+        else:
+            self.amps = int(amperage)
+            self.milliamps = 0
 
         self.key = 'si'
         self.key += '{:01}'.format(self.amps)

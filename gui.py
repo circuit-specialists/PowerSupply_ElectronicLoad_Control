@@ -8,12 +8,13 @@ licensed as GPLv3
 # gui classes
 try: # windows
     import tkinter
-    from tkinter import Menu, filedialog, Toplevel, Button, messagebox
+    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label
 except: # unix
-    import Tkinter, os
+    import Tkinter as tkinter
     import tkFileDialog as filedialog
     import tkMessageBox as messagebox
-    from Tkinter import Menu, Toplevel, Button
+    from Tkinter import Menu, Toplevel, Button, Entry, Label
+    import os
 
 # devices classes
 import powersupply
@@ -33,10 +34,7 @@ class GUI:
         self.variable_count = 0
         self.programme_file = []
         self.help_url = "https://github.com/circuit-specialists/PowerSupply_ElectronicLoad_Control/wiki"
-        try: # python3
-            self.floor = tkinter.Tk()
-        except: # python2.7
-            self.floor = Tkinter.Tk()
+        self.floor = tkinter.Tk()
         try: # windows
             self.floor.iconbitmap('CircuitSpecialists.ico')
         except: # unix
@@ -90,9 +88,17 @@ class GUI:
         self.editmenu.add_command(
             label="Run Single Loop", command=self.setRunParameters)
         self.editmenu.add_separator()
-        self.editmenu.add_command(label="Time Delay", command=self.donothing)
-        self.editmenu.add_command(label="Voltage", command=self.donothing)
-        self.editmenu.add_command(label="Amperge", command=self.donothing)
+        self.editmenu.add_command(
+            label="Create CSV File", command=self.createCSVFile)
+        self.editmenu.add_separator()
+        self.editmenu.add_command(label="Time Delay", command=lambda: self.getEntry("Time Delay"))
+        self.editmenu.add_command(label="Voltage", command=lambda: self.getEntry("Voltage"))
+        self.editmenu.add_command(label="Amperge", command=lambda: self.getEntry("Current"))
+        self.editmenu.add_separator()
+        self.editmenu.add_command(label="Mode", command=self.donothing)
+        self.editmenu.add_command(label="EL Setting", command=self.donothing)
+        self.editmenu.add_separator()
+        self.editmenu.add_command(label="Output", command=self.donothing)
         self.menubar.add_cascade(label="Edit", menu=self.editmenu)
 
     def setHelpMenu(self):
@@ -105,12 +111,38 @@ class GUI:
     def donothing(self):
         self.null = None
 
+    def getEntry(self, parameter):
+        self.top = Toplevel(self.floor)
+        if(parameter == "Time Delay"):
+            Label(self.top, text="Input Time Delay").pack()
+            self.entry_type = "TD"
+        elif(parameter == "Voltage"):
+            Label(self.top, text="Input Voltage Value").pack()
+            self.entry_type = "V"
+        elif(parameter == "Current"):
+            Label(self.top, text="Input Current Value").pack()
+            self.entry_type = "A"
+        self.entry_dialog = Entry(self.top)
+        self.entry_dialog.pack(padx=5)
+        button_dialog = Button(self.top, text="OK", command=self.okay)
+        button_dialog.pack(pady=5)
+
+    def okay(self):
+        self.entry = self.entry_dialog.get()
+        self.top.destroy()
+        if(self.entry_type == "TD"):
+            print()
+        elif(self.entry_type == "V"):
+            self.device.setVoltage(self.entry)
+        elif(self.entry_type == "A"):
+            self.device.setAmperage(self.entry)
+
     def openCSVFile(self):
-        self.csv_filename = filedialog.askopenfilename(
-            initialdir="./", title="Select file", filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
+        self.programme_filename = filedialog.askopenfilename(
+            initialdir="./", title="Select file", filetypes=(("csv files", "*.csv"), ("all files", "*.*")))        
         try:
-            with open(self.csv_filename, "r") as f:
-                self.programme_file = f.readlines
+            with open(self.programme_filename, "r") as f:
+                self.programme_file = f.readlines()
         except:
             pass
 
@@ -130,6 +162,9 @@ class GUI:
         except:
             pass
 
+    def createCSVFile(self):
+        print()
+
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
         self.timestamp.append(Timestamp)
         self.voltage.append(Voltage)
@@ -142,15 +177,15 @@ class GUI:
     def deviceSelection(self):
         try:
             self.device = powersupply.POWERSUPPLY()
-            self.device_type = "powersupply"
+            self.device = self.device.powersupply
             messagebox.showinfo(
-                "Power Supply", "Detected: " + self.device.powersupply.name)
+                "Power Supply", "Detected: " + self.device.name)
         except:
             try:
                 self.device = electronicload.ELECTRONICLOAD()
-                self.device_type = "electronicload"
+                self.device = self.device.electronicload
                 messagebox.showinfo("Electronic Load",
-                                    "Detected: " + self.device.electronicload.name)
+                                    "Detected: " + self.device.name)
             except:
                 messagebox.showerror(
                     "Error", "Sorry, no devices currently supported are found")

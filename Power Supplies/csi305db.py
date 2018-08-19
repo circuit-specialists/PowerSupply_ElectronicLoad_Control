@@ -12,32 +12,39 @@ import time
 
 class CSI305DB:
     def __init__(self, com_device):
+        self.com_device = com_device
         self.name = "CSI305DB"
         self.channels = 1
 
-    def setVoltage(self, voltage, channel):
+    def setVoltage(self, voltage):
         self.voltage = voltage
-        if(voltage != "."):
+        if("." in voltage):
             try:
                 self.volts = int(voltage.split('.')[0])
-                try:
-                    self.hectoVolts = int(voltage.split('.')[1])
-                except:
-                    self.hectoVolts = 0
             except:
                 self.volts = 0
+            try:
+                self.hectoVolts = int(voltage.split('.')[1])
+            except:
+                self.hectoVolts = 0
+        else:
+            self.volts = int(voltage)
+            self.hectoVolts = 0
 
-    def setAmperage(self, amperage, channel):
+    def setAmperage(self, amperage):
         self.amperage = amperage
-        if(amperage != "."):
+        if("." in amperage):
             try:
                 self.amps = int(amperage.split('.')[0])
-                try:
-                    self.milliAmps = int(amperage.split('.')[1])
-                except:
-                    self.milliAmps = 0
             except:
-                self.volts = 0
+                self.amps = 0
+            try:
+                self.milliamps = int(amperage.split('.')[1])
+            except:
+                self.milliamps = 0
+        else:
+            self.amps = int(amperage)
+            self.milliamps = 0
 
     def control(self):
         while True:
