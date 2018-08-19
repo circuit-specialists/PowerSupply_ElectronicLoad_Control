@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 """
 written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
@@ -7,6 +6,7 @@ licensed as GPLv3
 
 import msvcrt
 import sys
+
 
 class KEYBOARD:
     def __init__(self):
@@ -18,7 +18,7 @@ class KEYBOARD:
             if msvcrt.kbhit():
                 self.input_buf = msvcrt.getch().decode('UTF-8')
                 self.null = msvcrt.getch()
-            if(self.kill_signal):
+            if (self.kill_signal):
                 return
 
     def quit(self):

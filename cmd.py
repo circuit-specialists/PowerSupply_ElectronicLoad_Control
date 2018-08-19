@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 """
 written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
@@ -19,7 +18,7 @@ print("Select Device Type")
 print("Power Supply                     press:'p'")
 print("Electronic Load                  press:'l'")
 device_selection = str(input())
-if(device_selection == 'p'):
+if (device_selection == 'p'):
     try:
         device = powersupply.POWERSUPPLY()
     except:
@@ -34,7 +33,7 @@ if(device_selection == 'p'):
     print("Quit                             press:'q'")
     operation_selection = str(input())
 
-    if(operation_selection == 'a'):
+    if (operation_selection == 'a'):
         print("Auto Mode")
         print()
         file = open("auto_run_ps.csv", "r")
@@ -51,7 +50,7 @@ if(device_selection == 'p'):
         threads.append(t1)
         t1.start()
         for i in file_lines:
-            if(keys.input_buf == "q"):
+            if (keys.input_buf == "q"):
                 print("exiting...")
                 keys.quit()
                 device.powersupply.quit()
@@ -73,7 +72,7 @@ if(device_selection == 'p'):
         t1.join()
         sys.exit()
 
-    elif(operation_selection == 'm'):
+    elif (operation_selection == 'm'):
         print("Manual Mode")
         print()
         for i in range(1, device.powersupply.channels):
@@ -97,45 +96,43 @@ if(device_selection == 'p'):
         t1.start()
 
         while True:
-            if(keys.input_buf > ""):
-                if(keys.input_buf == "q"):
+            if (keys.input_buf > ""):
+                if (keys.input_buf == "q"):
                     print("exiting...")
                     keys.quit()
                     device.powersupply.quit()
                     t0.join()
                     sys.exit()
-                elif(keys.input_buf == "o"):
+                elif (keys.input_buf == "o"):
                     device.powersupply.turnON()
-                elif(keys.input_buf == "f"):
+                elif (keys.input_buf == "f"):
                     device.powersupply.turnOFF()
-                elif(keys.input_buf == "v"):
-                    if(device.powersupply.channels > 1):
+                elif (keys.input_buf == "v"):
+                    if (device.powersupply.channels > 1):
                         print("Which Channel?")
                         channel = str(input())
                         print("Input Volts in Volts.hectoVolts")
-                        device.powersupply.setVoltage(
-                            str(input()), channel)
+                        device.powersupply.setVoltage(str(input()), channel)
                     else:
                         print("Input Volts in Volts.hectoVolts")
                         device.powersupply.setVoltage(str(input()), 1)
-                elif(keys.input_buf == "a"):
-                    if(device.powersupply.channels > 1):
+                elif (keys.input_buf == "a"):
+                    if (device.powersupply.channels > 1):
                         print("Which Channel?")
                         channel = str(input())
                         print("Input Amps in Amps.milliAmps")
-                        device.powersupply.setVoltage(
-                            str(input()), channel)
+                        device.powersupply.setVoltage(str(input()), channel)
                     else:
                         print("Input Amps in Amps.milliAmps")
                         device.powersupply.setAmperage(str(input()), 1)
                 keys.input_buf = ""
-    elif(operation_selection == 'q'):
+    elif (operation_selection == 'q'):
         print("exiting...")
         keys.quit()
         device.powersupply.quit()
         sys.exit()
 
-elif(device_selection == 'l'):
+elif (device_selection == 'l'):
     try:
         device = electronicload.ELECTRONICLOAD()
     except:
@@ -150,13 +147,13 @@ elif(device_selection == 'l'):
     print("Quit                             press:'q'")
     operation_selection = str(input())
 
-    if(operation_selection == 'a'):
+    if (operation_selection == 'a'):
         print("Auto Run Mode")
         print()
         # log file
         print("Input Log-Time interval. Default is 1s")
         interval_selection = str(input())
-        if(interval_selection == ""):
+        if (interval_selection == ""):
             interval_selection = 1.0
         # log file
         log_file = open("auto_log_el.csv", "w")
@@ -177,14 +174,14 @@ elif(device_selection == 'l'):
         last_write_time = time.time()
         start_time = time.time()
         while True:
-            if(keys.input_buf == "q"):
+            if (keys.input_buf == "q"):
                 print("exiting...")
                 keys.quit()
                 device.electronicload.quit()
                 t0.join()
                 t1.join()
                 sys.exit()
-            if(last_read_time + wait_read_time < time.time()):
+            if (last_read_time + wait_read_time < time.time()):
                 last_read_time = time.time()
                 line = file_lines[count]
                 device.electronicload.setMode(line.split(',')[1])
@@ -197,11 +194,12 @@ elif(device_selection == 'l'):
                     null = file_lines[count]
                 except:
                     break
-            if(last_write_time + wait_write_time < time.time()):
-                log_file.writelines(str(time.time() - start_time) + "," +
-                                    str(device.electronicload.getVoltage()[:-1]) + "," +
-                                    str(device.electronicload.getCurrent()[:-1]) + "," +
-                                    str(device.electronicload.getPower()[:-1]) + "\n")
+            if (last_write_time + wait_write_time < time.time()):
+                log_file.writelines(
+                    str(time.time() - start_time) + "," +
+                    str(device.electronicload.getVoltage()[:-1]) + "," +
+                    str(device.electronicload.getCurrent()[:-1]) + "," +
+                    str(device.electronicload.getPower()[:-1]) + "\n")
 
         device.electronicload.turnOFF()
         print("Finished auto run mode")
@@ -212,7 +210,7 @@ elif(device_selection == 'l'):
         t1.join()
         sys.exit()
 
-    elif(operation_selection == 'm'):
+    elif (operation_selection == 'm'):
         print("Manual Mode")
         print()
         print("Set Current Limit")
@@ -225,31 +223,31 @@ elif(device_selection == 'l'):
         t1.start()
 
         while True:
-            if(keys.input_buf > ""):
-                if(keys.input_buf == "q"):
+            if (keys.input_buf > ""):
+                if (keys.input_buf == "q"):
                     print("exiting...")
                     keys.quit()
                     device.electronicload.quit()
                     t0.join()
                     t1.join()
                     sys.exit()
-                elif(keys.input_buf == "o"):
+                elif (keys.input_buf == "o"):
                     device.electronicload.turnON()
-                elif(keys.input_buf == "f"):
+                elif (keys.input_buf == "f"):
                     device.electronicload.turnOFF()
-                elif(keys.input_buf == "v"):
+                elif (keys.input_buf == "v"):
                     print("Set Current Limit")
                     device.electronicload.setCurrent = str(input())
                 keys.input_buf = ""
             print(device.electronicload.getCurrent())
 
-    elif(operation_selection == 'q'):
+    elif (operation_selection == 'q'):
         print("exiting...")
         keys.quit()
         device.electronicload.quit()
         sys.exit()
 
-elif(device_selection == 'q'):
+elif (device_selection == 'q'):
     print("exiting...")
     keys.quit()
     sys.exit()

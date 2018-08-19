@@ -17,6 +17,7 @@ class PPS2116A:
         self.channels = 1
 
     def setVoltage(self, voltage):
+        self.voltage = voltage
         if("." in voltage):
             try:
                 self.volts = int(voltage.split('.')[0])
@@ -37,18 +38,19 @@ class PPS2116A:
         self.writeFunction()
 
     def setAmperage(self, amperage):
+        self.amperage = amperage
         if("." in amperage):
             try:
                 self.amps = int(amperage.split('.')[0])
             except:
                 self.amps = 0
             try:
-                self.milliamps = int(amperage.split('.')[1])
+                self.milliAmps = int(amperage.split('.')[1])
             except:
-                self.milliamps = 0
+                self.milliAmps = 0
         else:
             self.amps = int(amperage)
-            self.milliamps = 0
+            self.milliAmps = 0
 
         self.key = 'si'
         self.key += '{:01}'.format(self.amps)

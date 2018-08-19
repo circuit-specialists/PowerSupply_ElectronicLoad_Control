@@ -17,6 +17,7 @@ class PPS3E004:
         self.channels = 1
 
     def setVoltage(self, voltage):
+        self.voltage = voltage
         if("." in voltage):
             try:
                 self.volts = int(voltage.split('.')[0])
