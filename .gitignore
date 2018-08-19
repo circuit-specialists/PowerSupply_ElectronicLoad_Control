@@ -1,3 +1,4 @@
 *.pyc
 *.json
+*.yml
 __pycache__/*
