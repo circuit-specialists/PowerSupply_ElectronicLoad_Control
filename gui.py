@@ -13,7 +13,6 @@ except:  # unix
     import tkFileDialog as filedialog
     import tkMessageBox as messagebox
     from Tkinter import Menu, Toplevel, Button, Entry, Label
-    import os
 
 # devices classes
 import powersupply
@@ -33,12 +32,13 @@ class GUI:
         self.variable_count = 0
         self.programme_file = []
         self.help_url = "https://github.com/circuit-specialists/PowerSupply_ElectronicLoad_Control/wiki"
-        self.floor = tkinter.Tk()
-        try:  # windows
-            self.floor.iconbitmap('CircuitSpecialists.ico')
-        except:  # unix
-            self.floor.iconbitmap('@CircuitSpecialists.xbm')
-        self.floor.title('Circuit Specialists')
+        self.floor = tkinter.Tk(className=' cs power control')
+        #if ('win' in sys.platform):
+         #   self.floor.iconbitmap('CircuitSpecialists.ico')
+        self.floor.tk.call(
+            'wm', 'iconphoto', self.floor._w,
+            tkinter.Image("photo", file="CircuitSpecialists.gif"))
+        self.floor.title('Circuit Specialists Power Control')
         self.setWindowSize()
         self.setMenuBar()
 
