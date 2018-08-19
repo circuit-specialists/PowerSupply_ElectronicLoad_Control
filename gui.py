@@ -31,7 +31,7 @@ class GUI:
         self.output = []
         self.variable_count = 0
         self.programme_file = []
-        self.help_url = "https://github.com/circuit-specialists/PowerSupply_ElectronicLoad_Control/wiki"
+        self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.floor = tkinter.Tk(className=' cs power control')
         #if ('win' in sys.platform):
          #   self.floor.iconbitmap('CircuitSpecialists.ico')
