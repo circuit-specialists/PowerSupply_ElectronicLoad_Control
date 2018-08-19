@@ -33,33 +33,33 @@ class GUI:
         self.programme_file = []
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.floor = tkinter.Tk(className=' cs power control')
-        #if ('win' in sys.platform):
-         #   self.floor.iconbitmap('CircuitSpecialists.ico')
         self.floor.tk.call(
             'wm', 'iconphoto', self.floor._w,
             tkinter.Image("photo", file="CircuitSpecialists.gif"))
         self.floor.title('Circuit Specialists Power Control')
-        self.setWindowSize()
+        self.setWindowSize(self.floor, 700, 500)
         self.setMenuBar()
 
-    def setWindowSize(self):
+    def setWindowSize(self, object, width, height):
         # get screen size
-        self.screen_width = self.floor.winfo_screenwidth()
-        self.screen_height = self.floor.winfo_screenheight()
+        self.screen_width = object.winfo_screenwidth()
+        self.screen_height = object.winfo_screenheight()
 
         # keep the window in ratio
-        self.window_height = 500
-        if (self.screen_height < 1080):
-            self.height_aspect = self.window_height / 1080
-            self.window_height *= self.height_aspect
-        self.window_width = 700
+        self.window_width = width
         if (self.screen_width < 1920):
             self.width_aspect = self.window_width / 1920
             self.window_width *= self.width_aspect
+        self.window_height = height
+        if (self.screen_height < 1080):
+            self.height_aspect = self.window_height / 1080
+            self.window_height *= self.height_aspect
 
         # set window to fit in ratio to screen size
-        self.floor.geometry(
-            str(self.window_width) + "x" + str(self.window_height))
+        self.window_x = int(self.screen_width / 2 - self.window_width / 2)
+        self.window_y = int(self.screen_height / 2 - self.window_height / 2)
+        object.geometry('%dx%d+%d+%d' %
+                            (self.window_width, self.window_height, self.window_x, self.window_y))
 
     def setMenuBar(self):
         self.menubar = Menu(self.floor)
@@ -119,8 +119,16 @@ class GUI:
                 title="Output State", message="Turn On Output?"))
 
     def getEntry(self, parameter):
+        # pop-up window
         self.top = Toplevel(self.floor)
+        self.setWindowSize(self.top, 250, 80)
+        self.top.title(parameter)
+        self.top.tk.call(
+            'wm', 'iconphoto', self.top._w,
+            tkinter.Image("photo", file="CircuitSpecialists.gif"))
         self.top.bind('<Return>', self.okay)
+
+        # window parameters
         if (parameter == "Time Delay"):
             Label(self.top, text="Input Time Delay").pack()
             self.entry_type = "TD"
@@ -130,6 +138,8 @@ class GUI:
         elif (parameter == "Current"):
             Label(self.top, text="Input Current Value").pack()
             self.entry_type = "A"
+
+        # window function
         self.entry_dialog = Entry(self.top)
         self.entry_dialog.pack(padx=5)
         button_dialog = Button(self.top, text="OK", command=self.okay)
@@ -138,12 +148,15 @@ class GUI:
     def okay(self, event=None):
         self.entry = self.entry_dialog.get()
         self.top.destroy()
-        if (self.entry_type == "TD"):
-            print()
-        elif (self.entry_type == "V"):
-            self.device.setVoltage(self.entry)
-        elif (self.entry_type == "A"):
-            self.device.setAmperage(self.entry)
+        try:
+            if (self.entry_type == "TD"):
+                print()
+            elif (self.entry_type == "V"):
+                self.device.setVoltage(self.entry)
+            elif (self.entry_type == "A"):
+                self.device.setAmperage(self.entry)
+        except:
+            messagebox.showerror("Error", "Device Not Connected")
 
     def openCSVFile(self):
         self.programme_filename = filedialog.askopenfilename(
