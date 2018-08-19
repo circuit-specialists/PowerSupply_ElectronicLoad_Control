@@ -7,12 +7,12 @@ licensed as GPLv3
 # gui classes
 try:  # windows
     import tkinter
-    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label
+    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas
 except:  # unix
     import Tkinter as tkinter
     import tkFileDialog as filedialog
     import tkMessageBox as messagebox
-    from Tkinter import Menu, Toplevel, Button, Entry, Label
+    from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas
 
 # devices classes
 import powersupply
@@ -21,10 +21,12 @@ import electronicload
 # dependent classes
 import sys
 import webbrowser
+import threading
 
 
 class GUI:
     def __init__(self):
+        self.threads = []
         self.timestamp = []
         self.voltage = []
         self.current = []
@@ -39,6 +41,33 @@ class GUI:
         self.floor.title('Circuit Specialists Power Control')
         self.setWindowSize(self.floor, 700, 500)
         self.setMenuBar()
+        self.drawCanvas()
+
+    def drawCanvas(self):
+        self.canvas_width = int(self.window_width / 2)
+        self.canvas_height = int(self.window_height / 2)
+        self.canvas = Canvas(
+            self.floor, width=self.canvas_width, height=self.canvas_height)
+        self.canvas.pack()
+        # w.coords(i, new_xy) # change coordinates
+        # w.itemconfig(i, fill="blue") # change color
+        # (x1,y1,x2,y2)
+        self.graph_x1 = 0
+        self.graph_y1 = 0
+        self.graph_x2 = int(self.canvas_width)
+        self.graph_y2 = int(self.canvas_height)
+        self.canvas.create_rectangle(
+            self.graph_x1, self.graph_y1, self.graph_x2, self.graph_y2, fill="#1a1a1a")
+
+        # grid lines (reticules)
+        self.horizontal_line_distance = int(self.canvas_width / 7)
+        self.vertical_line_distance = int(self.canvas_height / 7)
+        for x in range(self.horizontal_line_distance, self.canvas_width, self.horizontal_line_distance):
+            self.canvas.create_line(x, 0, x, self.canvas_height,
+                                    fill="#ffffff", dash=(4, 4))
+        for y in range(self.vertical_line_distance, self.canvas_height, self.vertical_line_distance):
+            self.canvas.create_line(0, y, self.canvas_width, y,
+                                    fill="#ffffff", dash=(4, 4))
 
     def setWindowSize(self, object, width, height):
         # get screen size
@@ -59,7 +88,7 @@ class GUI:
         self.window_x = int(self.screen_width / 2 - self.window_width / 2)
         self.window_y = int(self.screen_height / 2 - self.window_height / 2)
         object.geometry('%dx%d+%d+%d' %
-                            (self.window_width, self.window_height, self.window_x, self.window_y))
+                        (self.window_width, self.window_height, self.window_x, self.window_y))
 
     def setMenuBar(self):
         self.menubar = Menu(self.floor)
