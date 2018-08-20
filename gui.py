@@ -160,7 +160,7 @@ class GUI:
 
     def setEditMenu(self):
         self.editmenu = Menu(self.menubar, tearoff=0)
-        self.editmenu.add_command(label="Device", command=self.deviceSelection)
+        self.editmenu.add_command(label="Find Device", command=self.deviceSelection)
         self.editmenu.add_separator()
         self.editmenu.add_command(
             label="Run Single Loop", command=self.runSingleLoop)
@@ -302,10 +302,10 @@ class GUI:
         button_dialog.pack(pady=5)
 
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
-        self.timestamp.append(Timestamp)
-        self.voltage.append(Voltage)
-        self.current.append(Current)
-        self.output.append(Output)
+        self.timestamps.append(Timestamp)
+        self.voltages.append(Voltage)
+        self.currents.append(Current)
+        self.outputs.append(Output)
 
     def runSingleLoop(self):
         self.null = None
@@ -315,13 +315,13 @@ class GUI:
             self.device = powersupply.POWERSUPPLY()
             self.device = self.device.powersupply
             messagebox.showinfo("Power Supply",
-                                "Detected: " + self.device.name)
+                                "Device Detected: " + self.device.name)
         except:
             try:
                 self.device = electronicload.ELECTRONICLOAD()
                 self.device = self.device.electronicload
                 messagebox.showinfo("Electronic Load",
-                                    "Detected: " + self.device.name)
+                                    "Device Detected: " + self.device.name)
             except:
                 messagebox.showerror(
                     "Error", "Sorry, no devices currently supported are found")
