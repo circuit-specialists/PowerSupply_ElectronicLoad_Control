@@ -40,7 +40,8 @@ class GUI:
 
     def drawManualControls(self):
         # Voltage Controls
-        Label(self.bottom, text="Voltage: ").pack()
+        self.voltage_label = Label(self.bottom, text="Voltage: ")
+        self.voltage_label.pack()
         self.voltage_bar = Spinbox(
             self.bottom, from_=0, to=32, format="%.2f", increment=0.01)
         self.voltage_bar.pack()
@@ -49,9 +50,10 @@ class GUI:
         self.setVoltsButton.pack()
 
         # Amperage Controls
-        Label(self.bottom, text="Amperage: ").pack()
+        self.current_label = Label(self.bottom, text="Amperage: ")
+        self.current_label.pack()
         self.current_bar = Spinbox(
-            self.bottom, from_=0, to=5.2, format="%.2f", increment=0.01)
+            self.bottom, from_=0, to=5.2, format="%.3f", increment=0.01)
         self.current_bar.pack()
         self.setAmpsButton = Button(
             self.bottom, text="Set Amps", command=lambda: self.okay(self.current_bar, "A"))
@@ -71,6 +73,12 @@ class GUI:
         self.output_Off_Button = Button(
             self.bottom, text="Off", command=lambda: self.updateOutput(0))
         self.output_Off_Button.pack()
+
+    def updateVoltage(self, voltage):
+        self.voltage_label.config(text="Voltage: %.2fV" % (voltage))
+
+    def updateAmperage(self, amperage):
+        self.current_label.config(text="Amperage: %.3fA" % (amperage))
 
     def updatePower(self, voltage, amperage):
         self.power_label.config(text="Power: %.3f Watts" %
@@ -223,8 +231,10 @@ class GUI:
         # setting before device connect
         if(type == "V"):
             self.voltage = float(entry)
+            self.updateVoltage(float(entry))
         elif(type == "A"):
             self.amperage = float(entry)
+            self.updateAmperage(float(entry))
         elif(type == "O"):
             self.updateOutput(entry)
         self.updatePower(self.voltage, self.amperage)
