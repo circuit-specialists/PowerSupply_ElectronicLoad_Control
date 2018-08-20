@@ -7,12 +7,12 @@ licensed as GPLv3
 # gui classes
 try:  # windows
     import tkinter
-    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas
+    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas, Spinbox
 except:  # unix
     import Tkinter as tkinter
     import tkFileDialog as filedialog
     import tkMessageBox as messagebox
-    from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas
+    from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox
 
 # devices classes
 import powersupply
@@ -27,27 +27,68 @@ import threading
 class GUI:
     def __init__(self):
         self.threads = []
-        self.timestamp = []
-        self.voltage = []
-        self.current = []
-        self.output = []
-        self.variable_count = 0
-        self.programme_file = []
+        self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
-        self.floor = tkinter.Tk(className=' cs power control')
-        self.floor.tk.call(
-            'wm', 'iconphoto', self.floor._w,
+        self.bottom = tkinter.Tk(className=' cs power control')
+        self.bottom.tk.call(
+            'wm', 'iconphoto', self.bottom._w,
             tkinter.Image("photo", file="CircuitSpecialists.gif"))
-        self.floor.title('Circuit Specialists Power Control')
-        self.setWindowSize(self.floor, 700, 500)
+        self.bottom.title('Circuit Specialists Power Control')
+        self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()
-        self.drawCanvas()
+        self.drawManualControls()
+
+    def drawManualControls(self):
+        # Voltage Controls
+        Label(self.bottom, text="Voltage: ").pack()
+        self.voltage_bar = Spinbox(
+            self.bottom, from_=0, to=32, format="%.2f", increment=0.01)
+        self.voltage_bar.pack()
+        self.setVoltsButton = Button(
+            self.bottom, text="Set Volts", command=lambda: self.okay(self.voltage_bar, "V"))
+        self.setVoltsButton.pack()
+
+        # Amperage Controls
+        Label(self.bottom, text="Amperage: ").pack()
+        self.current_bar = Spinbox(
+            self.bottom, from_=0, to=5.2, format="%.2f", increment=0.01)
+        self.current_bar.pack()
+        self.setAmpsButton = Button(
+            self.bottom, text="Set Amps", command=lambda: self.okay(self.current_bar, "A"))
+        self.setAmpsButton.pack()
+
+        # Power Label
+        self.power_label = Label(self.bottom)
+        self.power_label.pack()
+        self.updatePower(self.voltage, self.amperage)
+
+        # Output Label
+        self.output_label = Label(self.bottom, text="Output Off")
+        self.output_label.pack()
+        self.output_On_Button = Button(
+            self.bottom, text="On", command=lambda: self.updateOutput(1))
+        self.output_On_Button.pack()
+        self.output_Off_Button = Button(
+            self.bottom, text="Off", command=lambda: self.updateOutput(0))
+        self.output_Off_Button.pack()
+
+    def updatePower(self, voltage, amperage):
+        self.power_label.config(text="Power: %.3f Watts" %
+                                (voltage * amperage))
+
+    def updateOutput(self, state):
+        try:
+            self.device.setOutput(state)
+        except:
+            pass
+        self.output_label.config(text="Output: %s" %
+                                 ("On" if state else "Off"))
 
     def drawCanvas(self):
         self.canvas_width = int(self.window_width / 2)
         self.canvas_height = int(self.window_height / 2)
         self.canvas = Canvas(
-            self.floor, width=self.canvas_width, height=self.canvas_height)
+            self.bottom, width=self.canvas_width, height=self.canvas_height)
         self.canvas.pack()
         # w.coords(i, new_xy) # change coordinates
         # w.itemconfig(i, fill="blue") # change color
@@ -91,11 +132,11 @@ class GUI:
                         (self.window_width, self.window_height, self.window_x, self.window_y))
 
     def setMenuBar(self):
-        self.menubar = Menu(self.floor)
+        self.menubar = Menu(self.bottom)
         self.setFileMenu()
         self.setEditMenu()
         self.setHelpMenu()
-        self.floor.config(menu=self.menubar)
+        self.bottom.config(menu=self.menubar)
 
     def setFileMenu(self):
         self.filemenu = Menu(self.menubar, tearoff=0)
@@ -106,7 +147,7 @@ class GUI:
             label="Save as...", command=self.save_AS_CSVFile)
         self.filemenu.add_command(label="Close", command=self.donothing)
         self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=self.floor.quit)
+        self.filemenu.add_command(label="Exit", command=self.bottom.quit)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
 
     def setEditMenu(self):
@@ -149,43 +190,61 @@ class GUI:
 
     def getEntry(self, parameter):
         # pop-up window
-        self.top = Toplevel(self.floor)
+        self.top = Toplevel(self.bottom)
         self.setWindowSize(self.top, 250, 80)
         self.top.title(parameter)
         self.top.tk.call(
             'wm', 'iconphoto', self.top._w,
             tkinter.Image("photo", file="CircuitSpecialists.gif"))
-        self.top.bind('<Return>', self.okay)
+        self.entry_dialog = Entry(self.top)
+        self.top.bind('<Return>',
+                      lambda: self.okay(self.entry_dialog, entry_type))
 
         # window parameters
         if (parameter == "Time Delay"):
             Label(self.top, text="Input Time Delay").pack()
-            self.entry_type = "TD"
+            entry_type = "TD"
         elif (parameter == "Voltage"):
             Label(self.top, text="Input Voltage Value").pack()
-            self.entry_type = "V"
+            entry_type = "V"
         elif (parameter == "Current"):
             Label(self.top, text="Input Current Value").pack()
-            self.entry_type = "A"
+            entry_type = "A"
 
         # window function
-        self.entry_dialog = Entry(self.top)
         self.entry_dialog.pack(padx=5)
-        button_dialog = Button(self.top, text="OK", command=self.okay)
+        button_dialog = Button(self.top, text="OK",
+                               command=lambda: self.okay(self.entry_dialog, entry_type))
         button_dialog.pack(pady=5)
 
-    def okay(self, event=None):
-        self.entry = self.entry_dialog.get()
-        self.top.destroy()
+    def okay(self, object, type, event=None):
+        entry = object.get()
         try:
-            if (self.entry_type == "TD"):
-                print()
-            elif (self.entry_type == "V"):
-                self.device.setVoltage(self.entry)
-            elif (self.entry_type == "A"):
-                self.device.setAmperage(self.entry)
+            self.top.destroy()
+            try:
+                if (type == "TD"):
+                    print()
+                elif (type == "V"):
+                    self.device.setVoltage(entry)
+                    self.device.voltage = entry
+                elif (type == "A"):
+                    self.device.setAmperage(entry)
+                    self.device.amperage = entry
+                elif(type == "O"):
+                    self.device.setOutput(entry)
+                    self.device.output = entry
+                elif(type == 'ccsv'):
+                    print()
+            except:
+                messagebox.showerror("Error", "Device Not Connected")
         except:
-            messagebox.showerror("Error", "Device Not Connected")
+            if(type == "V"):
+                self.voltage = float(entry)
+            elif(type == "A"):
+                self.amperage = float(entry)
+
+        self.updatePower(self.voltage, self.amperage)
+        self.updateOutput(entry)
 
     def openCSVFile(self):
         self.programme_filename = filedialog.askopenfilename(
@@ -216,12 +275,13 @@ class GUI:
         self.save()
 
     def createCSVFile(self):
-        self.top = Toplevel(self.floor)
+        self.top = Toplevel(self.bottom)
         Label(self.top, text="Create Run CSV").pack()
-        self.entry_type = "CSVC"
+        entry_type = "ccsv"
         self.entry_dialog = Entry(self.top)
         self.entry_dialog.pack(padx=5)
-        button_dialog = Button(self.top, text="OK", command=self.okay)
+        button_dialog = Button(self.top, text="OK",
+                               command=lambda: self.okay(self.entry_dialog, entry_type))
         button_dialog.pack(pady=5)
 
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
@@ -249,6 +309,17 @@ class GUI:
                 messagebox.showerror(
                     "Error", "Sorry, no devices currently supported are found")
 
+    def variable_init(self):
+        self.timestamps = []
+        self.voltages = []
+        self.currents = []
+        self.outputs = []
+        self.variable_count = 0
+        self.programme_file = []
+        self.voltage = 0
+        self.amperage = 0
+        self.output = 0
+
     def gotoURL(self, url):
         webbrowser.open_new_tab(url)
 
@@ -258,7 +329,7 @@ class GUI:
             "Operating System: %s" % sys.platform)
 
     def startWindow(self):
-        self.floor.mainloop()
+        self.bottom.mainloop()
 
 
 if __name__ == "__main__":
