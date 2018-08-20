@@ -219,32 +219,39 @@ class GUI:
 
     def okay(self, object, type, event=None):
         entry = object.get()
+
+        # setting before device connect
+        if(type == "V"):
+            self.voltage = float(entry)
+        elif(type == "A"):
+            self.amperage = float(entry)
+        elif(type == "O"):
+            self.updateOutput(entry)
+        self.updatePower(self.voltage, self.amperage)
+
+        # device settings
+        try:
+            if (type == "TD"):
+                print()
+            elif (type == "V"):
+                self.device.setVoltage(entry)
+                self.device.voltage = entry
+            elif (type == "A"):
+                self.device.setAmperage(entry)
+                self.device.amperage = entry
+            elif(type == "O"):
+                self.device.setOutput(entry)
+                self.device.output = entry
+            elif(type == 'ccsv'):
+                print()
+        except:
+            messagebox.showerror("Error", "Device Not Connected")
+
+        # if prompt window open, close it
         try:
             self.top.destroy()
-            try:
-                if (type == "TD"):
-                    print()
-                elif (type == "V"):
-                    self.device.setVoltage(entry)
-                    self.device.voltage = entry
-                elif (type == "A"):
-                    self.device.setAmperage(entry)
-                    self.device.amperage = entry
-                elif(type == "O"):
-                    self.device.setOutput(entry)
-                    self.device.output = entry
-                elif(type == 'ccsv'):
-                    print()
-            except:
-                messagebox.showerror("Error", "Device Not Connected")
         except:
-            if(type == "V"):
-                self.voltage = float(entry)
-            elif(type == "A"):
-                self.amperage = float(entry)
-
-        self.updatePower(self.voltage, self.amperage)
-        self.updateOutput(entry)
+            pass
 
     def openCSVFile(self):
         self.programme_filename = filedialog.askopenfilename(
