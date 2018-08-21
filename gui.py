@@ -26,7 +26,8 @@ import threading
 
 class GUI:
     def __init__(self):
-        self.threads = []
+        # 1337
+        # (0|]3
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
@@ -96,6 +97,12 @@ class GUI:
         self.output_label.config(text="Output: %s" %
                                  ("On" if state else "Off"))
 
+    def runThread(self):
+        threads = []
+        t1 = threading.Thread(target=self.donothing)
+        threads.append(thread)
+        t1.start()
+
     def drawCanvas(self):
         self.canvas_width = int(self.window_width / 2)
         self.canvas_height = int(self.window_height / 2)
@@ -127,6 +134,25 @@ class GUI:
                        self.vertical_line_distance):
             self.canvas.create_line(
                 0, y, self.canvas_width, y, fill="#ffffff", dash=(4, 4))
+
+    def runAutoWindow(self, parameters):
+        # pop-up window
+        self.top = Toplevel(self.bottom)
+        self.setWindowSize(self.top, 400, 400)
+        self.top.title("Running Mode")
+        self.top.tk.call('wm', 'iconphoto', self.top._w,
+                         tkinter.Image("photo", file="CircuitSpecialists.gif"))
+        self.entry_dialog = Entry(self.top)
+        start_button = Button(
+            self.top,
+            text="Start",
+            command=lambda: self.donothing)
+        start_button.pack(pady=5)
+        stop_button = Button(
+            self.top,
+            text="Stop",
+            command=lambda: self.donothing)
+        stop_button.pack(pady=5)
 
     def setWindowSize(self, object, width, height):
         # get screen size
@@ -324,11 +350,15 @@ class GUI:
     def runSingleLoop(self):
         # pop-up window
         self.top = Toplevel(self.bottom)
-        self.setWindowSize(self.top, 250, 200)
+        self.setWindowSize(self.top, 250, 225)
         self.top.title("Single Loop Settings")
         self.top.tk.call('wm', 'iconphoto', self.top._w,
                          tkinter.Image("photo", file="CircuitSpecialists.gif"))
         self.entry_dialog = Entry(self.top)
+
+        # Display Type of Device
+        device_type_label = Label(self.top, text="Device Type: %s" % (self.device_type))
+        device_type_label.pack()
 
         # Enter Length of Time
         timelength_label = Label(self.top, text="Length in (s): ")
@@ -336,11 +366,18 @@ class GUI:
         timelength_entry = Entry(self.top)
         timelength_entry.pack()
 
-        # Enter Voltage
-        voltage_label = Label(self.top, text="Voltage: ")
-        voltage_label.pack()
-        voltage_entry = Entry(self.top)
-        voltage_entry.pack()
+        if(self.device_type == "powersupply"):
+            # Enter Voltage
+            voltage_label = Label(self.top, text="Voltage: ")
+            voltage_label.pack()
+            voltage_entry = Entry(self.top)
+            voltage_entry.pack()
+        else:
+            # Enter Mode
+            mode_label = Label(self.top, text="Mode: ")
+            mode_label.pack()
+            mode_entry = Entry(self.top)
+            mode_entry.pack()
 
         # Enter Current
         current_label = Label(self.top, text="Current: ")
@@ -357,12 +394,14 @@ class GUI:
         try:
             self.device = powersupply.POWERSUPPLY()
             self.device = self.device.powersupply
+            self.device_type = "powersupply"
             messagebox.showinfo("Power Supply",
                                 "Device Detected: " + self.device.name)
         except:
             try:
                 self.device = electronicload.ELECTRONICLOAD()
                 self.device = self.device.electronicload
+                self.device_type = "electronicload"
                 messagebox.showinfo("Electronic Load",
                                     "Device Detected: " + self.device.name)
             except:
@@ -379,6 +418,7 @@ class GUI:
         self.voltage = 0
         self.amperage = 0
         self.output = 0
+        self.device_type = "None"
 
     def gotoURL(self, url):
         webbrowser.open_new_tab(url)
