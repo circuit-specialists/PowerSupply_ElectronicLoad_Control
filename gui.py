@@ -46,7 +46,9 @@ class GUI:
             self.bottom, from_=0, to=32, format="%.2f", increment=0.01)
         self.voltage_bar.pack()
         self.setVoltsButton = Button(
-            self.bottom, text="Set Volts", command=lambda: self.okay(self.voltage_bar, "V"))
+            self.bottom,
+            text="Set Volts",
+            command=lambda: self.okay(self.voltage_bar, "V"))
         self.setVoltsButton.pack()
 
         # Amperage Controls
@@ -56,7 +58,9 @@ class GUI:
             self.bottom, from_=0, to=5.2, format="%.3f", increment=0.01)
         self.current_bar.pack()
         self.setAmpsButton = Button(
-            self.bottom, text="Set Amps", command=lambda: self.okay(self.current_bar, "A"))
+            self.bottom,
+            text="Set Amps",
+            command=lambda: self.okay(self.current_bar, "A"))
         self.setAmpsButton.pack()
 
         # Power Label
@@ -106,17 +110,23 @@ class GUI:
         self.graph_x2 = int(self.canvas_width)
         self.graph_y2 = int(self.canvas_height)
         self.canvas.create_rectangle(
-            self.graph_x1, self.graph_y1, self.graph_x2, self.graph_y2, fill="#1a1a1a")
+            self.graph_x1,
+            self.graph_y1,
+            self.graph_x2,
+            self.graph_y2,
+            fill="#1a1a1a")
 
         # grid lines (reticules)
         self.horizontal_line_distance = int(self.canvas_width / 7)
         self.vertical_line_distance = int(self.canvas_height / 7)
-        for x in range(self.horizontal_line_distance, self.canvas_width, self.horizontal_line_distance):
-            self.canvas.create_line(x, 0, x, self.canvas_height,
-                                    fill="#ffffff", dash=(4, 4))
-        for y in range(self.vertical_line_distance, self.canvas_height, self.vertical_line_distance):
-            self.canvas.create_line(0, y, self.canvas_width, y,
-                                    fill="#ffffff", dash=(4, 4))
+        for x in range(self.horizontal_line_distance, self.canvas_width,
+                       self.horizontal_line_distance):
+            self.canvas.create_line(
+                x, 0, x, self.canvas_height, fill="#ffffff", dash=(4, 4))
+        for y in range(self.vertical_line_distance, self.canvas_height,
+                       self.vertical_line_distance):
+            self.canvas.create_line(
+                0, y, self.canvas_width, y, fill="#ffffff", dash=(4, 4))
 
     def setWindowSize(self, object, width, height):
         # get screen size
@@ -136,8 +146,8 @@ class GUI:
         # set window to fit in ratio to screen size
         self.window_x = int(self.screen_width / 2 - self.window_width / 2)
         self.window_y = int(self.screen_height / 2 - self.window_height / 2)
-        object.geometry('%dx%d+%d+%d' %
-                        (self.window_width, self.window_height, self.window_x, self.window_y))
+        object.geometry('%dx%d+%d+%d' % (self.window_width, self.window_height,
+                                         self.window_x, self.window_y))
 
     def setMenuBar(self):
         self.menubar = Menu(self.bottom)
@@ -160,7 +170,8 @@ class GUI:
 
     def setEditMenu(self):
         self.editmenu = Menu(self.menubar, tearoff=0)
-        self.editmenu.add_command(label="Find Device", command=self.deviceSelection)
+        self.editmenu.add_command(
+            label="Find Device", command=self.deviceSelection)
         self.editmenu.add_separator()
         self.editmenu.add_command(
             label="Run Single Loop", command=self.runSingleLoop)
@@ -201,9 +212,8 @@ class GUI:
         self.top = Toplevel(self.bottom)
         self.setWindowSize(self.top, 250, 80)
         self.top.title(parameter)
-        self.top.tk.call(
-            'wm', 'iconphoto', self.top._w,
-            tkinter.Image("photo", file="CircuitSpecialists.gif"))
+        self.top.tk.call('wm', 'iconphoto', self.top._w,
+                         tkinter.Image("photo", file="CircuitSpecialists.gif"))
         self.entry_dialog = Entry(self.top)
         self.top.bind('<Return>',
                       lambda: self.okay(self.entry_dialog, entry_type))
@@ -221,21 +231,23 @@ class GUI:
 
         # window function
         self.entry_dialog.pack(padx=5)
-        button_dialog = Button(self.top, text="OK",
-                               command=lambda: self.okay(self.entry_dialog, entry_type))
+        button_dialog = Button(
+            self.top,
+            text="OK",
+            command=lambda: self.okay(self.entry_dialog, entry_type))
         button_dialog.pack(pady=5)
 
     def okay(self, object, type, event=None):
         entry = object.get()
 
         # setting before device connect
-        if(type == "V"):
+        if (type == "V"):
             self.voltage = float(entry)
             self.updateVoltage(float(entry))
-        elif(type == "A"):
+        elif (type == "A"):
             self.amperage = float(entry)
             self.updateAmperage(float(entry))
-        elif(type == "O"):
+        elif (type == "O"):
             self.updateOutput(entry)
         self.updatePower(self.voltage, self.amperage)
 
@@ -249,10 +261,10 @@ class GUI:
             elif (type == "A"):
                 self.device.setAmperage(entry)
                 self.device.amperage = entry
-            elif(type == "O"):
+            elif (type == "O"):
                 self.device.setOutput(entry)
                 self.device.output = entry
-            elif(type == 'ccsv'):
+            elif (type == 'ccsv'):
                 print()
         except:
             messagebox.showerror("Error", "Device Not Connected")
@@ -297,8 +309,10 @@ class GUI:
         entry_type = "ccsv"
         self.entry_dialog = Entry(self.top)
         self.entry_dialog.pack(padx=5)
-        button_dialog = Button(self.top, text="OK",
-                               command=lambda: self.okay(self.entry_dialog, entry_type))
+        button_dialog = Button(
+            self.top,
+            text="OK",
+            command=lambda: self.okay(self.entry_dialog, entry_type))
         button_dialog.pack(pady=5)
 
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
@@ -308,7 +322,36 @@ class GUI:
         self.outputs.append(Output)
 
     def runSingleLoop(self):
-        self.null = None
+        # pop-up window
+        self.top = Toplevel(self.bottom)
+        self.setWindowSize(self.top, 250, 200)
+        self.top.title("Single Loop Settings")
+        self.top.tk.call('wm', 'iconphoto', self.top._w,
+                         tkinter.Image("photo", file="CircuitSpecialists.gif"))
+        self.entry_dialog = Entry(self.top)
+
+        # Enter Length of Time
+        timelength_label = Label(self.top, text="Length in (s): ")
+        timelength_label.pack()
+        timelength_entry = Entry(self.top)
+        timelength_entry.pack()
+
+        # Enter Voltage
+        voltage_label = Label(self.top, text="Voltage: ")
+        voltage_label.pack()
+        voltage_entry = Entry(self.top)
+        voltage_entry.pack()
+
+        # Enter Current
+        current_label = Label(self.top, text="Current: ")
+        current_label.pack()
+        current_entry = Entry(self.top)
+        current_entry.pack()
+
+        # Submit values and run
+        self.runLoop = Button(
+            self.top, text="Run Loop", command=lambda: self.donothing)
+        self.runLoop.pack()
 
     def deviceSelection(self):
         try:
