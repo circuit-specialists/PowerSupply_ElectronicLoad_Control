@@ -23,6 +23,10 @@ import sys
 import webbrowser
 import threading
 
+# Paths to devices
+sys.path.insert(0, './Power Supplies')
+sys.path.insert(0, './Electronic Loads')
+
 
 class GUI:
     def __init__(self):

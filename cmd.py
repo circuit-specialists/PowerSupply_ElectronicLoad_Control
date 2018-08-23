@@ -11,6 +11,13 @@ import powersupply
 import electronicload
 import sys
 
+# Path to CSV Files
+sys.path.insert(0, './Example CSV')
+
+# Path to devices
+sys.path.insert(0, './Power Supplies')
+sys.path.insert(0, './Electronic Loads')
+
 keys = keyboard.KEYBOARD()
 
 # last update v1.2

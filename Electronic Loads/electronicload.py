@@ -8,7 +8,6 @@ import os
 import visa
 import sys
 import time
-sys.path.insert(0, './Electronic Loads')
 """
 To add electronic load, simply add the object class python script for the electronic load into the
 Electronic Loads subdirectory following the same structure of other files, then add the import

@@ -7,7 +7,6 @@ import serial
 import serial.tools.list_ports
 import time
 import sys
-sys.path.insert(0, './Power Supplies')
 """
 To add powersupply, simply add the object class python script for the power supply into the
 Power Supplies subdirectory following the same structure of other files, then add the import
