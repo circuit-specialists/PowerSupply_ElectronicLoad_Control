@@ -208,13 +208,14 @@ class GUI:
             label="Create CSV File", command=self.createCSVFile)
         self.editmenu.add_separator()
         self.editmenu.add_command(
-            label="Time Delay", command=lambda: self.getEntry("Time Delay"))
+            label="Time Delay", command=lambda: self.entryWindow("Time Delay"))
         self.editmenu.add_command(
-            label="Voltage", command=lambda: self.getEntry("Voltage"))
+            label="Voltage", command=lambda: self.entryWindow("Voltage"))
         self.editmenu.add_command(
-            label="Amperge", command=lambda: self.getEntry("Current"))
+            label="Amperge", command=lambda: self.entryWindow("Current"))
         self.editmenu.add_separator()
-        self.editmenu.add_command(label="Mode", command=self.donothing)
+        self.editmenu.add_command(
+            label="Mode", command=lambda: self.entryWindow("Electronic Load Mode"))
         self.editmenu.add_command(label="EL Setting", command=self.donothing)
         self.editmenu.add_separator()
         self.editmenu.add_command(label="Output", command=self.setOutput)
@@ -235,16 +236,13 @@ class GUI:
             messagebox.askyesno(
                 title="Output State", message="Turn On Output?"))
 
-    def getEntry(self, parameter):
+    def entryWindow(self, parameter):
         # pop-up window
         self.top = Toplevel(self.bottom)
         self.setWindowSize(self.top, 250, 80)
         self.top.title(parameter)
         self.top.tk.call('wm', 'iconphoto', self.top._w,
                          tkinter.Image("photo", file="CircuitSpecialists.gif"))
-        self.entry_dialog = Entry(self.top)
-        self.top.bind('<Return>',
-                      lambda: self.okay(self.entry_dialog, entry_type))
 
         # window parameters
         if (parameter == "Time Delay"):
@@ -256,44 +254,64 @@ class GUI:
         elif (parameter == "Current"):
             Label(self.top, text="Input Current Value").pack()
             entry_type = "A"
+        elif (parameter == "Electronic Load Mode"):
+            entry_type = "ELM"
 
         # window function
-        self.entry_dialog.pack(padx=5)
+        if(entry_type != "ELM"):
+            entry_dialog = Entry(self.top)
+        else:
+            entry_dialog = Spinbox(
+                self.top, values=("CCH", "CCL", "CV", "CRM"))
+
+        #
+        self.top.bind('<Return>',
+                      lambda: self.getEntry(entry_dialog, entry_type))
+        entry_dialog.pack(padx=5)
         button_dialog = Button(
             self.top,
             text="OK",
-            command=lambda: self.okay(self.entry_dialog, entry_type))
+            command=lambda: self.getEntry(entry_dialog, entry_type))
         button_dialog.pack(pady=5)
 
-    def okay(self, object, type, event=None):
+    def getEntry(self, object, type, event=None):
         entry = object.get()
 
-        # setting before device connect
-        if (type == "V"):
-            self.voltage = float(entry)
-            self.updateVoltage(float(entry))
-        elif (type == "A"):
-            self.amperage = float(entry)
-            self.updateAmperage(float(entry))
-        elif (type == "O"):
-            self.updateOutput(entry)
-        self.updatePower(self.voltage, self.amperage)
-
-        # device settings
+        # set entry to variables
         try:
-            if (type == "TD"):
-                print()
-            elif (type == "V"):
-                self.device.setVoltage(entry)
-                self.device.voltage = entry
+            if (type == "V"):
+                self.voltage = float(entry)
+                self.updateVoltage(float(entry))
             elif (type == "A"):
-                self.device.setAmperage(entry)
-                self.device.amperage = entry
+                self.amperage = float(entry)
+                self.updateAmperage(float(entry))
             elif (type == "O"):
-                self.device.setOutput(entry)
-                self.device.output = entry
-            elif (type == 'ccsv'):
-                print()
+                self.updateOutput(entry)
+            self.updatePower(self.voltage, self.amperage)
+        except:
+            messagebox.showerror("Error", "Not a valid input")
+            entry_failed = True
+
+        # set device settings to entry variables
+        try:
+            if(not entry_failed):
+                if (type == "TD"):
+                    print()
+                elif (type == "V"):
+                    self.device.setVoltage(entry)
+                    self.device.voltage = entry
+                elif (type == "A"):
+                    self.device.setAmperage(entry)
+                    self.device.amperage = entry
+                elif (type == "O"):
+                    self.device.setOutput(entry)
+                    self.device.output = entry
+                elif (type == 'ccsv'):
+                    print()
+                elif (type == "ELM"):
+                    self.device.setMode(entry)
+            else:
+                self.device.name
         except:
             messagebox.showerror("Error", "Device Not Connected")
 
@@ -359,7 +377,8 @@ class GUI:
         self.entry_dialog = Entry(self.top)
 
         # Display Type of Device
-        device_type_label = Label(self.top, text="Device Type: %s" % (self.device_type))
+        device_type_label = Label(
+            self.top, text="Device Type: %s" % (self.device_type))
         device_type_label.pack()
 
         # Enter Length of Time
