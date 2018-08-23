@@ -30,6 +30,7 @@ class GUI:
     def __init__(self):
         # 1337
         # (0|]3
+        self.version = "1.3 alpha"
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
@@ -444,6 +445,17 @@ class GUI:
                 messagebox.showerror(
                     "Error", "Sorry, no devices currently supported are found")
 
+    def gotoURL(self, url):
+        webbrowser.open_new_tab(url)
+
+    def about(self):
+        messagebox.showinfo(
+            "About", "Version %s\n"
+            "Operating System: %s" % (self.version, sys.platform))
+
+    def startWindow(self):
+        self.bottom.mainloop()
+
     def variable_init(self):
         self.timestamps = []
         self.voltages = []
@@ -455,17 +467,6 @@ class GUI:
         self.amperage = 0
         self.output = 0
         self.device_type = "None"
-
-    def gotoURL(self, url):
-        webbrowser.open_new_tab(url)
-
-    def about(self):
-        messagebox.showinfo(
-            "About", "Version 1.3 alpha\n"
-            "Operating System: %s" % sys.platform)
-
-    def startWindow(self):
-        self.bottom.mainloop()
 
 
 if __name__ == "__main__":
