@@ -7,8 +7,6 @@ licensed as GPLv3
 import time
 import threading
 import keyboard
-import powersupply
-import electronicload
 import sys
 
 # Path to CSV Files
@@ -17,6 +15,8 @@ sys.path.insert(0, './Example CSV')
 # Path to devices
 sys.path.insert(0, './Power Supplies')
 sys.path.insert(0, './Electronic Loads')
+import powersupply
+import electronicload
 
 keys = keyboard.KEYBOARD()
 

@@ -14,18 +14,16 @@ except:  # unix
     import tkMessageBox as messagebox
     from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox
 
-# devices classes
-import powersupply
-import electronicload
-
 # dependent classes
 import sys
 import webbrowser
 import threading
 
-# Paths to devices
+# Paths to devices and libraries
 sys.path.insert(0, './Power Supplies')
 sys.path.insert(0, './Electronic Loads')
+import powersupply
+import electronicload
 
 
 class GUI:
