@@ -8,6 +8,7 @@ import time
 import threading
 import keyboard
 import sys
+import os
 
 # Path to CSV Files
 sys.path.insert(0, './Example CSV')
@@ -20,7 +21,7 @@ import electronicload
 
 keys = keyboard.KEYBOARD()
 
-# last update v1.2
+# last update v1.3
 print("Select Device Type")
 print("Power Supply                     press:'p'")
 print("Electronic Load                  press:'l'")
@@ -43,7 +44,14 @@ if (device_selection == 'p'):
     if (operation_selection == 'a'):
         print("Auto Mode")
         print()
-        file = open("auto_run_ps.csv", "r")
+        files = os.listdir('./Example CSV')
+        count = 1
+        for filenames in files:
+            print("%d: %s" % (count, filenames))
+            count += 1
+        file_selection = int(input())
+        print('./Example CSV/%s' % (files[file_selection - 1]))
+        file = open('./Example CSV/%s' % (files[file_selection - 1]), "r")
         file_lines = file.readlines()
         file_lines = file_lines[1:]
         count = 0
@@ -65,9 +73,14 @@ if (device_selection == 'p'):
                 t1.join()
                 sys.exit()
             line = file_lines[count]
-            device.powersupply.setVoltage(line.split(',')[1], i)
-            device.powersupply.setAmperage(line.split(',')[2], i)
-            device.powersupply.setOutput(int(line.split(',')[3]), i)
+            if(device.powersupply.channels > 1):
+                device.powersupply.setVoltage(line.split(',')[1], i)
+                device.powersupply.setAmperage(line.split(',')[2], i)
+                device.powersupply.setOutput(int(line.split(',')[3]), i)
+            else:
+                device.powersupply.setVoltage(line.split(',')[1])
+                device.powersupply.setAmperage(line.split(',')[2])
+                device.powersupply.setOutput(int(line.split(',')[3]))
             time.sleep(float(line.split(',')[0]))
             count += 1
         print("Finished auto run mode")
@@ -122,7 +135,7 @@ if (device_selection == 'p'):
                         device.powersupply.setVoltage(str(input()), channel)
                     else:
                         print("Input Volts in Volts.hectoVolts")
-                        device.powersupply.setVoltage(str(input()), 1)
+                        device.powersupply.setVoltage(str(input()))
                 elif (keys.input_buf == "a"):
                     if (device.powersupply.channels > 1):
                         print("Which Channel?")
@@ -131,7 +144,7 @@ if (device_selection == 'p'):
                         device.powersupply.setVoltage(str(input()), channel)
                     else:
                         print("Input Amps in Amps.milliAmps")
-                        device.powersupply.setAmperage(str(input()), 1)
+                        device.powersupply.setAmperage(str(input()))
                 keys.input_buf = ""
     elif (operation_selection == 'q'):
         print("exiting...")
@@ -164,9 +177,16 @@ elif (device_selection == 'l'):
             interval_selection = 1.0
         # log file
         log_file = open("auto_log_el.csv", "w")
-        log_file.writelines(str("timestamp,voltage,current,power\n"))
+        log_file.writelines(str("timestamp,voltage,current,power\n"))       
         # script file
-        par_file = open("auto_run_el.csv", "r")
+        files = os.listdir('./Example CSV')
+        count = 1
+        for filenames in files:
+            print("%d: %s" % (count, filenames))
+            count += 1
+        file_selection = int(input())
+        print('./Example CSV/%s' % (files[file_selection - 1]))
+        par_file = open('./Example CSV/%s' % (files[file_selection - 1]), "r")
         file_lines = par_file.readlines()
         file_lines = file_lines[1:]
         count = 0
