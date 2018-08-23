@@ -188,10 +188,10 @@ class GUI:
         self.filemenu = Menu(self.menubar, tearoff=0)
         self.filemenu.add_command(
             label="Open CSV File...", command=self.openCSVFile)
-        self.filemenu.add_command(label="Save", command=self.donothing)
+        self.filemenu.add_command(label="Save", command=self.saveFile)
         self.filemenu.add_command(
             label="Save as...", command=self.save_AS_CSVFile)
-        self.filemenu.add_command(label="Close", command=self.donothing)
+        self.filemenu.add_command(label="Close", command=self.closeFile)
         self.filemenu.add_separator()
         self.filemenu.add_command(label="Exit", command=self.bottom.quit)
         self.menubar.add_cascade(label="File", menu=self.filemenu)
@@ -208,7 +208,7 @@ class GUI:
             label="Create CSV File", command=self.createCSVFile)
         self.editmenu.add_separator()
         self.editmenu.add_command(
-            label="Time Delay", command=lambda: self.entryWindow("Time Delay"))
+            label="Run for (s)", command=lambda: self.entryWindow("Time Delay"))
         self.editmenu.add_command(
             label="Voltage", command=lambda: self.entryWindow("Voltage"))
         self.editmenu.add_command(
@@ -216,7 +216,8 @@ class GUI:
         self.editmenu.add_separator()
         self.editmenu.add_command(
             label="Mode", command=lambda: self.entryWindow("Electronic Load Mode"))
-        self.editmenu.add_command(label="EL Setting", command=self.donothing)
+        self.editmenu.add_command(
+            label="Resistance", command=lambda: self.entryWindow("Resistance"))
         self.editmenu.add_separator()
         self.editmenu.add_command(label="Output", command=self.setOutput)
         self.menubar.add_cascade(label="Edit", menu=self.editmenu)
@@ -256,6 +257,9 @@ class GUI:
             entry_type = "A"
         elif (parameter == "Electronic Load Mode"):
             entry_type = "ELM"
+        elif (parameter == "Resistance"):
+            Label(self.top, text="Input Resistance Value").pack()
+            entry_type = "R"
 
         # window function
         if(entry_type != "ELM"):
@@ -287,6 +291,8 @@ class GUI:
                 self.updateAmperage(float(entry))
             elif (type == "O"):
                 self.updateOutput(entry)
+            elif (type == "R"):
+                self.resistance = float(entry)
             self.updatePower(self.voltage, self.amperage)
         except:
             messagebox.showerror("Error", "Not a valid input")
@@ -310,6 +316,8 @@ class GUI:
                     print()
                 elif (type == "ELM"):
                     self.device.setMode(entry)
+                elif (type == "R"):
+                    self.device.setResistance(entry)
             else:
                 self.device.name
         except:
@@ -332,7 +340,7 @@ class GUI:
         except:
             messagebox.showerror("Error", "Unable to open file")
 
-    def save(self):
+    def saveFile(self):
         try:
             self.log_file = open(self.save_filename + ".csv", "w")
         except:
@@ -348,6 +356,13 @@ class GUI:
             title="Select file",
             filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
         self.save()
+
+    def closeFile(self):
+        try:
+            self.save_filename.close()
+        except:
+            messagebox.ERROR("Save Error", "Error in saving %s" %
+                             (self.save_filename))
 
     def createCSVFile(self):
         self.top = Toplevel(self.bottom)
