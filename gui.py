@@ -7,12 +7,12 @@ licensed as GPLv3
 # gui classes
 try:  # windows
     import tkinter
-    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas, Spinbox
+    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas, Spinbox, Frame
 except:  # unix
     import Tkinter as tkinter
     import tkFileDialog as filedialog
     import tkMessageBox as messagebox
-    from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox
+    from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox, Frame
 
 # dependent classes
 import sys
@@ -44,28 +44,32 @@ class GUI:
 
     def drawManualControls(self):
         # Voltage Controls
-        self.voltage_label = Label(self.bottom, text="Voltage: ")
-        self.voltage_label.pack()
+        self.voltage_frame = Frame(self.bottom)
+        self.voltage_label = Label(self.voltage_frame, text="Voltage: ")
+        self.voltage_label.pack(side=tkinter.LEFT, padx=5)
         self.voltage_bar = Spinbox(
-            self.bottom, from_=0, to=32, format="%.2f", increment=0.01)
-        self.voltage_bar.pack()
+            self.voltage_frame, from_=0, to=32, format="%.2f", increment=0.01)
+        self.voltage_bar.pack(side=tkinter.LEFT)
         self.setVoltsButton = Button(
-            self.bottom,
+            self.voltage_frame,
             text="Set Volts",
-            command=lambda: self.okay(self.voltage_bar, "V"))
-        self.setVoltsButton.pack()
+            command=lambda: self.getEntry(self.voltage_bar, "V"))
+        self.setVoltsButton.pack(side=tkinter.LEFT, padx=5)
+        self.voltage_frame.pack()
 
         # Amperage Controls
-        self.current_label = Label(self.bottom, text="Amperage: ")
-        self.current_label.pack()
+        self.current_frame = Frame(self.bottom)
+        self.current_label = Label(self.current_frame, text="Amperage: ")
+        self.current_label.pack(side=tkinter.LEFT)
         self.current_bar = Spinbox(
-            self.bottom, from_=0, to=5.2, format="%.3f", increment=0.01)
-        self.current_bar.pack()
+            self.current_frame, from_=0, to=5.2, format="%.3f", increment=0.01)
+        self.current_bar.pack(side=tkinter.LEFT)
         self.setAmpsButton = Button(
-            self.bottom,
+            self.current_frame,
             text="Set Amps",
-            command=lambda: self.okay(self.current_bar, "A"))
-        self.setAmpsButton.pack()
+            command=lambda: self.getEntry(self.current_bar, "A"))
+        self.setAmpsButton.pack(side=tkinter.LEFT, padx=5)
+        self.current_frame.pack()
 
         # Power Label
         self.power_label = Label(self.bottom)
@@ -73,14 +77,16 @@ class GUI:
         self.updatePower(self.voltage, self.amperage)
 
         # Output Label
-        self.output_label = Label(self.bottom, text="Output Off")
-        self.output_label.pack()
+        self.output_frame = Frame(self.bottom)
+        self.output_label = Label(self.output_frame, text="Output: Off")
+        self.output_label.pack(side=tkinter.LEFT)
         self.output_On_Button = Button(
-            self.bottom, text="On", command=lambda: self.updateOutput(1))
-        self.output_On_Button.pack()
+            self.output_frame, text="On", command=lambda: self.updateOutput(1))
+        self.output_On_Button.pack(side=tkinter.LEFT)
         self.output_Off_Button = Button(
-            self.bottom, text="Off", command=lambda: self.updateOutput(0))
-        self.output_Off_Button.pack()
+            self.output_frame, text="Off", command=lambda: self.updateOutput(0))
+        self.output_Off_Button.pack(side=tkinter.LEFT, padx=5)
+        self.output_frame.pack()
 
     def updateVoltage(self, voltage):
         self.voltage_label.config(text="Voltage: %.2fV" % (voltage))
@@ -100,10 +106,10 @@ class GUI:
         self.output_label.config(text="Output: %s" %
                                  ("On" if state else "Off"))
 
-    def runThread(self):
+    def runThread(self, object):
         threads = []
         t1 = threading.Thread(target=self.donothing)
-        threads.append(thread)
+        threads.append(t1)
         t1.start()
 
     def drawCanvas(self):
@@ -295,6 +301,7 @@ class GUI:
             elif (type == "R"):
                 self.resistance = float(entry)
             self.updatePower(self.voltage, self.amperage)
+            entry_failed = False
         except:
             messagebox.showerror("Error", "Not a valid input")
             entry_failed = True
@@ -356,7 +363,7 @@ class GUI:
             initialdir="./",
             title="Select file",
             filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
-        self.save()
+        self.saveFile()
 
     def closeFile(self):
         try:
@@ -369,12 +376,12 @@ class GUI:
         self.top = Toplevel(self.bottom)
         Label(self.top, text="Create Run CSV").pack()
         entry_type = "ccsv"
-        self.entry_dialog = Entry(self.top)
-        self.entry_dialog.pack(padx=5)
+        entry_dialog = Entry(self.top)
+        entry_dialog.pack(padx=5)
         button_dialog = Button(
             self.top,
             text="OK",
-            command=lambda: self.okay(self.entry_dialog, entry_type))
+            command=lambda: self.getEntry(entry_dialog, entry_type))
         button_dialog.pack(pady=5)
 
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
@@ -395,37 +402,37 @@ class GUI:
         # Display Type of Device
         device_type_label = Label(
             self.top, text="Device Type: %s" % (self.device_type))
-        device_type_label.pack()
+        device_type_label.pack(pady=5)
 
         # Enter Length of Time
         timelength_label = Label(self.top, text="Length in (s): ")
         timelength_label.pack()
         timelength_entry = Entry(self.top)
-        timelength_entry.pack()
+        timelength_entry.pack(pady=5)
 
         if(self.device_type == "powersupply"):
             # Enter Voltage
             voltage_label = Label(self.top, text="Voltage: ")
             voltage_label.pack()
             voltage_entry = Entry(self.top)
-            voltage_entry.pack()
+            voltage_entry.pack(pady=5)
         else:
             # Enter Mode
             mode_label = Label(self.top, text="Mode: ")
             mode_label.pack()
             mode_entry = Entry(self.top)
-            mode_entry.pack()
+            mode_entry.pack(pady=5)
 
         # Enter Current
         current_label = Label(self.top, text="Current: ")
         current_label.pack()
         current_entry = Entry(self.top)
-        current_entry.pack()
+        current_entry.pack(pady=5)
 
         # Submit values and run
         self.runLoop = Button(
             self.top, text="Run Loop", command=lambda: self.donothing)
-        self.runLoop.pack()
+        self.runLoop.pack(pady=5)
 
     def deviceSelection(self):
         try:
