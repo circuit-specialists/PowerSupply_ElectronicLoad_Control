@@ -107,16 +107,15 @@ class GUI:
                                  ("On" if state else "Off"))
 
     def runThread(self, object):
-        threads = []
-        t1 = threading.Thread(target=self.donothing)
-        threads.append(t1)
-        t1.start()
+        thread = threading.Thread(target=object)
+        self.threads.append(thread)
+        thread.start()
 
-    def drawCanvas(self):
+    def drawReticules(self, window_object):
         self.canvas_width = int(self.window_width / 2)
         self.canvas_height = int(self.window_height / 2)
         self.canvas = Canvas(
-            self.bottom, width=self.canvas_width, height=self.canvas_height)
+            window_object, width=self.canvas_width, height=self.canvas_height)
         self.canvas.pack()
         # w.coords(i, new_xy) # change coordinates
         # w.itemconfig(i, fill="blue") # change color
@@ -143,21 +142,6 @@ class GUI:
                        self.vertical_line_distance):
             self.canvas.create_line(
                 0, y, self.canvas_width, y, fill="#ffffff", dash=(4, 4))
-
-    def runAutoWindow(self, parameters):
-        # pop-up window
-        self.creatTopWindow(400, 400, "Running Mode")
-        
-        start_button = Button(
-            self.top,
-            text="Start",
-            command=lambda: self.donothing)
-        start_button.pack(pady=5)
-        stop_button = Button(
-            self.top,
-            text="Stop",
-            command=lambda: self.donothing)
-        stop_button.pack(pady=5)
 
     def setWindowSize(self, object, width, height):
         # get screen size
@@ -242,46 +226,49 @@ class GUI:
 
     def entryWindow(self, parameter):
         # pop-up window
-        self.creatTopWindow(250, 80, parameter)
-        
+        self.createTopWindow(250, 80, parameter)
 
         # window parameters
         if (parameter == "Time Delay"):
-            Label(self.top, text="Input Time Delay").pack()
+            Label(self.window_levels[0], text="Input Time Delay").pack()
             entry_type = "TD"
         elif (parameter == "Voltage"):
-            Label(self.top, text="Input Voltage Value").pack()
+            Label(self.window_levels[0], text="Input Voltage Value").pack()
             entry_type = "V"
         elif (parameter == "Current"):
-            Label(self.top, text="Input Current Value").pack()
+            Label(self.window_levels[0], text="Input Current Value").pack()
             entry_type = "A"
         elif (parameter == "Electronic Load Mode"):
             entry_type = "ELM"
         elif (parameter == "Resistance"):
-            Label(self.top, text="Input Resistance Value").pack()
+            Label(self.window_levels[0], text="Input Resistance Value").pack()
             entry_type = "R"
 
         # window function
         if(entry_type != "ELM"):
-            entry_dialog = Entry(self.top)
+            entry_dialog = Entry(self.window_levels[0])
         else:
             entry_dialog = Spinbox(
-                self.top, values=("CCH", "CCL", "CV", "CRM"))
+                self.window_levels[0], values=("CCH", "CCL", "CV", "CRM"))
 
         #
-        self.top.bind('<Return>',
+        self.window_levels[0].bind('<Return>',
                       lambda: self.getEntry(entry_dialog, entry_type))
         entry_dialog.pack(padx=5)
         button_dialog = Button(
-            self.top,
+            self.window_levels[0],
             text="OK",
             command=lambda: self.getEntry(entry_dialog, entry_type))
         button_dialog.pack(pady=5)
 
     def getEntry(self, object, type, event=None):
-        entry = object.get()
-        print(entry)
-        print(type)
+        try:
+            length = object[0].get()
+            voltage = object[1].get()
+            current = object[2].get()
+            self.window_levels[0].destroy()
+        except:
+            entry = object.get()
 
         # set entry to variables
         try:
@@ -321,6 +308,8 @@ class GUI:
                     self.device.setMode(entry)
                 elif (type == "R"):
                     self.device.setResistance(entry)
+                elif(type == "RSL"):
+                    self.runAutoWindow(parameters=[length, voltage, current])
             else:
                 self.device.name
         except:
@@ -328,9 +317,9 @@ class GUI:
 
         # if prompt window open, close it
         try:
-            self.top.destroy()
+            self.destroyWindowLevel(0)
         except:
-            pass
+            self.destroyWindowLevel(1)
 
     def openCSVFile(self):
         self.programme_filename = filedialog.askopenfilename(
@@ -342,6 +331,8 @@ class GUI:
                 self.programme_file = f.readlines()
         except:
             messagebox.showerror("Error", "Unable to open file")
+
+        self.runAutoWindow(self.programme_file)
 
     def saveFile(self):
         try:
@@ -368,15 +359,14 @@ class GUI:
                              (self.save_filename))
 
     def createCSVFile(self):
-        self.top = Toplevel(self.bottom)
-        Label(self.top, text="Create Run CSV").pack()
+        self.createTopWindow(400, 400, "Create Run CSV")
         entry_type = "ccsv"
-        entry_dialog = Entry(self.top)
-        entry_dialog.pack(padx=5)
+        #fields = self.createEntryBar(parameters_window)
+
         button_dialog = Button(
-            self.top,
+            self.window_levels[0],
             text="OK",
-            command=lambda: self.getEntry(entry_dialog, entry_type))
+            command=lambda: self.getEntry(fields, entry_type))
         button_dialog.pack(pady=5)
 
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
@@ -385,24 +375,53 @@ class GUI:
         self.currents.append(Current)
         self.outputs.append(Output)
 
-    def creatTopWindow(self, width, height, title):
-        self.top = Toplevel(self.bottom)
-        self.setWindowSize(self.top, width, height)
-        self.top.title(title)
-        self.top.tk.call('wm', 'iconphoto', self.top._w,
+    def createTopWindow(self, width, height, title):
+        top = Toplevel(self.bottom)
+        self.setWindowSize(top, width, height)
+        top.title(title)
+        top.protocol("WM_DELETE_WINDOW", lambda: self.destroyWindow(top))
+        top.tk.call('wm', 'iconphoto', top._w,
                          tkinter.Image("photo", file="CircuitSpecialists.gif"))
+        self.window_levels.append(top)
+
+    def destroyWindow(self, window):
+        window.destroy()
+        self.window_levels.remove(window)
+
+    def destroyWindowLevel(self, level_number):
+        self.window_levels[level_number].destroy()
+        self.window_levels.remove(self.window_levels[level_number])
+
+    def runAutoWindow(self, parameters):
+        # pop-up window
+        self.createTopWindow(400, 400, "Running Mode")
+
+        reticule_frame = Frame(self.window_levels[1])
+        self.drawReticules(reticule_frame)
+        reticule_frame.pack()
+
+        start_button = Button(
+            self.window_levels[1],
+            text="Start",
+            command=lambda: self.donothing)
+        start_button.pack(pady=5)
+        stop_button = Button(
+            self.window_levels[1],
+            text="Stop",
+            command=lambda: self.donothing)
+        stop_button.pack(pady=5)
 
     def runSingleLoop(self):
         # pop-up window
-        self.creatTopWindow(250, 225, "Single Loop Settings")
+        self.createTopWindow(250, 225, "Single Loop Settings")
 
         # Display Type of Device
         device_type_label = Label(
-            self.top, text="Device Type: %s" % (self.device_type))
+            self.window_levels[0], text="Device Type: %s" % (self.device_type))
         device_type_label.pack(pady=5)
 
         # Enter Length of Time
-        timelength_entry = self.createEntryBar(self.top, "Length in (s): ")
+        timelength_entry = self.createEntryBar(self.window_levels[0], "Length in (s): ")
 
         # Enter usage variable
         if(self.device_type == "powersupply"):
@@ -411,16 +430,16 @@ class GUI:
             usage = "Mode"
         else:
             usage = "Unknown"
-        usage_entry = self.createEntryBar(self.top, usage)
+        usage_entry = self.createEntryBar(self.window_levels[0], usage)
 
         # Enter Current
-        current_entry = self.createEntryBar(self.top, "Current: ")
+        current_entry = self.createEntryBar(self.window_levels[0], "Current: ")
 
         # Submit values and run
         time_usage_current = [timelength_entry, usage_entry, current_entry]
-        runLoop = Button(
-            self.top, text="Run Loop", command=lambda: self.getEntry(time_usage_current, "LR"))
-        runLoop.pack(pady=5)
+        runLoopwindow = Button(
+            self.window_levels[0], text="Run Loop", command=lambda: self.getEntry(time_usage_current, "RSL"))
+        runLoopwindow.pack(pady=5)
 
     def createEntryBar(self, window_object, Label_Title):
         Label(window_object, text=Label_Title).pack()
@@ -468,6 +487,8 @@ class GUI:
         self.amperage = 0
         self.output = 0
         self.device_type = "None"
+        self.threads = []
+        self.window_levels = []
 
 
 if __name__ == "__main__":
