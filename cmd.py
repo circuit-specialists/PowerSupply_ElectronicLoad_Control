@@ -35,10 +35,9 @@ class CMD:
             self.runCSV()
         elif(self.run_type == 'm'):
             self.getParameters(prompt=True)
-            self.addThread(self.keys.getInput)
+            self.addThread(self.keys.inputHandler)
             self.addThread(self.runManual)
             self.runThreads()
-        self.quit()
 
     def getRunType(self, prompt):
         if(prompt):
@@ -134,7 +133,10 @@ class CMD:
 
     def quitThreads(self):
         for th in self.threads:
-            th.join()
+            try:
+                th.join()
+            except:
+                pass
 
     def addThread(self, function):
         self.threads.append(threading.Thread(target=function))
@@ -186,15 +188,17 @@ class CMD:
         while True:
             if(self.device.name == "CSI305DB"):
                 self.device.control()
-            if(self.keys.kill_signal):
-                return
-            elif(self.keys.getInput == 'v'):
-                self.getVoltage(prompt=False)
-            elif(self.keys.getInput == 'a'):
-                self.getCurrent(prompt=False)
-            elif(self.keys.getInput == 'o'):
-                self.flipOutput()
 
+            # input handler
+            input_temp = self.keys.getInput()
+            if(input_temp == 'q'):
+                self.quit()
+            elif(input_temp == 'v'):
+                self.getVoltage(prompt=False)
+            elif(input_temp == 'a'):
+                self.getCurrent(prompt=False)
+            elif(input_temp == 'o'):
+                self.flipOutput()
 
 
 if __name__ == "__main__":
