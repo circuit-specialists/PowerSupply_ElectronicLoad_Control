@@ -111,38 +111,6 @@ class GUI:
         self.threads.append(thread)
         thread.start()
 
-    def drawReticules(self, window_object):
-        self.canvas_width = int(self.window_width / 2)
-        self.canvas_height = int(self.window_height / 2)
-        self.canvas = Canvas(
-            window_object, width=self.canvas_width, height=self.canvas_height)
-        self.canvas.pack()
-        # w.coords(i, new_xy) # change coordinates
-        # w.itemconfig(i, fill="blue") # change color
-        # (x1,y1,x2,y2)
-        graph_x1 = 0
-        graph_y1 = 0
-        graph_x2 = int(self.canvas_width)
-        graph_y2 = int(self.canvas_height)
-        self.canvas.create_rectangle(
-            graph_x1,
-            graph_y1,
-            graph_x2,
-            graph_y2,
-            fill="#1a1a1a")
-
-        # grid lines (reticules)
-        self.horizontal_line_distance = int(self.canvas_width / 7)
-        self.vertical_line_distance = int(self.canvas_height / 7)
-        for x in range(self.horizontal_line_distance, self.canvas_width,
-                       self.horizontal_line_distance):
-            self.canvas.create_line(
-                x, 0, x, self.canvas_height, fill="#ffffff", dash=(4, 4))
-        for y in range(self.vertical_line_distance, self.canvas_height,
-                       self.vertical_line_distance):
-            self.canvas.create_line(
-                0, y, self.canvas_width, y, fill="#ffffff", dash=(4, 4))
-
     def setWindowSize(self, object, width, height):
         # get screen size
         self.screen_width = object.winfo_screenwidth()
@@ -392,28 +360,72 @@ class GUI:
         self.window_levels[level_number].destroy()
         self.window_levels.remove(self.window_levels[level_number])
 
+    def drawReticules(self, window_object):
+        self.canvas_width = int(self.window_width / 2)
+        self.canvas_height = int(self.window_height / 2)
+        self.canvas = Canvas(
+            window_object, width=self.canvas_width, height=self.canvas_height)
+        self.canvas.pack()
+        # w.coords(i, new_xy) # change coordinates
+        # w.itemconfig(i, fill="blue") # change color
+        # (x1,y1,x2,y2)
+        graph_x1 = 0
+        graph_y1 = 0
+        graph_x2 = int(self.canvas_width)
+        graph_y2 = int(self.canvas_height)
+        self.canvas.create_rectangle(
+            graph_x1,
+            graph_y1,
+            graph_x2,
+            graph_y2,
+            fill="#1a1a1a")
+
+        # grid lines (reticules)
+        self.horizontal_line_distance = int(self.canvas_width / 10)
+        self.vertical_line_distance = int(self.canvas_height / 10)
+        for x in range(self.horizontal_line_distance, self.canvas_width,
+                       self.horizontal_line_distance):
+            self.canvas.create_line(
+                x, 0, x, self.canvas_height, fill="#ffffff", dash=(4, 4))
+        for y in range(self.vertical_line_distance, self.canvas_height,
+                       self.vertical_line_distance):
+            self.canvas.create_line(
+                0, y, self.canvas_width, y, fill="#ffffff", dash=(4, 4))
+
     def runAutoWindow(self, parameters):
         # pop-up window
-        self.createTopWindow(400, 400, "Running Mode")
+        self.createTopWindow(500, 400, "Running Mode")
+        print(parameters)
 
         reticule_frame = Frame(self.window_levels[1])
         self.drawReticules(reticule_frame)
-        reticule_frame.pack()
+        reticule_frame.pack(anchor="ne", pady=30, padx=20)
 
+        parameter_view_frame = Frame(self.window_levels[1])
+        Label(parameter_view_frame, text="Length:   %s" % parameters[0]).pack()
+        Label(parameter_view_frame, text="Voltage:  %s" % parameters[1]).pack()
+        Label(parameter_view_frame, text="Amperage: %s" % parameters[2]).pack()
+        parameter_view_frame.pack(anchor="nw", pady=30, padx=20)
+
+        control_frame = Frame(self.window_levels[1])
         start_button = Button(
-            self.window_levels[1],
+            control_frame,
             text="Start",
             command=lambda: self.donothing)
-        start_button.pack(pady=5)
+        start_button.pack(side=tkinter.LEFT, pady=5, padx=5)
         stop_button = Button(
-            self.window_levels[1],
+            control_frame,
             text="Stop",
             command=lambda: self.donothing)
-        stop_button.pack(pady=5)
+        stop_button.pack(side=tkinter.LEFT, pady=5)
+        control_frame.pack(side=tkinter.BOTTOM, anchor="s")
 
     def runSingleLoop(self):
         # pop-up window
-        self.createTopWindow(250, 225, "Single Loop Settings")
+        if(sys.version_info[0] < 3):
+            self.createTopWindow(250, 260, "Single Loop Settings")
+        else:
+            self.createTopWindow(250, 225, "Single Loop Settings")
 
         # Display Type of Device
         device_type_label = Label(
