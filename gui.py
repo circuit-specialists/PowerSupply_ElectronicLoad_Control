@@ -5,10 +5,10 @@ licensed as GPLv3
 """
 
 # gui classes
-try:  # windows
+try:  # python 3
     import tkinter
     from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas, Spinbox, Frame
-except:  # unix
+except:  # python 2
     import Tkinter as tkinter
     import tkFileDialog as filedialog
     import tkMessageBox as messagebox
