@@ -44,32 +44,32 @@ class GUI:
 
     def drawManualControls(self):
         # Voltage Controls
-        self.voltage_frame = Frame(self.bottom)
-        self.voltage_label = Label(self.voltage_frame, text="Voltage: ")
+        voltage_frame = Frame(self.bottom)
+        self.voltage_label = Label(voltage_frame, text="Voltage: ")
         self.voltage_label.pack(side=tkinter.LEFT, padx=5)
-        self.voltage_bar = Spinbox(
-            self.voltage_frame, from_=0, to=32, format="%.2f", increment=0.01)
-        self.voltage_bar.pack(side=tkinter.LEFT)
-        self.setVoltsButton = Button(
-            self.voltage_frame,
+        voltage_bar = Spinbox(
+            voltage_frame, from_=0, to=32, format="%.2f", increment=0.01)
+        voltage_bar.pack(side=tkinter.LEFT)
+        setVoltsButton = Button(
+            voltage_frame,
             text="Set Volts",
-            command=lambda: self.getEntry(self.voltage_bar, "V"))
-        self.setVoltsButton.pack(side=tkinter.LEFT, padx=5)
-        self.voltage_frame.pack()
+            command=lambda: self.getEntry(voltage_bar, "V"))
+        setVoltsButton.pack(side=tkinter.LEFT, padx=5)
+        voltage_frame.pack()
 
         # Amperage Controls
-        self.current_frame = Frame(self.bottom)
-        self.current_label = Label(self.current_frame, text="Amperage: ")
+        current_frame = Frame(self.bottom)
+        self.current_label = Label(current_frame, text="Amperage: ")
         self.current_label.pack(side=tkinter.LEFT)
-        self.current_bar = Spinbox(
-            self.current_frame, from_=0, to=5.2, format="%.3f", increment=0.01)
-        self.current_bar.pack(side=tkinter.LEFT)
-        self.setAmpsButton = Button(
-            self.current_frame,
+        current_bar = Spinbox(
+            current_frame, from_=0, to=5.2, format="%.3f", increment=0.01)
+        current_bar.pack(side=tkinter.LEFT)
+        setAmpsButton = Button(
+            current_frame,
             text="Set Amps",
-            command=lambda: self.getEntry(self.current_bar, "A"))
-        self.setAmpsButton.pack(side=tkinter.LEFT, padx=5)
-        self.current_frame.pack()
+            command=lambda: self.getEntry(current_bar, "A"))
+        setAmpsButton.pack(side=tkinter.LEFT, padx=5)
+        current_frame.pack()
 
         # Power Label
         self.power_label = Label(self.bottom)
@@ -77,16 +77,16 @@ class GUI:
         self.updatePower(self.voltage, self.amperage)
 
         # Output Label
-        self.output_frame = Frame(self.bottom)
-        self.output_label = Label(self.output_frame, text="Output: Off")
+        output_frame = Frame(self.bottom)
+        self.output_label = Label(output_frame, text="Output: Off")
         self.output_label.pack(side=tkinter.LEFT)
-        self.output_On_Button = Button(
-            self.output_frame, text="On", command=lambda: self.updateOutput(1))
-        self.output_On_Button.pack(side=tkinter.LEFT)
-        self.output_Off_Button = Button(
-            self.output_frame, text="Off", command=lambda: self.updateOutput(0))
-        self.output_Off_Button.pack(side=tkinter.LEFT, padx=5)
-        self.output_frame.pack()
+        output_On_Button = Button(
+            output_frame, text="On", command=lambda: self.updateOutput(1))
+        output_On_Button.pack(side=tkinter.LEFT)
+        output_Off_Button = Button(
+            output_frame, text="Off", command=lambda: self.updateOutput(0))
+        output_Off_Button.pack(side=tkinter.LEFT, padx=5)
+        output_frame.pack()
 
     def updateVoltage(self, voltage):
         self.voltage_label.config(text="Voltage: %.2fV" % (voltage))
@@ -121,15 +121,15 @@ class GUI:
         # w.coords(i, new_xy) # change coordinates
         # w.itemconfig(i, fill="blue") # change color
         # (x1,y1,x2,y2)
-        self.graph_x1 = 0
-        self.graph_y1 = 0
-        self.graph_x2 = int(self.canvas_width)
-        self.graph_y2 = int(self.canvas_height)
+        graph_x1 = 0
+        graph_y1 = 0
+        graph_x2 = int(self.canvas_width)
+        graph_y2 = int(self.canvas_height)
         self.canvas.create_rectangle(
-            self.graph_x1,
-            self.graph_y1,
-            self.graph_x2,
-            self.graph_y2,
+            graph_x1,
+            graph_y1,
+            graph_x2,
+            graph_y2,
             fill="#1a1a1a")
 
         # grid lines (reticules)
@@ -146,12 +146,8 @@ class GUI:
 
     def runAutoWindow(self, parameters):
         # pop-up window
-        self.top = Toplevel(self.bottom)
-        self.setWindowSize(self.top, 400, 400)
-        self.top.title("Running Mode")
-        self.top.tk.call('wm', 'iconphoto', self.top._w,
-                         tkinter.Image("photo", file="CircuitSpecialists.gif"))
-        self.entry_dialog = Entry(self.top)
+        self.creatTopWindow(400, 400, "Running Mode")
+        
         start_button = Button(
             self.top,
             text="Start",
@@ -192,49 +188,49 @@ class GUI:
         self.bottom.config(menu=self.menubar)
 
     def setFileMenu(self):
-        self.filemenu = Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(
+        filemenu = Menu(self.menubar, tearoff=0)
+        filemenu.add_command(
             label="Open CSV File...", command=self.openCSVFile)
-        self.filemenu.add_command(label="Save", command=self.saveFile)
-        self.filemenu.add_command(
+        filemenu.add_command(label="Save", command=self.saveFile)
+        filemenu.add_command(
             label="Save as...", command=self.save_AS_CSVFile)
-        self.filemenu.add_command(label="Close", command=self.closeFile)
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=self.bottom.quit)
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
+        filemenu.add_command(label="Close", command=self.closeFile)
+        filemenu.add_separator()
+        filemenu.add_command(label="Exit", command=self.bottom.quit)
+        self.menubar.add_cascade(label="File", menu=filemenu)
 
     def setEditMenu(self):
-        self.editmenu = Menu(self.menubar, tearoff=0)
-        self.editmenu.add_command(
+        editmenu = Menu(self.menubar, tearoff=0)
+        editmenu.add_command(
             label="Find Device", command=self.deviceSelection)
-        self.editmenu.add_separator()
-        self.editmenu.add_command(
+        editmenu.add_separator()
+        editmenu.add_command(
             label="Run Single Loop", command=self.runSingleLoop)
-        self.editmenu.add_separator()
-        self.editmenu.add_command(
+        editmenu.add_separator()
+        editmenu.add_command(
             label="Create CSV File", command=self.createCSVFile)
-        self.editmenu.add_separator()
-        self.editmenu.add_command(
+        editmenu.add_separator()
+        editmenu.add_command(
             label="Run for (s)", command=lambda: self.entryWindow("Time Delay"))
-        self.editmenu.add_command(
+        editmenu.add_command(
             label="Voltage", command=lambda: self.entryWindow("Voltage"))
-        self.editmenu.add_command(
+        editmenu.add_command(
             label="Amperge", command=lambda: self.entryWindow("Current"))
-        self.editmenu.add_separator()
-        self.editmenu.add_command(
+        editmenu.add_separator()
+        editmenu.add_command(
             label="Mode", command=lambda: self.entryWindow("Electronic Load Mode"))
-        self.editmenu.add_command(
+        editmenu.add_command(
             label="Resistance", command=lambda: self.entryWindow("Resistance"))
-        self.editmenu.add_separator()
-        self.editmenu.add_command(label="Output", command=self.setOutput)
-        self.menubar.add_cascade(label="Edit", menu=self.editmenu)
+        editmenu.add_separator()
+        editmenu.add_command(label="Output", command=self.setOutput)
+        self.menubar.add_cascade(label="Edit", menu=editmenu)
 
     def setHelpMenu(self):
-        self.helpmenu = Menu(self.menubar, tearoff=0)
-        self.helpmenu.add_command(
+        helpmenu = Menu(self.menubar, tearoff=0)
+        helpmenu.add_command(
             label="Help Index", command=lambda: self.gotoURL(self.help_url))
-        self.helpmenu.add_command(label="About...", command=self.about)
-        self.menubar.add_cascade(label="Help", menu=self.helpmenu)
+        helpmenu.add_command(label="About...", command=self.about)
+        self.menubar.add_cascade(label="Help", menu=helpmenu)
 
     def donothing(self):
         self.null = None
@@ -246,11 +242,8 @@ class GUI:
 
     def entryWindow(self, parameter):
         # pop-up window
-        self.top = Toplevel(self.bottom)
-        self.setWindowSize(self.top, 250, 80)
-        self.top.title(parameter)
-        self.top.tk.call('wm', 'iconphoto', self.top._w,
-                         tkinter.Image("photo", file="CircuitSpecialists.gif"))
+        self.creatTopWindow(250, 80, parameter)
+        
 
         # window parameters
         if (parameter == "Time Delay"):
@@ -287,6 +280,8 @@ class GUI:
 
     def getEntry(self, object, type, event=None):
         entry = object.get()
+        print(entry)
+        print(type)
 
         # set entry to variables
         try:
@@ -354,9 +349,9 @@ class GUI:
         except:
             pass
         for i in range(0, self.variable_count):
-            self.log_file.writelines("%d, %d, %d, %d" % self.timestamp[i],
-                                     self.voltage[i], self.current[i],
-                                     self.output[i])
+            self.log_file.writelines("%d, %d, %d, %d" % self.timestamps[i],
+                                     self.voltages[i], self.currents[i],
+                                     self.outputs[i])
 
     def save_AS_CSVFile(self):
         self.save_filename = filedialog.asksaveasfilename(
@@ -390,14 +385,16 @@ class GUI:
         self.currents.append(Current)
         self.outputs.append(Output)
 
-    def runSingleLoop(self):
-        # pop-up window
+    def creatTopWindow(self, width, height, title):
         self.top = Toplevel(self.bottom)
-        self.setWindowSize(self.top, 250, 225)
-        self.top.title("Single Loop Settings")
+        self.setWindowSize(self.top, width, height)
+        self.top.title(title)
         self.top.tk.call('wm', 'iconphoto', self.top._w,
                          tkinter.Image("photo", file="CircuitSpecialists.gif"))
-        self.entry_dialog = Entry(self.top)
+
+    def runSingleLoop(self):
+        # pop-up window
+        self.creatTopWindow(250, 225, "Single Loop Settings")
 
         # Display Type of Device
         device_type_label = Label(
@@ -405,34 +402,31 @@ class GUI:
         device_type_label.pack(pady=5)
 
         # Enter Length of Time
-        timelength_label = Label(self.top, text="Length in (s): ")
-        timelength_label.pack()
-        timelength_entry = Entry(self.top)
-        timelength_entry.pack(pady=5)
+        timelength_entry = self.createEntryBar(self.top, "Length in (s): ")
 
+        # Enter usage variable
         if(self.device_type == "powersupply"):
-            # Enter Voltage
-            voltage_label = Label(self.top, text="Voltage: ")
-            voltage_label.pack()
-            voltage_entry = Entry(self.top)
-            voltage_entry.pack(pady=5)
+            usage = "Voltage"
+        elif(self.device_type == "electronicload"):
+            usage = "Mode"
         else:
-            # Enter Mode
-            mode_label = Label(self.top, text="Mode: ")
-            mode_label.pack()
-            mode_entry = Entry(self.top)
-            mode_entry.pack(pady=5)
+            usage = "Unknown"
+        usage_entry = self.createEntryBar(self.top, usage)
 
         # Enter Current
-        current_label = Label(self.top, text="Current: ")
-        current_label.pack()
-        current_entry = Entry(self.top)
-        current_entry.pack(pady=5)
+        current_entry = self.createEntryBar(self.top, "Current: ")
 
         # Submit values and run
-        self.runLoop = Button(
-            self.top, text="Run Loop", command=lambda: self.donothing)
-        self.runLoop.pack(pady=5)
+        time_usage_current = [timelength_entry, usage_entry, current_entry]
+        runLoop = Button(
+            self.top, text="Run Loop", command=lambda: self.getEntry(time_usage_current, "LR"))
+        runLoop.pack(pady=5)
+
+    def createEntryBar(self, window_object, Label_Title):
+        Label(window_object, text=Label_Title).pack()
+        entry = Entry(window_object)
+        entry.pack(pady=5)
+        return entry
 
     def deviceSelection(self):
         try:
