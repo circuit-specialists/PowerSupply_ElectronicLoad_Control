@@ -43,50 +43,49 @@ class GUI:
         self.drawManualControls()
 
     def drawManualControls(self):
+        manual_control_frame = Frame(self.bottom)
+        manual_control_frame.pack(anchor="c")
+
         # Voltage Controls
-        voltage_frame = Frame(self.bottom)
+        voltage_frame = Frame(manual_control_frame)
+        voltage_frame.pack()
         self.voltage_label = Label(voltage_frame, text="Voltage: ")
         self.voltage_label.pack(side=tkinter.LEFT, padx=5)
         voltage_bar = Spinbox(
             voltage_frame, from_=0, to=32, format="%.2f", increment=0.01)
         voltage_bar.pack(side=tkinter.LEFT)
-        setVoltsButton = Button(
+        Button(
             voltage_frame,
             text="Set Volts",
-            command=lambda: self.getEntry(voltage_bar, "V"))
-        setVoltsButton.pack(side=tkinter.LEFT, padx=5)
-        voltage_frame.pack()
+            command=lambda: self.getEntry(voltage_bar, "V")).pack(side=tkinter.LEFT, padx=5)
 
         # Amperage Controls
-        current_frame = Frame(self.bottom)
+        current_frame = Frame(manual_control_frame)
+        current_frame.pack()
         self.current_label = Label(current_frame, text="Amperage: ")
         self.current_label.pack(side=tkinter.LEFT)
         current_bar = Spinbox(
             current_frame, from_=0, to=5.2, format="%.3f", increment=0.01)
         current_bar.pack(side=tkinter.LEFT)
-        setAmpsButton = Button(
+        Button(
             current_frame,
             text="Set Amps",
-            command=lambda: self.getEntry(current_bar, "A"))
-        setAmpsButton.pack(side=tkinter.LEFT, padx=5)
-        current_frame.pack()
+            command=lambda: self.getEntry(current_bar, "A")).pack(side=tkinter.LEFT, padx=5)
 
         # Power Label
-        self.power_label = Label(self.bottom)
+        self.power_label = Label(manual_control_frame)
         self.power_label.pack()
         self.updatePower(self.voltage, self.amperage)
 
         # Output Label
-        output_frame = Frame(self.bottom)
+        output_frame = Frame(manual_control_frame)
+        output_frame.pack()
         self.output_label = Label(output_frame, text="Output: Off")
         self.output_label.pack(side=tkinter.LEFT)
-        output_On_Button = Button(
-            output_frame, text="On", command=lambda: self.updateOutput(1))
-        output_On_Button.pack(side=tkinter.LEFT)
-        output_Off_Button = Button(
-            output_frame, text="Off", command=lambda: self.updateOutput(0))
-        output_Off_Button.pack(side=tkinter.LEFT, padx=5)
-        output_frame.pack()
+        Button(output_frame, text="On", command=lambda: self.updateOutput(1)).pack(
+            side=tkinter.LEFT)
+        Button(output_frame, text="Off", command=lambda: self.updateOutput(0)).pack(
+            side=tkinter.LEFT, padx=5)
 
     def updateVoltage(self, voltage):
         self.voltage_label.config(text="Voltage: %.2fV" % (voltage))
@@ -219,15 +218,14 @@ class GUI:
             entry_dialog = Spinbox(
                 self.window_levels[0], values=("CCH", "CCL", "CV", "CRM"))
 
-        #
+        # Accept <enter> or okay button to get data
         self.window_levels[0].bind('<Return>',
-                      lambda: self.getEntry(entry_dialog, entry_type))
+                                   lambda: self.getEntry(entry_dialog, entry_type))
         entry_dialog.pack(padx=5)
-        button_dialog = Button(
+        Button(
             self.window_levels[0],
             text="OK",
-            command=lambda: self.getEntry(entry_dialog, entry_type))
-        button_dialog.pack(pady=5)
+            command=lambda: self.getEntry(entry_dialog, entry_type)).pack(pady=5)
 
     def getEntry(self, object, type, event=None):
         try:
@@ -331,11 +329,10 @@ class GUI:
         entry_type = "ccsv"
         #fields = self.createEntryBar(parameters_window)
 
-        button_dialog = Button(
+        Button(
             self.window_levels[0],
             text="OK",
-            command=lambda: self.getEntry(fields, entry_type))
-        button_dialog.pack(pady=5)
+            command=lambda: self.getEntry(fields, entry_type)).pack(pady=5)
 
     def storeVariabels(self, Timestamp, Voltage, Current, Output):
         self.timestamps.append(Timestamp)
@@ -349,7 +346,7 @@ class GUI:
         top.title(title)
         top.protocol("WM_DELETE_WINDOW", lambda: self.destroyWindow(top))
         top.tk.call('wm', 'iconphoto', top._w,
-                         tkinter.Image("photo", file="CircuitSpecialists.gif"))
+                    tkinter.Image("photo", file="CircuitSpecialists.gif"))
         self.window_levels.append(top)
 
     def destroyWindow(self, window):
@@ -433,7 +430,8 @@ class GUI:
         device_type_label.pack(pady=5)
 
         # Enter Length of Time
-        timelength_entry = self.createEntryBar(self.window_levels[0], "Length in (s): ")
+        timelength_entry = self.createEntryBar(
+            self.window_levels[0], "Length in (s): ")
 
         # Enter usage variable
         if(self.device_type == "powersupply"):
@@ -460,22 +458,26 @@ class GUI:
         return entry
 
     def deviceSelection(self):
-        try:
-            self.device = powersupply.POWERSUPPLY()
-            self.device = self.device.powersupply
-            self.device_type = "powersupply"
-            messagebox.showinfo("Power Supply",
-                                "Device Detected: " + self.device.name)
-        except:
+        if(self.device_type == "None"):
             try:
-                self.device = electronicload.ELECTRONICLOAD()
-                self.device = self.device.electronicload
-                self.device_type = "electronicload"
-                messagebox.showinfo("Electronic Load",
+                self.device = powersupply.POWERSUPPLY()
+                self.device = self.device.powersupply
+                self.device_type = "powersupply"
+                messagebox.showinfo("Power Supply",
                                     "Device Detected: " + self.device.name)
             except:
-                messagebox.showerror(
-                    "Error", "Sorry, no devices currently supported are found")
+                try:
+                    self.device = electronicload.ELECTRONICLOAD()
+                    self.device = self.device.electronicload
+                    self.device_type = "electronicload"
+                    messagebox.showinfo("Electronic Load",
+                                        "Device Detected: " + self.device.name)
+                except:
+                    messagebox.showerror(
+                        "Error", "Sorry, no devices currently supported are found")
+        else:
+            messagebox.showinfo("Power Supply",
+                                    "Device Detected: " + self.device.name)
 
     def gotoURL(self, url):
         webbrowser.open_new_tab(url)
@@ -503,6 +505,4 @@ class GUI:
         self.window_levels = []
 
 
-if __name__ == "__main__":
-    gui = GUI()
-    gui.startWindow()
+

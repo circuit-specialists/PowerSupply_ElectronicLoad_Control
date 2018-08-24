@@ -16,6 +16,9 @@ class PPS2116A:
         self.name = "PPS2116A"
         self.channels = 1
 
+    def getChannels(self):
+        return self.channels
+
     def setVoltage(self, voltage):
         self.voltage = voltage
         if("." in voltage):

@@ -15,6 +15,7 @@ class GENERIC_SCPI:
         self.inst = visa_instance
         self.name = self.inst.query("*IDN?")
         self.inst.write("SYST:REM")
+        self.channels = 1
 
     def getCurrent(self):
         self.current = self.inst.query(":MEAS:CURR?")

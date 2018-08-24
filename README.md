@@ -8,7 +8,7 @@ One script to rule them all, one script to find the device, and one script to bi
 
 ## Features
 
-* Autofinding on COM bus
+* Autofinding Devices on COM bus
 * Run from GUI or command line (GUI currently in alpha)
 * Manual Voltage and Amperage control
 * Run predined csv with timing and power specs
@@ -25,16 +25,16 @@ You first need to have python installed. If you don't, [download](https://www.py
 * There are two modes. 
     * The GUI version is current as of v1.3 alpha.
         * To run the GUI version, run `python gui.py`.
-    * The command line version is current as of v1.2.
+    * The command line version is current as of v1.3.
         * To run the command line version, run `python cmd.py`.
 
 ###### GUI Help
 To access the GUI help, run the GUI and select the help menu item.
 
 ###### Command Line Help
-When the program first runs, the option for either running a power supply or electronic load is given. Once the type of device is selected, the type of run usage also needs to be selected. 
+When the program first runs, the option for either running auto mode running from a csv file, or manual mode is given.
 
-If you choose `Auto Mode`, you'll need to have a .csv file titled `auto_run_el.csv` for electronic loads, or `auto_run_ps.csv` for power supplies. The format for each type is diplayed in the first line of the provided example files.
+If you choose `Auto Mode`, you'll need to have the .csv file copied into the Example CSV folder. Then select from the list, the file number you want to load. The format for each device type csv file is diplayed in the first line of the provided example files.
 
 If you chose `Manual Mode`, the program will prompt for the input values. Make sure to give full values, such as 0.123, 1, or 1.123. The program very likely will not be able to interpret truncated values such as .123.
 
