@@ -57,7 +57,8 @@ class GUI:
         Button(
             voltage_frame,
             text="Set Volts",
-            command=lambda: self.getEntry(voltage_bar, "V")).pack(side=tkinter.LEFT, padx=5)
+            command=lambda: self.getEntry(voltage_bar, "V")).pack(
+                side=tkinter.LEFT, padx=5)
 
         # Amperage Controls
         current_frame = Frame(manual_control_frame)
@@ -70,7 +71,8 @@ class GUI:
         Button(
             current_frame,
             text="Set Amps",
-            command=lambda: self.getEntry(current_bar, "A")).pack(side=tkinter.LEFT, padx=5)
+            command=lambda: self.getEntry(current_bar, "A")).pack(
+                side=tkinter.LEFT, padx=5)
 
         # Power Label
         self.power_label = Label(manual_control_frame)
@@ -82,10 +84,13 @@ class GUI:
         output_frame.pack()
         self.output_label = Label(output_frame, text="Output: Off")
         self.output_label.pack(side=tkinter.LEFT)
-        Button(output_frame, text="On", command=lambda: self.updateOutput(1)).pack(
-            side=tkinter.LEFT)
-        Button(output_frame, text="Off", command=lambda: self.updateOutput(0)).pack(
-            side=tkinter.LEFT, padx=5)
+        Button(
+            output_frame, text="On",
+            command=lambda: self.updateOutput(1)).pack(side=tkinter.LEFT)
+        Button(
+            output_frame, text="Off",
+            command=lambda: self.updateOutput(0)).pack(
+                side=tkinter.LEFT, padx=5)
 
     def updateVoltage(self, voltage):
         self.voltage_label.config(text="Voltage: %.2fV" % (voltage))
@@ -152,8 +157,7 @@ class GUI:
         filemenu.add_command(
             label="Open CSV File...", command=self.openCSVFile)
         filemenu.add_command(label="Save", command=self.saveFile)
-        filemenu.add_command(
-            label="Save as...", command=self.save_AS_CSVFile)
+        filemenu.add_command(label="Save as...", command=self.save_AS_CSVFile)
         filemenu.add_command(label="Close", command=self.closeFile)
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=self.bottom.quit)
@@ -161,8 +165,7 @@ class GUI:
 
     def setEditMenu(self):
         editmenu = Menu(self.menubar, tearoff=0)
-        editmenu.add_command(
-            label="Find Device", command=self.deviceSelection)
+        editmenu.add_command(label="Find Device", command=self.deviceSelection)
         editmenu.add_separator()
         editmenu.add_command(
             label="Run Single Loop", command=self.runSingleLoop)
@@ -171,14 +174,16 @@ class GUI:
             label="Create CSV File", command=self.createCSVFile)
         editmenu.add_separator()
         editmenu.add_command(
-            label="Run for (s)", command=lambda: self.entryWindow("Time Delay"))
+            label="Run for (s)",
+            command=lambda: self.entryWindow("Time Delay"))
         editmenu.add_command(
             label="Voltage", command=lambda: self.entryWindow("Voltage"))
         editmenu.add_command(
             label="Amperge", command=lambda: self.entryWindow("Current"))
         editmenu.add_separator()
         editmenu.add_command(
-            label="Mode", command=lambda: self.entryWindow("Electronic Load Mode"))
+            label="Mode",
+            command=lambda: self.entryWindow("Electronic Load Mode"))
         editmenu.add_command(
             label="Resistance", command=lambda: self.entryWindow("Resistance"))
         editmenu.add_separator()
@@ -221,20 +226,21 @@ class GUI:
             entry_type = "R"
 
         # window function
-        if(entry_type != "ELM"):
+        if (entry_type != "ELM"):
             entry_dialog = Entry(self.window_levels[0])
         else:
             entry_dialog = Spinbox(
                 self.window_levels[0], values=("CCH", "CCL", "CV", "CRM"))
 
         # Accept <enter> or okay button to get data
-        self.window_levels[0].bind('<Return>',
-                                   lambda: self.getEntry(entry_dialog, entry_type))
+        self.window_levels[0].bind(
+            '<Return>', lambda: self.getEntry(entry_dialog, entry_type))
         entry_dialog.pack(padx=5)
         Button(
             self.window_levels[0],
             text="OK",
-            command=lambda: self.getEntry(entry_dialog, entry_type)).pack(pady=5)
+            command=lambda: self.getEntry(entry_dialog, entry_type)).pack(
+                pady=5)
 
     def getEntry(self, object, type, event=None):
         try:
@@ -265,7 +271,7 @@ class GUI:
 
         # set device settings to entry variables
         try:
-            if(not entry_failed):
+            if (not entry_failed):
                 if (type == "TD"):
                     print()
                 elif (type == "V"):
@@ -283,7 +289,7 @@ class GUI:
                     self.device.setMode(entry)
                 elif (type == "R"):
                     self.device.setResistance(entry)
-                elif(type == "RSL"):
+                elif (type == "RSL"):
                     self.runAutoWindow(parameters=[length, voltage, current])
             else:
                 self.device.name
@@ -330,8 +336,8 @@ class GUI:
         try:
             self.save_filename.close()
         except:
-            messagebox.ERROR("Save Error", "Error in saving %s" %
-                             (self.save_filename))
+            messagebox.ERROR("Save Error",
+                             "Error in saving %s" % (self.save_filename))
 
     def createCSVFile(self):
         self.createTopWindow(400, 400, "Create Run CSV")
@@ -380,11 +386,7 @@ class GUI:
         graph_x2 = int(self.canvas_width)
         graph_y2 = int(self.canvas_height)
         self.canvas.create_rectangle(
-            graph_x1,
-            graph_y1,
-            graph_x2,
-            graph_y2,
-            fill="#1a1a1a")
+            graph_x1, graph_y1, graph_x2, graph_y2, fill="#1a1a1a")
 
         # grid lines (reticules)
         self.horizontal_line_distance = int(self.canvas_width / 10)
@@ -415,20 +417,16 @@ class GUI:
 
         control_frame = Frame(self.window_levels[1])
         start_button = Button(
-            control_frame,
-            text="Start",
-            command=lambda: self.donothing)
+            control_frame, text="Start", command=lambda: self.donothing)
         start_button.pack(side=tkinter.LEFT, pady=5, padx=5)
         stop_button = Button(
-            control_frame,
-            text="Stop",
-            command=lambda: self.donothing)
+            control_frame, text="Stop", command=lambda: self.donothing)
         stop_button.pack(side=tkinter.LEFT, pady=5)
         control_frame.pack(side=tkinter.BOTTOM, anchor="s")
 
     def runSingleLoop(self):
         # pop-up window
-        if(sys.version_info[0] < 3):
+        if (sys.version_info[0] < 3):
             self.createTopWindow(250, 260, "Single Loop Settings")
         else:
             self.createTopWindow(250, 225, "Single Loop Settings")
@@ -439,13 +437,13 @@ class GUI:
         device_type_label.pack(pady=5)
 
         # Enter Length of Time
-        timelength_entry = self.createEntryBar(
-            self.window_levels[0], "Length in (s): ")
+        timelength_entry = self.createEntryBar(self.window_levels[0],
+                                               "Length in (s): ")
 
         # Enter usage variable
-        if(self.device_type == "powersupply"):
+        if (self.device_type == "powersupply"):
             usage = "Voltage"
-        elif(self.device_type == "electronicload"):
+        elif (self.device_type == "electronicload"):
             usage = "Mode"
         else:
             usage = "Unknown"
@@ -457,7 +455,9 @@ class GUI:
         # Submit values and run
         time_usage_current = [timelength_entry, usage_entry, current_entry]
         runLoopwindow = Button(
-            self.window_levels[0], text="Run Loop", command=lambda: self.getEntry(time_usage_current, "RSL"))
+            self.window_levels[0],
+            text="Run Loop",
+            command=lambda: self.getEntry(time_usage_current, "RSL"))
         runLoopwindow.pack(pady=5)
 
     def createEntryBar(self, window_object, Label_Title):
@@ -467,7 +467,7 @@ class GUI:
         return entry
 
     def deviceSelection(self):
-        if(self.device_type == "None"):
+        if (self.device_type == "None"):
             try:
                 self.device = powersupply.POWERSUPPLY()
                 self.device = self.device.powersupply
@@ -483,10 +483,11 @@ class GUI:
                                         "Device Detected: " + self.device.name)
                 except:
                     messagebox.showerror(
-                        "Error", "Sorry, no devices currently supported are found")
+                        "Error",
+                        "Sorry, no devices currently supported are found")
         else:
             messagebox.showinfo("Power Supply",
-                                    "Device Detected: " + self.device.name)
+                                "Device Detected: " + self.device.name)
 
     def gotoURL(self, url):
         webbrowser.open_new_tab(url)
@@ -514,4 +515,6 @@ class GUI:
         self.window_levels = []
 
 
-
+if __name__ == "__main__":
+    gui = GUI()
+    gui.startWindow()

@@ -28,19 +28,19 @@ class CMD:
         self.getDevice()
         self.device_output = 0
         self.run_type = self.getRunType(prompt=True)
-        if(self.run_type == 'a'):
-            if(self.device_type == 'electronicload'):
+        if (self.run_type == 'a'):
+            if (self.device_type == 'electronicload'):
                 self.setLogFile('')
             self.loadCSVFile()
             self.runCSV()
-        elif(self.run_type == 'm'):
+        elif (self.run_type == 'm'):
             self.getParameters(prompt=True)
             self.addThread(self.keys.inputHandler)
             self.addThread(self.runManual)
             self.runThreads()
 
     def getRunType(self, prompt):
-        if(prompt):
+        if (prompt):
             print("Open CSV file to run auto loop   press:'a'")
             print("For Manual Control               press:'m'")
             print("Quit                             press:'q'")
@@ -75,7 +75,7 @@ class CMD:
         self.file_lines = self.file_lines[1:]
 
     def setLogFile(self, filename):
-        if(filename != "" or filename != None):
+        if (filename != "" or filename != None):
             self.log_file = open("%s.csv" % filename, "w")
         else:
             self.log_file = open("auto_log_el.csv", "w")
@@ -87,7 +87,7 @@ class CMD:
 
     def runCSV(self):
         # set time between file saves for logging
-        if(self.device_type == "electronicload"):
+        if (self.device_type == "electronicload"):
             wait_read_time = 0.0
             last_read_time = time.time()
             wait_write_time = float(self.write_interval)
@@ -97,25 +97,23 @@ class CMD:
         count = 0
         for i in self.file_lines:
             line = self.file_lines[count]
-            if(self.device.channels > 1):
+            if (self.device.channels > 1):
                 self.device.setVoltage(line.split(',')[1], i)
                 self.device.setAmperage(line.split(',')[2], i)
                 self.device.setOutput(int(line.split(',')[3]), i)
             else:
-                if(self.device_type == "powersupply"):
+                if (self.device_type == "powersupply"):
                     self.device.setVoltage(line.split(',')[1])
                     self.device.setAmperage(line.split(',')[2])
                     self.device.setOutput(int(line.split(',')[3]))
                     time.sleep(float(line.split(',')[0]))
                     count += 1
-                elif(self.device_type == "electronicload"):
+                elif (self.device_type == "electronicload"):
                     if (last_read_time + wait_read_time < time.time()):
                         last_read_time = time.time()
                         self.device.setMode(line.split(',')[1])
-                        self.device.setCurrent(
-                            line.split(',')[2])
-                        self.device.setOutput(
-                            int(line.split(',')[3]))
+                        self.device.setCurrent(line.split(',')[2])
+                        self.device.setOutput(int(line.split(',')[3]))
                         wait_read_time = float(line.split(',')[0])
                     if (last_write_time + wait_write_time < time.time()):
                         self.log_file.writelines(
@@ -152,11 +150,11 @@ class CMD:
         sys.exit()
 
     def getParameters(self, prompt):
-        if(self.device.channels > 1):
+        if (self.device.channels > 1):
             for i in range(1, self.device.channels):
                 print("Setting Channel: %s" % str(i))
 
-        if(self.device_type == "powersupply"):
+        if (self.device_type == "powersupply"):
             self.getVoltage(prompt)
             print('Voltage: %s' % self.device.voltage)
 
@@ -164,20 +162,20 @@ class CMD:
         print('Amps: %s' % self.device.amperage)
 
     def getVoltage(self, prompt):
-        if(prompt):
+        if (prompt):
             print("Input Volts in Volts.hectoVolts")
         self.device.setVoltage(str(input()))
 
     def getCurrent(self, prompt):
-        if(prompt):
+        if (prompt):
             print("Input Amps in Amps.milliAmps")
-        if(self.device_type == "powersupply"):
+        if (self.device_type == "powersupply"):
             self.device.setAmperage(str(input()))
-        elif(self.device_type == "electronicload"):
+        elif (self.device_type == "electronicload"):
             self.device.setCurrent = str(input())
 
     def flipOutput(self):
-        if(self.device_output):
+        if (self.device_output):
             self.device.setOutput(0)
             self.device_output = 0
         else:
@@ -186,18 +184,18 @@ class CMD:
 
     def runManual(self):
         while True:
-            if(self.device.name == "CSI305DB"):
+            if (self.device.name == "CSI305DB"):
                 self.device.control()
 
             # input handler
             input_temp = self.keys.getInput()
-            if(input_temp == 'q'):
+            if (input_temp == 'q'):
                 self.quit()
-            elif(input_temp == 'v'):
+            elif (input_temp == 'v'):
                 self.getVoltage(prompt=False)
-            elif(input_temp == 'a'):
+            elif (input_temp == 'a'):
                 self.getCurrent(prompt=False)
-            elif(input_temp == 'o'):
+            elif (input_temp == 'o'):
                 self.flipOutput()
 
 
