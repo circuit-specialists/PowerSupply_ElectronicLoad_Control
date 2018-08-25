@@ -105,10 +105,19 @@ class GUI:
         self.output_label.config(text="Output: %s" %
                                  ("On" if state else "Off"))
 
-    def runThread(self, object):
-        thread = threading.Thread(target=object)
-        self.threads.append(thread)
-        thread.start()
+    def runThreads(self):
+        for th in self.threads:
+            th.start()
+
+    def quitThreads(self):
+        for th in self.threads:
+            try:
+                th.join()
+            except:
+                pass
+
+    def addThread(self, function):
+        self.threads.append(threading.Thread(target=function))
 
     def setWindowSize(self, object, width, height):
         # get screen size
