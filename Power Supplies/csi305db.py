@@ -15,6 +15,7 @@ class CSI305DB:
         self.com_device = com_device
         self.name = "CSI305DB"
         self.channels = 1
+        self.run = True
 
     def setVoltage(self, voltage):
         self.voltage = voltage
@@ -47,7 +48,7 @@ class CSI305DB:
             self.milliamps = 0
 
     def control(self):
-        while True:
+        while self.run:
             self.key = 'HPPSU'
             self.key += '{:02}'.format(self.volts)
             self.key += '{:<02}'.format(self.hectoVolts)
@@ -75,4 +76,4 @@ class CSI305DB:
     def quit(self):
         self.turnOFF()
         self.com_device.close()
-        exit()
+        self.run = False

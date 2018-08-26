@@ -85,4 +85,3 @@ class GENERIC_SCPI:
 
     def quit(self):
         self.inst.close()
-        exit()

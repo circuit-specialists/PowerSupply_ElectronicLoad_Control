@@ -123,4 +123,3 @@ class PPS2116A:
     def quit(self):
         self.turnOFF()
         self.com_device.close()
-        exit()

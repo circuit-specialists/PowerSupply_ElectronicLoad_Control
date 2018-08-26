@@ -24,27 +24,35 @@ class CMD:
     def __init__(self):
         # last update v1.3
         self.threads = []
-        self.keys = keyboard.KEYBOARD()
         self.getDevice()
         self.device_output = 0
         self.run_type = self.getRunType(prompt=True)
+        self.keys = keyboard.KEYBOARD()
+        self.addThread(self.keys.inputHandler)
         if (self.run_type == 'a'):
             if (self.device_type == 'electronicload'):
                 self.setLogFile('')
             self.loadCSVFile()
-            self.runCSV()
+            self.addThread(self.runCSV)
         elif (self.run_type == 'm'):
             self.getParameters(prompt=True)
-            self.addThread(self.keys.inputHandler)
             self.addThread(self.runManual)
-            self.runThreads()
+
+        self.addThread(self.keys.quit)
+        self.runThreads()
 
     def getRunType(self, prompt):
         if (prompt):
             print("Open CSV file to run auto loop   press:'a'")
             print("For Manual Control               press:'m'")
             print("Quit                             press:'q'")
-        return str(input())
+        return self.getInput()
+
+    def getInput(self):
+        if (sys.version_info.major >= 3):
+            return str(input())  # python 3
+        else:
+            return str(raw_input())  # python 2
 
     def getDevice(self):
         try:
@@ -68,7 +76,7 @@ class CMD:
         for filenames in files:
             print("%d: %s" % (count, filenames))
             count += 1
-        file_selection = int(input())
+        file_selection = int(self.getInput())
         print('Running...    ./Example CSV/%s' % (files[file_selection - 1]))
         file = open('./Example CSV/%s' % (files[file_selection - 1]), "r")
         self.file_lines = file.readlines()
@@ -81,7 +89,7 @@ class CMD:
             self.log_file = open("auto_log_el.csv", "w")
         self.log_file.writelines(str("timestamp,voltage,current,power\n"))
         print("Input Log-Time interval. Default is 1s")
-        self.write_interval = str(input())
+        self.write_interval = self.getInput()
         if (self.write_interval == ""):
             self.write_interval = 1.0
 
@@ -96,6 +104,11 @@ class CMD:
 
         count = 0
         for i in self.file_lines:
+            # input handler
+            if (self.keys.getInput() == 'q'):
+                self.quit()
+
+            # csv file loop
             line = self.file_lines[count]
             if (self.device.channels > 1):
                 self.device.setVoltage(line.split(',')[1], i)
@@ -132,9 +145,10 @@ class CMD:
     def quitThreads(self):
         for th in self.threads:
             try:
+                print(len(self.threads))
                 th.join()
             except:
-                pass
+                self.threads.pop()
 
     def addThread(self, function):
         self.threads.append(threading.Thread(target=function))
@@ -146,8 +160,8 @@ class CMD:
             self.device.quit()
         except:
             pass
-        self.quitThreads()
-        sys.exit()
+        #self.quitThreads()
+        exit()
 
     def getParameters(self, prompt):
         if (self.device.channels > 1):
@@ -164,15 +178,15 @@ class CMD:
     def getVoltage(self, prompt):
         if (prompt):
             print("Input Volts in Volts.hectoVolts")
-        self.device.setVoltage(str(input()))
+        self.device.setVoltage(self.getInput())
 
     def getCurrent(self, prompt):
         if (prompt):
             print("Input Amps in Amps.milliAmps")
         if (self.device_type == "powersupply"):
-            self.device.setAmperage(str(input()))
+            self.device.setAmperage(self.getInput())
         elif (self.device_type == "electronicload"):
-            self.device.setCurrent = str(input())
+            self.device.setCurrent = self.getInput()
 
     def flipOutput(self):
         if (self.device_output):
@@ -190,13 +204,15 @@ class CMD:
             # input handler
             input_temp = self.keys.getInput()
             if (input_temp == 'q'):
-                self.quit()
+                break
             elif (input_temp == 'v'):
                 self.getVoltage(prompt=False)
             elif (input_temp == 'a'):
                 self.getCurrent(prompt=False)
             elif (input_temp == 'o'):
                 self.flipOutput()
+
+        self.quit()
 
 
 if __name__ == "__main__":

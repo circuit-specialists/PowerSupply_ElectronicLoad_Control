@@ -4,20 +4,20 @@ written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
 """
 
-# gui classes
-try:  # python 3
-    import tkinter
-    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas, Spinbox, Frame
-except:  # python 2
-    import Tkinter as tkinter
-    import tkFileDialog as filedialog
-    import tkMessageBox as messagebox
-    from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox, Frame
-
 # dependent classes
 import sys
 import webbrowser
 import threading
+
+# gui classess
+if (sys.version_info.major >= 3):  # python 3
+    import tkinter
+    from tkinter import Menu, filedialog, Toplevel, Button, messagebox, Entry, Label, Canvas, Spinbox, Frame
+else:  # python 2
+    import Tkinter as tkinter
+    import tkFileDialog as filedialog
+    import tkMessageBox as messagebox
+    from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox, Frame
 
 # Paths to devices and libraries
 sys.path.insert(0, './Power Supplies')
@@ -405,24 +405,66 @@ class GUI:
         self.createTopWindow(500, 400, "Running Mode")
         print(parameters)
 
-        reticule_frame = Frame(self.window_levels[1])
-        self.drawReticules(reticule_frame)
-        reticule_frame.pack(anchor="ne", pady=30, padx=20)
+        north_frame = Frame(self.window_levels[1])
+        north_frame.pack(anchor="n", pady=30, padx=20)
+        south_frame = Frame(self.window_levels[1])
+        south_frame.pack(anchor="s", pady=30, padx=20)
 
-        parameter_view_frame = Frame(self.window_levels[1])
+        parameter_view_frame = Frame(north_frame)
+        parameter_view_frame.pack(side=tkinter.LEFT, pady=30, padx=20)
         Label(parameter_view_frame, text="Length:   %s" % parameters[0]).pack()
         Label(parameter_view_frame, text="Voltage:  %s" % parameters[1]).pack()
         Label(parameter_view_frame, text="Amperage: %s" % parameters[2]).pack()
-        parameter_view_frame.pack(anchor="nw", pady=30, padx=20)
 
-        control_frame = Frame(self.window_levels[1])
+        reticule_frame = Frame(north_frame)
+        reticule_frame.pack(side=tkinter.RIGHT, pady=30, padx=20)
+        self.drawReticules(reticule_frame)
+
+        control_frame = Frame(south_frame)
+        control_frame.pack()
         start_button = Button(
             control_frame, text="Start", command=lambda: self.donothing)
-        start_button.pack(side=tkinter.LEFT, pady=5, padx=5)
+        start_button.pack(side=tkinter.LEFT, padx=5)
         stop_button = Button(
             control_frame, text="Stop", command=lambda: self.donothing)
-        stop_button.pack(side=tkinter.LEFT, pady=5)
-        control_frame.pack(side=tkinter.BOTTOM, anchor="s")
+        stop_button.pack(side=tkinter.LEFT)
+
+    def runLoop(self, parameters):
+        # set time between file saves for logging
+        if (self.device_type == "electronicload"):
+            wait_read_time = 0.0
+            last_read_time = time.time()
+            wait_write_time = float(self.write_interval)
+            last_write_time = time.time()
+            start_time = time.time()
+
+        count = 0
+        for i in self.file_lines:
+            line = self.file_lines[count]
+            if (self.device.channels > 1):
+                self.device.setVoltage(line.split(',')[1], i)
+                self.device.setAmperage(line.split(',')[2], i)
+                self.device.setOutput(int(line.split(',')[3]), i)
+            else:
+                if (self.device_type == "powersupply"):
+                    self.device.setVoltage(line.split(',')[1])
+                    self.device.setAmperage(line.split(',')[2])
+                    self.device.setOutput(int(line.split(',')[3]))
+                    time.sleep(float(line.split(',')[0]))
+                    count += 1
+                elif (self.device_type == "electronicload"):
+                    if (last_read_time + wait_read_time < time.time()):
+                        last_read_time = time.time()
+                        self.device.setMode(line.split(',')[1])
+                        self.device.setCurrent(line.split(',')[2])
+                        self.device.setOutput(int(line.split(',')[3]))
+                        wait_read_time = float(line.split(',')[0])
+                    if (last_write_time + wait_write_time < time.time()):
+                        self.log_file.writelines(
+                            str(time.time() - start_time) + "," +
+                            str(self.device.getVoltage()[:-1]) + "," +
+                            str(self.device.getCurrent()[:-1]) + "," +
+                            str(self.device.getPower()[:-1]) + "\n")
 
     def runSingleLoop(self):
         # pop-up window

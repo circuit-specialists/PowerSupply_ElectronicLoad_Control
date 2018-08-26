@@ -85,4 +85,3 @@ class ARRAY3721A:
 
     def quit(self):
         self.inst.close()
-        exit()

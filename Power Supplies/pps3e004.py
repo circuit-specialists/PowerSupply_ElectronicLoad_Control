@@ -162,4 +162,3 @@ class PPS3E004:
     def quit(self):
         self.turnOFF()
         self.com_device.close()
-        exit()

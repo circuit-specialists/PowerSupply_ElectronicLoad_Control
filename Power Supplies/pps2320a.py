@@ -164,4 +164,3 @@ class PPS2320A:
     def quit(self):
         self.turnOFF()
         self.com_device.close()
-        exit()
