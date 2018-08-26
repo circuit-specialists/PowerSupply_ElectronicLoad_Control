@@ -30,7 +30,7 @@ class GUI:
     def __init__(self):
         # 1337
         # (0|]3
-        self.version = "1.3 alpha"
+        self.version = "1.4 alpha"
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
