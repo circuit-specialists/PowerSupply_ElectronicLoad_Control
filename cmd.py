@@ -38,7 +38,6 @@ class CMD:
             self.getParameters(prompt=True)
             self.addThread(self.runManual)
 
-        self.addThread(self.keys.quit)
         self.runThreads()
 
     def getRunType(self, prompt):
@@ -160,7 +159,7 @@ class CMD:
             self.device.quit()
         except:
             pass
-        #self.quitThreads()
+        # self.quitThreads()
         exit()
 
     def getParameters(self, prompt):

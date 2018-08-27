@@ -5,10 +5,11 @@ licensed as GPLv3
 """
 
 import sys
-if (sys.platform == "win32"):
+if ("win" in sys.platform):
     import msvcrt
 else:
-    import termios, tty
+    import termios
+    import tty
 
 
 class KEYBOARD:
@@ -18,7 +19,7 @@ class KEYBOARD:
 
     def inputHandler(self):
         while True:
-            if (sys.platform == "win32"):
+            if ("win" in sys.platform):
                 if msvcrt.kbhit():
                     self.input_buf = msvcrt.getch().decode('UTF-8')
                     self.null = msvcrt.getch()
@@ -41,8 +42,6 @@ class KEYBOARD:
             temp = self.input_buf
             self.input_buf = ''
             return temp
-        else:
-            return
 
     def quit(self):
         self.kill_signal = True
