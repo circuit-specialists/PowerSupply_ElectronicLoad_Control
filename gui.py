@@ -369,8 +369,11 @@ class GUI:
         self.window_levels.remove(window)
 
     def destroyWindowLevel(self, level_number):
-        self.window_levels[level_number].destroy()
-        self.window_levels.remove(self.window_levels[level_number])
+        try:
+            self.window_levels[level_number].destroy()
+            self.window_levels.remove(self.window_levels[level_number])
+        except:
+            pass
 
     def drawReticules(self, window_object):
         self.canvas_width = int(self.window_width / 2)
