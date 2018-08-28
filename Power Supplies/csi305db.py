@@ -40,12 +40,12 @@ class CSI305DB:
             except:
                 self.amps = 0
             try:
-                self.milliamps = int(amperage.split('.')[1])
+                self.milliAmps = int(amperage.split('.')[1])
             except:
-                self.milliamps = 0
+                self.milliAmps = 0
         else:
             self.amps = int(amperage)
-            self.milliamps = 0
+            self.milliAmps = 0
 
     def control(self):
         while self.run:

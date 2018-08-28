@@ -127,6 +127,7 @@ class PPS2320A:
         elif(channel == 2):
             self.key = "rh\n"
         self.voltage = self.writeFunction()
+        return self.voltage
 
     def measureAmperage(self, channel):
         if(channel):
@@ -134,6 +135,7 @@ class PPS2320A:
         elif(channel == 2):
             self.key = "rj\n"
         self.amperage = self.writeFunction()
+        return self.amperage
 
     def presetVoltage(self, channel):
         if(channel):

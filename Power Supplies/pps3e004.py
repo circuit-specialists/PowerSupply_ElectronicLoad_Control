@@ -88,9 +88,15 @@ class PPS3E004:
         else:
             self.turnOFF()
 
+    def measureVoltage(self):
+        self.key = "rv\n"
+        self.voltage = self.writeFunction()
+        return self.voltage
+
     def measureAmperage(self):
         self.key = "ra\n"
         self.amperage = self.writeFunction()
+        return self.amperage
 
     def reboot(self):
         self.key = "rb\n"
@@ -140,10 +146,6 @@ class PPS3E004:
     def presetVoltage(self):
         self.key = "ru\n"
         self.preset_voltage = self.writeFunction()
-
-    def measureVoltage(self):
-        self.key = "rv\n"
-        self.voltage = self.writeFunction()
 
     def reboot_w(self):
         self.key = "rw\n"

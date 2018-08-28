@@ -94,11 +94,15 @@ class PPS2116A:
 
     def measureVoltage(self):
         self.key = "rv\n"
-        self.writeFunction()
+        self.voltage = self.writeFunction()
+        self.voltage = (int(self.voltage) / 100) + (0 - int(self.voltage) % 100)
+        return self.voltage
 
     def measureAmperage(self):
         self.key = "ra\n"
-        self.writeFunction()
+        self.amperage = self.writeFunction()
+        self.amperage = (int(self.amperage) / 100) + (0 - int(self.amperage) % 100)
+        return self.amperage
 
     def presetVoltage(self):
         self.key = "ru\n"

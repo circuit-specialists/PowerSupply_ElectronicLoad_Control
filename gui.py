@@ -405,6 +405,25 @@ class GUI:
             self.canvas.create_line(
                 0, y, self.canvas_width, y, fill="#ffffff", dash=(4, 4))
 
+    def updateReticules(self, start_point, max_x, max_y, parameter, time, color):
+        line_width = 2
+        x_scale = float(self.canvas_width / max_x)
+        y_scale = float(self.canvas_height / max_y)
+        end_point = [int(float(time) * x_scale),
+                     int(float(parameter) * y_scale)]
+        # x0, y0, x1, y1
+        # draw measured value
+        self.canvas.create_line(start_point[0], self.getRealY(start_point[1], line_width),
+                                end_point[0], self.getRealY(end_point[1], line_width), fill=color, width=line_width)
+        print(end_point)
+        return end_point
+
+    def getRealY(self, y_point, line_width):
+        if(y_point < 2):
+            return self.canvas_height - y_point
+        else:
+            return self.canvas_height - y_point + line_width
+
     def runAutoWindow(self, parameters):
         # pop-up window
         self.createTopWindow(500, 400, "Running Mode")
@@ -442,20 +461,39 @@ class GUI:
     def runThreadedLoop(self, parameters, elapsed_label):
         self.addThread(lambda: self.runLoop(parameters, elapsed_label))
         self.runThreads()
+        self.stop_loop = False
 
     def runLoop(self, parameters, elapsed_label):
         start_time = time.time()
-        self.device.setVoltage(parameters[2])
-        self.device.setAmperage(parameters[1])
+        self.device.setVoltage(parameters[1])
+        self.device.setAmperage(parameters[2])
         self.device.setOutput(1)
+        voltage_points = []
+        amperage_points = []
+        if(parameters[2] > parameters[1]):
+            max_y = float(parameters[2])
+        else:
+            max_y = float(parameters[1])
+        max_x = float(parameters[0])
+        voltage_start_point = [0, 0]
+        amperage_start_point = [0, 0]
+        count = 0
         while (time.time() <= start_time + int(parameters[0])):
             elapsed_label.config(text="Elapsed:   %d(s)" %
-                                    (time.time() - start_time))
+                                 (time.time() - start_time))
+            voltage = self.device.measureVoltage()
+            voltage_points.append(voltage)
+            amperage = self.device.measureAmperage()
+            amperage_points.append(amperage)
+            voltage_start_point = self.updateReticules(
+                voltage_start_point, max_x, max_y, voltage, time.time() - start_time, "#FF0000")
+            amperage_start_point = self.updateReticules(
+                amperage_start_point, max_x, max_y, amperage, time.time() - start_time, "#FFFF00")
             if(self.stop_loop):
                 break
         self.device.setOutput(0)
         self.threads.pop()
-            
+
         if(False):
             # set time between file saves for logging
             if (self.device_type == "electronicload"):
