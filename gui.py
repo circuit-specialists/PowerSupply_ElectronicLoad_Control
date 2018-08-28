@@ -306,7 +306,8 @@ class GUI:
     def openCSVFile(self):
         self.programme_filename = filedialog.askopenfilename(
             initialdir="./",
-            title="Select file",
+            title="Open file",
+            confirmoverwrite=False,
             filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
         try:
             with open(self.programme_filename, "r") as f:
@@ -316,34 +317,31 @@ class GUI:
 
         self.runAutoWindow(self.programme_file)
 
-    def saveFile(self):
-        try:
-            self.log_file = open(self.save_filename + ".csv", "w")
-        except:
-            pass
+    def saveFile(self, log_file):
         for i in range(0, self.variable_count):
-            self.log_file.writelines("%d, %d, %d, %d" % self.timestamps[i],
+            log_file.writelines("%d, %d, %d, %d" % self.timestamps[i],
                                      self.voltages[i], self.currents[i],
                                      self.outputs[i])
+        self.variable_count = 0
+        self.closeFile(log_file)
 
     def save_AS_CSVFile(self):
-        self.save_filename = filedialog.asksaveasfilename(
-            initialdir="./",
-            title="Select file",
-            filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
-        self.saveFile()
+        self.save_file = filedialog.asksaveasfile(
+            initialdir="./", title="Save file", mode='w', defaultextension=".csv")
+        if(self.save_file):
+            self.saveFile(self.save_file)
 
-    def closeFile(self):
+    def closeFile(self, log_file):
         try:
-            self.save_filename.close()
+            log_file.close()
         except:
             messagebox.ERROR("Save Error",
-                             "Error in saving %s" % (self.save_filename))
+                             "Error in saving %s" % (log_file))
 
     def createCSVFile(self):
         self.createTopWindow(400, 400, "Create Run CSV")
         entry_type = "ccsv"
-        #fields = self.createEntryBar(parameters_window)
+        # fields = self.createEntryBar(parameters_window)
 
         Button(
             self.window_levels[0],
@@ -355,6 +353,7 @@ class GUI:
         self.voltages.append(Voltage)
         self.currents.append(Current)
         self.outputs.append(Output)
+        self.variable_count += 1
 
     def createTopWindow(self, width, height, title):
         top = Toplevel(self.bottom)
@@ -453,6 +452,9 @@ class GUI:
         stop_button = Button(
             control_frame, text="Stop", command=self.stopLoop)
         stop_button.pack(side=tkinter.LEFT)
+        save_button = Button(
+            control_frame, text="Save", command=self.save_AS_CSVFile)
+        save_button.pack(side=tkinter.LEFT)
 
     def stopLoop(self):
         self.stop_loop = True
@@ -468,8 +470,6 @@ class GUI:
             self.device.setVoltage(parameters[1])
             self.device.setAmperage(parameters[2])
             self.device.setOutput(1)
-            voltage_points = []
-            amperage_points = []
             max_amperage_y = float(parameters[2])
             max_voltage_y = float(parameters[1])
             max_x = float(parameters[0])
@@ -482,7 +482,7 @@ class GUI:
                                      (time.time() - start_time))
 
                 # get measured values
-                voltage = self.device.measureVoltage()                
+                voltage = self.device.measureVoltage()
                 amperage = self.device.measureAmperage()
 
                 # graph measured values
@@ -491,9 +491,9 @@ class GUI:
                 amperage_start_point = self.updateReticules(
                     amperage_start_point, max_x, max_amperage_y, amperage, time.time() - start_time, "#FFFF00")
 
-                # arrays of measured values
-                voltage_points.append(voltage)
-                amperage_points.append(amperage)
+                # store values
+                self.storeVariabels(
+                    time.time() - start_time, voltage, amperage, 1)
 
                 if(self.stop_loop):
                     break
