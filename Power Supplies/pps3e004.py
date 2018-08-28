@@ -91,11 +91,13 @@ class PPS3E004:
     def measureVoltage(self):
         self.key = "rv\n"
         self.voltage = self.writeFunction()
+        self.voltage = float("%d%s%d" % (int(self.voltage[:2]), '.', int(self.voltage[2:-1])))
         return self.voltage
 
     def measureAmperage(self):
         self.key = "ra\n"
         self.amperage = self.writeFunction()
+        self.amperage = float("%d%s%d" % (int(self.amperage[:2]), '.', int(self.amperage[2:-1])))
         return self.amperage
 
     def reboot(self):

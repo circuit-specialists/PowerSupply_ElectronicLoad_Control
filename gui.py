@@ -415,7 +415,6 @@ class GUI:
         # draw measured value
         self.canvas.create_line(start_point[0], self.getRealY(start_point[1], line_width),
                                 end_point[0], self.getRealY(end_point[1], line_width), fill=color, width=line_width)
-        print(end_point)
         return end_point
 
     def getRealY(self, y_point, line_width):
@@ -464,35 +463,42 @@ class GUI:
         self.stop_loop = False
 
     def runLoop(self, parameters, elapsed_label):
-        start_time = time.time()
-        self.device.setVoltage(parameters[1])
-        self.device.setAmperage(parameters[2])
-        self.device.setOutput(1)
-        voltage_points = []
-        amperage_points = []
-        if(parameters[2] > parameters[1]):
-            max_y = float(parameters[2])
-        else:
-            max_y = float(parameters[1])
-        max_x = float(parameters[0])
-        voltage_start_point = [0, 0]
-        amperage_start_point = [0, 0]
-        count = 0
-        while (time.time() <= start_time + int(parameters[0])):
-            elapsed_label.config(text="Elapsed:   %d(s)" %
-                                 (time.time() - start_time))
-            voltage = self.device.measureVoltage()
-            voltage_points.append(voltage)
-            amperage = self.device.measureAmperage()
-            amperage_points.append(amperage)
-            voltage_start_point = self.updateReticules(
-                voltage_start_point, max_x, max_y, voltage, time.time() - start_time, "#FF0000")
-            amperage_start_point = self.updateReticules(
-                amperage_start_point, max_x, max_y, amperage, time.time() - start_time, "#FFFF00")
-            if(self.stop_loop):
-                break
-        self.device.setOutput(0)
-        self.threads.pop()
+        if(self.device_type == "powersupply"):
+            start_time = time.time()
+            self.device.setVoltage(parameters[1])
+            self.device.setAmperage(parameters[2])
+            self.device.setOutput(1)
+            voltage_points = []
+            amperage_points = []
+            max_amperage_y = float(parameters[2])
+            max_voltage_y = float(parameters[1])
+            max_x = float(parameters[0])
+            voltage_start_point = [0, 0]
+            amperage_start_point = [0, 0]
+            count = 0
+            while (time.time() <= start_time + int(parameters[0])):
+                # update time ticker
+                elapsed_label.config(text="Elapsed:   %d(s)" %
+                                     (time.time() - start_time))
+
+                # get measured values
+                voltage = self.device.measureVoltage()                
+                amperage = self.device.measureAmperage()
+
+                # graph measured values
+                voltage_start_point = self.updateReticules(
+                    voltage_start_point, max_x, max_voltage_y, voltage, time.time() - start_time, "#FF0000")
+                amperage_start_point = self.updateReticules(
+                    amperage_start_point, max_x, max_amperage_y, amperage, time.time() - start_time, "#FFFF00")
+
+                # arrays of measured values
+                voltage_points.append(voltage)
+                amperage_points.append(amperage)
+
+                if(self.stop_loop):
+                    break
+            self.device.setOutput(0)
+            self.threads.pop()
 
         if(False):
             # set time between file saves for logging
