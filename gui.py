@@ -430,7 +430,7 @@ class GUI:
         control_frame = Frame(south_frame)
         control_frame.pack()
         start_button = Button(
-            control_frame, text="Start", command=lambda: self.runThreadedLoop(parameters, "RSL", elapsed_label))
+            control_frame, text="Start", command=lambda: self.runThreadedLoop(parameters, elapsed_label))
         start_button.pack(side=tkinter.LEFT, padx=5)
         stop_button = Button(
             control_frame, text="Stop", command=self.stopLoop)
@@ -439,24 +439,24 @@ class GUI:
     def stopLoop(self):
         self.stop_loop = True
 
-    def runThreadedLoop(self, parameters, loop_type, elapsed_label):
-        self.addThread(lambda: self.runLoop(parameters, loop_type, elapsed_label))
+    def runThreadedLoop(self, parameters, elapsed_label):
+        self.addThread(lambda: self.runLoop(parameters, elapsed_label))
         self.runThreads()
 
-    def runLoop(self, parameters, loop_type, elapsed_label):
-        if(loop_type == "RSL"):
-            start_time = time.time()
-            self.device.setVoltage(parameters[2])
-            self.device.setAmperage(parameters[1])
-            self.device.setOutput(1)
-            while (time.time() <= start_time + int(parameters[0])):
-                elapsed_label.config(text="Elapsed:   %d(s)" %
-                                     (time.time() - start_time))
-                if(self.stop_loop):
-                    break
-            self.device.setOutput(0)
-            self.threads.pop()
-        else:
+    def runLoop(self, parameters, elapsed_label):
+        start_time = time.time()
+        self.device.setVoltage(parameters[2])
+        self.device.setAmperage(parameters[1])
+        self.device.setOutput(1)
+        while (time.time() <= start_time + int(parameters[0])):
+            elapsed_label.config(text="Elapsed:   %d(s)" %
+                                    (time.time() - start_time))
+            if(self.stop_loop):
+                break
+        self.device.setOutput(0)
+        self.threads.pop()
+            
+        if(False):
             # set time between file saves for logging
             if (self.device_type == "electronicload"):
                 wait_read_time = 0.0
