@@ -31,7 +31,7 @@ class GUI:
     def __init__(self):
         # 1337
         # (0|]3
-        self.version = "1.4 alpha"
+        self.version = "alpha"
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
@@ -232,11 +232,11 @@ class GUI:
         else:
             entry_dialog = Spinbox(
                 self.window_levels[0], values=("CCH", "CCL", "CV", "CRM"))
+        entry_dialog.pack(padx=5)
 
         # Accept <enter> or okay button to get data
         self.window_levels[0].bind(
             '<Return>', lambda: self.getEntry(entry_dialog, entry_type))
-        entry_dialog.pack(padx=5)
         Button(
             self.window_levels[0],
             text="OK",
@@ -556,11 +556,13 @@ class GUI:
         # Enter usage variable
         if (self.device_type == "powersupply"):
             usage = "Voltage"
+            usage_entry = self.createEntryBar(self.window_levels[0], usage)
         elif (self.device_type == "electronicload"):
             usage = "Mode"
+            usage_entry = self.createSpinBox(self.window_levels[0], usage)
         else:
             usage = "Unknown"
-        usage_entry = self.createEntryBar(self.window_levels[0], usage)
+            usage_entry = self.createEntryBar(self.window_levels[0], usage)
 
         # Enter Current
         current_entry = self.createEntryBar(self.window_levels[0], "Current: ")
@@ -572,6 +574,12 @@ class GUI:
             text="Run Loop",
             command=lambda: self.getEntry(time_usage_current, "RSL"))
         runLoopwindow.pack(pady=5)
+
+    def createSpinBox(self, window_object, Label_Title):
+        Label(window_object, text=Label_Title).pack()
+        entry = Spinbox(window_object, values=("CCH", "CCL", "CV", "CRM"))
+        entry.pack(pady=5)
+        return entry
 
     def createEntryBar(self, window_object, Label_Title):
         Label(window_object, text=Label_Title).pack()
