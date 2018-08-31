@@ -159,7 +159,8 @@ class GUI:
             label="Open CSV File...", command=self.openCSVFile)
         filemenu.add_command(label="Save", command=self.save_CSVFile)
         filemenu.add_command(label="Save as...", command=self.save_AS_CSVFile)
-        filemenu.add_command(label="Close", command=self.closeFile)
+        filemenu.add_command(
+            label="Close", command=lambda: self.closeFile(self.save_file))
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=self.bottom.quit)
         self.menubar.add_cascade(label="File", menu=filemenu)
@@ -280,7 +281,8 @@ class GUI:
                 elif (type == "R"):
                     self.device.setResistance(entry)
                 elif (type == "RSL"):
-                    self.runAutoWindow(parameters=[length, voltage, current])
+                    self.runAutoWindow(type, parameters=[
+                                       length, voltage, current])
             else:
                 self.device.name
         except:
@@ -304,7 +306,7 @@ class GUI:
         except:
             messagebox.showerror("Error", "Unable to open file")
 
-        self.runAutoWindow(self.programme_file)
+        self.runAutoWindow("CSVL", self.programme_file)
 
     def saveFile(self, log_file):
         log_file.writelines("Timestamp, Voltage, Current, Output\n")
@@ -338,7 +340,7 @@ class GUI:
     def createCSVFile(self):
         self.createTopWindow(400, 400, "Create Run CSV")
         entry_type = "ccsv"
-        # fields = self.createEntryBar(parameters_window)
+        fields = self.createEntryBar(self.window_levels[0])
 
         Button(
             self.window_levels[0],
@@ -425,7 +427,7 @@ class GUI:
         else:
             return self.canvas_height - y_point + line_width
 
-    def runAutoWindow(self, parameters):
+    def runAutoWindow(self, loop_type, parameters):
         # pop-up window
         self.createTopWindow(500, 400, "Running Mode")
 
@@ -450,7 +452,7 @@ class GUI:
         control_frame = Frame(south_frame)
         control_frame.pack()
         start_button = Button(
-            control_frame, text="Start", command=lambda: self.runThreadedLoop(parameters, elapsed_label))
+            control_frame, text="Start", command=lambda: self.runThreadedLoop(loop_type, parameters, elapsed_label))
         start_button.pack(side=tkinter.LEFT, padx=5)
         stop_button = Button(
             control_frame, text="Stop", command=self.stopLoop)
@@ -462,83 +464,74 @@ class GUI:
     def stopLoop(self):
         self.stop_loop = True
 
-    def runThreadedLoop(self, parameters, elapsed_label):
-        self.addThread(lambda: self.runLoop(parameters, elapsed_label))
+    def runThreadedLoop(self, loop_type, parameters, elapsed_label):
+        self.addThread(lambda: self.runLoop(
+            loop_type, parameters, elapsed_label))
         self.runThreads()
         self.stop_loop = False
 
-    def runLoop(self, parameters, elapsed_label):
-        if(self.device_type == "powersupply"):
-            start_time = time.time()
-            self.device.setVoltage(parameters[1])
-            self.device.setAmperage(parameters[2])
-            self.device.setOutput(1)
-            max_amperage_y = float(parameters[2])
-            max_voltage_y = float(parameters[1])
-            max_x = float(parameters[0])
-            voltage_start_point = [0, 0]
-            amperage_start_point = [0, 0]
-            count = 0
-            while (time.time() <= start_time + int(parameters[0])):
-                # update time ticker
-                elapsed_label.config(text="Elapsed:   %d(s)" %
-                                     (time.time() - start_time))
+    def runLoop(self, loop_type, parameters, elapsed_label):
+        if(loop_type == "RSL"):
+            if(self.device_type == "powersupply"):
+                start_time = time.time()
+                self.device.setVoltage(parameters[1])
+                self.device.setAmperage(parameters[2])
+                self.device.setOutput(1)
+                max_amperage_y = float(parameters[2])
+                max_voltage_y = float(parameters[1])
+                max_x = float(parameters[0])
+                voltage_start_point = [0, 0]
+                amperage_start_point = [0, 0]
+                while (time.time() <= start_time + int(parameters[0])):
+                    # update time ticker
+                    elapsed_label.config(text="Elapsed:   %d(s)" %
+                                         (time.time() - start_time))
 
-                # get measured values
-                voltage = self.device.measureVoltage()
-                amperage = self.device.measureAmperage()
+                    # get measured values
+                    voltage = self.device.measureVoltage()
+                    amperage = self.device.measureAmperage()
 
-                # graph measured values
-                voltage_start_point = self.updateReticules(
-                    voltage_start_point, max_x, max_voltage_y, voltage, time.time() - start_time, "#FF0000")
-                amperage_start_point = self.updateReticules(
-                    amperage_start_point, max_x, max_amperage_y, amperage, time.time() - start_time, "#FFFF00")
+                    # graph measured values
+                    voltage_start_point = self.updateReticules(
+                        voltage_start_point, max_x, max_voltage_y, voltage, time.time() - start_time, "#FF0000")
+                    amperage_start_point = self.updateReticules(
+                        amperage_start_point, max_x, max_amperage_y, amperage, time.time() - start_time, "#FFFF00")
 
-                # store values
-                self.storeVariabels(
-                    time.time() - start_time, voltage, amperage, self.device.output)
+                    # store values
+                    self.storeVariabels(
+                        time.time() - start_time, voltage, amperage, self.device.output)
 
-                if(self.stop_loop):
-                    break
-            self.device.setOutput(0)
-            self.threads.pop()
+                    if(self.stop_loop):
+                        break
+                self.device.setOutput(0)
+                self.threads.pop()
 
-        if(False):
+        else:
             # set time between file saves for logging
             if (self.device_type == "electronicload"):
                 wait_read_time = 0.0
                 last_read_time = time.time()
-                wait_write_time = float(self.write_interval)
-                last_write_time = time.time()
                 start_time = time.time()
 
-            count = 0
-            for i in self.file_lines:
-                line = self.file_lines[count]
-                if (self.device.channels > 1):
-                    self.device.setVoltage(line.split(',')[1], i)
-                    self.device.setAmperage(line.split(',')[2], i)
-                    self.device.setOutput(int(line.split(',')[3]), i)
-                else:
-                    if (self.device_type == "powersupply"):
+            for i in self.programme_file:
+                line = self.programme_file[i]
+                if (self.device_type == "powersupply"):
+                    if (last_read_time + wait_read_time < time.time()):
                         self.device.setVoltage(line.split(',')[1])
                         self.device.setAmperage(line.split(',')[2])
                         self.device.setOutput(int(line.split(',')[3]))
-                        time.sleep(float(line.split(',')[0]))
-                        count += 1
-                    elif (self.device_type == "electronicload"):
-                        if (last_read_time + wait_read_time < time.time()):
-                            last_read_time = time.time()
-                            self.device.setMode(line.split(',')[1])
-                            self.device.setCurrent(line.split(',')[2])
-                            self.device.setOutput(int(line.split(',')[3]))
-                            wait_read_time = float(line.split(',')[0])
-                        if (last_write_time + wait_write_time < time.time()):
-                            self.log_file.writelines(
-                                str(time.time() - start_time) + "," +
-                                str(self.device.getVoltage()[:-1]) + "," +
-                                str(self.device.getCurrent()[:-1]) + "," +
-                                str(self.device.getPower()[:-1]) + "\n")
+                        wait_read_time = float(line.split(',')[0])
+                        self.storeVariabels(
+                                time.time() - start_time, self.device.measureVoltage(), self.device.measureAmperage(), self.device.output)
+                elif (self.device_type == "electronicload"):
+                    if (last_read_time + wait_read_time < time.time()):
+                        last_read_time = time.time()
+                        self.device.setMode(line.split(',')[1])
+                        self.device.setCurrent(line.split(',')[2])
+                        self.device.setOutput(int(line.split(',')[3]))
+                        wait_read_time = float(line.split(',')[0])
+                        self.storeVariabels(
+                            time.time() - start_time, self.device.mode, self.device.getCurrent(), self.device.output)
 
     def promptSingleLoop(self):
         if(self.device_type == "None"):

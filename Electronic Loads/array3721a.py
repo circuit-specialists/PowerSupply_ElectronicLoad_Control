@@ -40,14 +40,14 @@ class ARRAY3721A:
         self.lock = self.inst.write("SYST:LOC")
 
     def setMode(self, mode):
-        mode = str(mode).upper()
-        if(mode == "CCH"):
+        self.mode = str(mode).upper()
+        if(self.mode == "CCH"):
             self.key = "MODE CCH"
-        elif(mode == "CCL"):
+        elif(self.mode == "CCL"):
             self.key = "MODE CCL"
-        elif(mode == "CV"):
+        elif(self.mode == "CV"):
             self.key = "MODE CV"
-        elif(mode == "CRM"):
+        elif(self.mode == "CRM"):
             self.key = "MODE CRM"
         else:
             return
