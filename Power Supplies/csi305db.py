@@ -15,7 +15,7 @@ class CSI305DB:
         self.com_device = com_device
         self.name = "CSI305DB"
         self.channels = 1
-        self.run = True
+        self.output_key = 'NY'
 
     def setVoltage(self, voltage):
         self.voltage = voltage
@@ -48,6 +48,7 @@ class CSI305DB:
             self.milliAmps = 0
 
     def control(self):
+        self.run = True
         while self.run:
             self.key = 'HPPSU'
             self.key += '{:02}'.format(self.volts)
@@ -55,19 +56,19 @@ class CSI305DB:
             self.key += 'H'
             self.key += '{:01}'.format(self.amps)
             self.key += '{:<03}'.format(self.milliAmps)
-            self.key += 'NY'
+            self.key += self.output_key
             self.com_device.write(self.key.encode())
             self.com_device.write(self.key.encode())
-            time.sleep(.02)
             self.com_device.read_all()
 
     def turnON(self):
-        print()
+        self.output_key = 'OY'
 
     def turnOFF(self):
-        print()
+        self.output_key = 'NY'
 
     def setOutput(self, state):
+        print(state)
         self.output = state
         if(state):
             self.turnON()
@@ -75,6 +76,9 @@ class CSI305DB:
             self.turnOFF()
 
     def quit(self):
+        self.run = False
+        time.sleep(0.2)
+        self.com_device.flushInput()
+        self.com_device.flushOutput()
         self.turnOFF()
         self.com_device.close()
-        self.run = False

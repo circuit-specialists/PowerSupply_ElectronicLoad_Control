@@ -37,6 +37,9 @@ class CMD:
         elif (self.run_type == 'm'):
             self.getParameters(prompt=True)
             self.addThread(self.runManual)
+            
+        if (self.device.name == "CSI305DB"):
+                self.addThread(self.device.control)
 
         self.runThreads()
 
@@ -104,7 +107,8 @@ class CMD:
         count = 0
         for i in self.file_lines:
             # input handler
-            if (self.keys.getInput() == 'q'):
+            input_temp = self.keys.getInput()
+            if (input_temp == 'q'):
                 self.quit()
 
             # csv file loop
@@ -167,12 +171,19 @@ class CMD:
             for i in range(1, self.device.channels):
                 print("Setting Channel: %s" % str(i))
 
+        self.run_time = self.getLength(prompt)
+
         if (self.device_type == "powersupply"):
             self.getVoltage(prompt)
             print('Voltage: %s' % self.device.voltage)
 
         self.getCurrent(prompt)
         print('Amps: %s' % self.device.amperage)
+
+    def getLength(self, prompt):
+        if (prompt):
+            print("Input Time to run in (s)")
+        return float(self.getInput())
 
     def getVoltage(self, prompt):
         if (prompt):
@@ -188,18 +199,15 @@ class CMD:
             self.device.setCurrent = self.getInput()
 
     def flipOutput(self):
-        if (self.device_output):
+        if (self.device.output):
             self.device.setOutput(0)
-            self.device_output = 0
         else:
             self.device.setOutput(1)
-            self.device_output = 1
 
     def runManual(self):
-        while True:
-            if (self.device.name == "CSI305DB"):
-                self.device.control()
-
+        start_time = time.time()
+        self.device.setOutput(1)
+        while time.time() <= start_time + self.run_time:
             # input handler
             input_temp = self.keys.getInput()
             if (input_temp == 'q'):
