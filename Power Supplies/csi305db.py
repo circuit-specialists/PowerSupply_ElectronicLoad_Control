@@ -68,6 +68,7 @@ class CSI305DB:
         print()
 
     def setOutput(self, state):
+        self.output = state
         if(state):
             self.turnON()
         else:

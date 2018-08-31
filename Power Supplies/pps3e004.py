@@ -74,6 +74,13 @@ class PPS3E004:
         self.key += "\n"
         self.writeFunction()
 
+    def setOutput(self, state):
+        self.output = state
+        if(state):
+            self.turnON()
+        else:
+            self.turnOFF()
+
     def turnON(self):
         self.key = "so1\n"
         self.writeFunction()
@@ -81,12 +88,6 @@ class PPS3E004:
     def turnOFF(self):
         self.key = "so0\n"
         self.writeFunction()
-
-    def setOutput(self, state):
-        if(state):
-            self.turnON()
-        else:
-            self.turnOFF()
 
     def measureVoltage(self):
         self.key = "rv\n"

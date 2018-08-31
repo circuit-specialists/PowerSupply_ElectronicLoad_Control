@@ -318,10 +318,11 @@ class GUI:
         self.runAutoWindow(self.programme_file)
 
     def saveFile(self, log_file):
+        log_file.writelines("Timestamp, Voltage, Current, Output\n")
         for i in range(0, self.variable_count):
-            log_file.writelines("%d, %d, %d, %d" % self.timestamps[i],
-                                     self.voltages[i], self.currents[i],
-                                     self.outputs[i])
+            log_file.writelines("%f, %f, %f, %d\n" % (self.timestamps[i],
+                                                      self.voltages[i], self.currents[i],
+                                                      self.outputs[i]))
         self.variable_count = 0
         self.closeFile(log_file)
 
@@ -493,7 +494,7 @@ class GUI:
 
                 # store values
                 self.storeVariabels(
-                    time.time() - start_time, voltage, amperage, 1)
+                    time.time() - start_time, voltage, amperage, self.device.output)
 
                 if(self.stop_loop):
                     break
@@ -538,6 +539,9 @@ class GUI:
                                 str(self.device.getPower()[:-1]) + "\n")
 
     def promptSingleLoop(self):
+        if(self.device_type == "None"):
+            self.deviceSelection()
+
         # pop-up window
         if (sys.version_info[0] < 3):
             self.createTopWindow(250, 260, "Single Loop Settings")
@@ -552,6 +556,7 @@ class GUI:
         # Enter Length of Time
         timelength_entry = self.createEntryBar(self.window_levels[0],
                                                "Length in (s): ")
+        timelength_entry.focus_set()
 
         # Enter usage variable
         if (self.device_type == "powersupply"):
@@ -588,27 +593,26 @@ class GUI:
         return entry
 
     def deviceSelection(self):
-        if (self.device_type == "None"):
-            try:
-                self.device = powersupply.POWERSUPPLY()
-                self.device = self.device.powersupply
-                self.device_type = "powersupply"
-                messagebox.showinfo("Power Supply",
-                                    "Device Detected: " + self.device.name)
-            except:
-                try:
-                    self.device = electronicload.ELECTRONICLOAD()
-                    self.device = self.device.electronicload
-                    self.device_type = "electronicload"
-                    messagebox.showinfo("Electronic Load",
-                                        "Device Detected: " + self.device.name)
-                except:
-                    messagebox.showerror(
-                        "Error",
-                        "Sorry, no devices currently supported are found")
-        else:
+        if(self.device_type != "None"):
+            self.device.quit()
+
+        try:
+            self.device = powersupply.POWERSUPPLY()
+            self.device = self.device.powersupply
+            self.device_type = "powersupply"
             messagebox.showinfo("Power Supply",
-                                "Device Detected: " + self.device.name)
+                                "Device Detected: %s" % self.device.name)
+        except:
+            try:
+                self.device = electronicload.ELECTRONICLOAD()
+                self.device = self.device.electronicload
+                self.device_type = "electronicload"
+                messagebox.showinfo("Electronic Load",
+                                    "Device Detected: %s" % self.device.name)
+            except:
+                messagebox.showerror(
+                    "Error",
+                    "Sorry, no devices currently supported are found")
 
     def gotoURL(self, url):
         webbrowser.open_new_tab(url)

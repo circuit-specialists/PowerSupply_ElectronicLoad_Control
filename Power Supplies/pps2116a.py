@@ -79,6 +79,7 @@ class PPS2116A:
         self.writeFunction()
 
     def setOutput(self, state):
+        self.output = state
         if(state):
             self.turnON()
         else:
