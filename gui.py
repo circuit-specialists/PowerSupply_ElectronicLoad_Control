@@ -116,7 +116,8 @@ class GUI:
 
     def runThreads(self):
         for th in self.threads:
-            th.start()
+            if(not th.is_alive()):
+                th.start()
 
     def quitThreads(self):
         for th in self.threads:
@@ -477,9 +478,6 @@ class GUI:
         self.stop_loop = True
 
     def runThreadedLoop(self, loop_type, parameters, labels):
-        if (self.device.name == "CSI305DB"):
-            self.device.breakControl()
-            self.addThread(self.device.control)
         self.addThread(lambda: self.runLoop(
             loop_type, parameters, labels))
         self.runThreads()
