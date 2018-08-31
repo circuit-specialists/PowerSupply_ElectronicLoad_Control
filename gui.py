@@ -662,8 +662,11 @@ class GUI:
 
     def startWindow(self):
         self.bottom.mainloop()
-        if(self.device.name == "CSI305DB"):
+        try:
             self.device.run = False
+        except:
+            pass
+            
 
     def variable_init(self):
         self.timestamps = []
