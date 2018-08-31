@@ -600,13 +600,13 @@ class GUI:
         runLoopwindow.pack(pady=5)
 
     def createSpinBox(self, window_object, Label_Title):
-        entry = Spinbox(window_object, values=("CCH", "CCL", "CV", "CRM"))
+        Label(window_object, text=Label_Title).pack()
         entry = Spinbox(window_object, values=("CCH", "CCL", "CV", "CRM"))
         entry.pack(pady=5)
         return entry
 
     def createEntryBar(self, window_object, Label_Title):
-        entry = Entry(window_object)
+        Label(window_object, text=Label_Title).pack()
         entry = Entry(window_object)
         entry.pack(pady=5)
         return entry
@@ -646,6 +646,7 @@ class GUI:
     def startWindow(self):
         self.bottom.mainloop()
 
+    def variable_init(self):
         self.timestamps=[]
         self.voltages=[]
         self.currents=[]
