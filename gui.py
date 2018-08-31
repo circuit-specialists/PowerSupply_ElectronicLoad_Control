@@ -662,6 +662,6 @@ class GUI:
         self.stop_loop=False
 
 
-    gui=GUI()
-    gui=GUI()
+if __name__ == "__main__":
+    gui=GUI()   
     gui.startWindow()
