@@ -315,6 +315,8 @@ class GUI:
             messagebox.showerror("Error", "Unable to open file")
 
         self.convertFileToList(self.programme_file[1:])
+        if(self.device_type == "None"):
+            self.deviceSelection()
         self.runAutoWindow("CSVL", parameters=[
                            self.timestamps, self.voltages, self.currents, self.outputs])
 
