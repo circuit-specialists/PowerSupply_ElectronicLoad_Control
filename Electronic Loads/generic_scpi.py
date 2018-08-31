@@ -70,6 +70,7 @@ class GENERIC_SCPI:
         self.inst.write(self.key)
 
     def setOutput(self, state):
+        self.output = state
         if(state):
             self.turnON()
         else:

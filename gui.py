@@ -157,7 +157,7 @@ class GUI:
         filemenu = Menu(self.menubar, tearoff=0)
         filemenu.add_command(
             label="Open CSV File...", command=self.openCSVFile)
-        filemenu.add_command(label="Save", command=self.saveFile)
+        filemenu.add_command(label="Save", command=self.save_CSVFile)
         filemenu.add_command(label="Save as...", command=self.save_AS_CSVFile)
         filemenu.add_command(label="Close", command=self.closeFile)
         filemenu.add_separator()
@@ -170,25 +170,14 @@ class GUI:
         editmenu.add_separator()
         editmenu.add_command(
             label="Run Single Loop", command=self.promptSingleLoop)
-        editmenu.add_separator()
         editmenu.add_command(
             label="Create CSV File", command=self.createCSVFile)
-        editmenu.add_separator()
         editmenu.add_command(
-            label="Run for (s)",
-            command=lambda: self.entryWindow("Time Delay"))
-        editmenu.add_command(
-            label="Voltage", command=lambda: self.entryWindow("Voltage"))
-        editmenu.add_command(
-            label="Amperge", command=lambda: self.entryWindow("Current"))
+            label="Reset Current Log", command=self.resetLog)
         editmenu.add_separator()
         editmenu.add_command(
             label="Mode",
             command=lambda: self.entryWindow("Electronic Load Mode"))
-        editmenu.add_command(
-            label="Resistance", command=lambda: self.entryWindow("Resistance"))
-        editmenu.add_separator()
-        editmenu.add_command(label="Output", command=self.setOutput)
         self.menubar.add_cascade(label="Edit", menu=editmenu)
 
     def setHelpMenu(self):
@@ -332,6 +321,13 @@ class GUI:
         if(self.save_file):
             self.saveFile(self.save_file)
 
+    def save_CSVFile(self):
+        try:
+            self.saveFile(self.save_file)
+        except:
+            self.save_file = open("logfile.csv", "w")
+            self.saveFile(self.save_file)
+
     def closeFile(self, log_file):
         try:
             log_file.close()
@@ -355,6 +351,12 @@ class GUI:
         self.currents.append(Current)
         self.outputs.append(Output)
         self.variable_count += 1
+
+    def resetLog(self):
+        del self.timestamps[:]
+        del self.voltages[:]
+        del self.currents[:]
+        del self.outputs[:]
 
     def createTopWindow(self, width, height, title):
         top = Toplevel(self.bottom)
