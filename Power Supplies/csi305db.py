@@ -68,7 +68,6 @@ class CSI305DB:
         self.output_key = 'NY'
 
     def setOutput(self, state):
-        print(state)
         self.output = state
         if(state):
             self.turnON()
