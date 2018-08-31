@@ -477,6 +477,9 @@ class GUI:
         self.stop_loop = True
 
     def runThreadedLoop(self, loop_type, parameters, labels):
+        if (self.device.name == "CSI305DB"):
+            self.device.breakControl()
+            self.addThread(self.device.control)
         self.addThread(lambda: self.runLoop(
             loop_type, parameters, labels))
         self.runThreads()
@@ -497,8 +500,8 @@ class GUI:
             max_x = float(parameters[0])
             max_voltage_y = float(parameters[1])
             max_amperage_y = float(parameters[2])
-            labels[2].config(text="Voltage:   %d(V)" % parameters[1])
-            labels[3].config(text="Current:   %d(A)" % parameters[2])
+            labels[2].config(text="Voltage:   %s(V)" % parameters[1])
+            labels[3].config(text="Current:   %s(A)" % parameters[2])
         elif(loop_type == "CSVL"):
             last_read_time = start_time
             max_x = 0
@@ -525,11 +528,11 @@ class GUI:
                              (time.time() - start_time))
 
             # get measured values
-            if(self.device_type == "powersupply"):
+            if(self.device_type == "powersupply" and self.device.name != "CSI305DB"):
                 type_parameter = self.device.measureVoltage()
                 amperage = self.device.measureAmperage()
                 voltage = type_parameter
-            elif(self.device_type == "electronicload"):
+            elif(self.device_type == "electronicload" and self.device.name != "CSI305DB"):
                 type_parameter = self.device.mode
                 amperage = self.device.getCurrent()
                 voltage = self.device.getVoltage()
@@ -551,15 +554,16 @@ class GUI:
                                  amperages[line_count])
                 line_count += 1
 
-            # graph measured values
-            voltage_start_point = self.updateReticules(
-                voltage_start_point, max_x, max_voltage_y, voltage, time.time() - start_time, "#FF0000")
-            amperage_start_point = self.updateReticules(
-                amperage_start_point, max_x, max_amperage_y, amperage, time.time() - start_time, "#FFFF00")
+            if(self.device.name != "CSI305DB"):
+                # graph measured values
+                voltage_start_point = self.updateReticules(
+                    voltage_start_point, max_x, max_voltage_y, voltage, time.time() - start_time, "#FF0000")
+                amperage_start_point = self.updateReticules(
+                    amperage_start_point, max_x, max_amperage_y, amperage, time.time() - start_time, "#FFFF00")
 
-            # store values
-            self.storeVariables(time.time() - start_time,
-                                type_parameter, amperage, self.device.output)
+                # store values
+                self.storeVariables(time.time() - start_time,
+                                    type_parameter, amperage, self.device.output)
 
             if(self.stop_loop):
                 break
@@ -632,6 +636,9 @@ class GUI:
             self.device_type = "powersupply"
             messagebox.showinfo("Power Supply",
                                 "Device Detected: %s" % self.device.name)
+            if (self.device.name == "CSI305DB"):
+                self.addThread(self.device.control)
+            self.runThreads()
         except:
             try:
                 self.device = electronicload.ELECTRONICLOAD()
@@ -655,6 +662,8 @@ class GUI:
 
     def startWindow(self):
         self.bottom.mainloop()
+        if(self.device.name == "CSI305DB"):
+            self.device.run = False
 
     def variable_init(self):
         self.timestamps = []

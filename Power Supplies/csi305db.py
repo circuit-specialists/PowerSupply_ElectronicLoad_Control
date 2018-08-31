@@ -16,6 +16,8 @@ class CSI305DB:
         self.name = "CSI305DB"
         self.channels = 1
         self.output_key = 'NY'
+        self.setVoltage("0")
+        self.setAmperage("0")
 
     def setVoltage(self, voltage):
         self.voltage = voltage
@@ -61,6 +63,9 @@ class CSI305DB:
             self.com_device.write(self.key.encode())
             self.com_device.read_all()
 
+    def breakControl(self):
+        self.run = False
+
     def turnON(self):
         self.output_key = 'OY'
 
@@ -75,7 +80,7 @@ class CSI305DB:
             self.turnOFF()
 
     def quit(self):
-        self.run = False
+        self.breakControl()
         time.sleep(0.2)
         self.com_device.flushInput()
         self.com_device.flushOutput()
