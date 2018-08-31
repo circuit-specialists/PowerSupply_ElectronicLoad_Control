@@ -143,7 +143,8 @@ class CMD:
 
     def runThreads(self):
         for th in self.threads:
-            th.start()
+            if(not th.is_alive()):
+                th.start()
 
     def quitThreads(self):
         for th in self.threads:
