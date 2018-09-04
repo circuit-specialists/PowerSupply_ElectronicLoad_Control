@@ -22,7 +22,7 @@ class ELECTRONICLOAD:
     def __init__(self):
         # find all devices defined
         self.files = []
-        for files in os.listdir():
+        for files in os.listdir('./Electronic Loads'):
             self.files.append(files)
 
         self.rm = visa.ResourceManager()
@@ -35,8 +35,7 @@ class ELECTRONICLOAD:
             self.inst.timeout = 100
             try:
                 self.idn = self.inst.query("*IDN?")
-                if (self.idn in self.files):
-                    break
+                break
             except:
                 pass
 

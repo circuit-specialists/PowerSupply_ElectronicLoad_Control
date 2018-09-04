@@ -58,14 +58,14 @@ class CMD:
 
     def getDevice(self):
         try:
-            self.device = powersupply.POWERSUPPLY()
-            self.device = self.device.powersupply
-            self.device_type = "powersupply"
+            self.device = electronicload.ELECTRONICLOAD()
+            self.device = self.device.electronicload
+            self.device_type = "electronicload"
         except:
             try:
-                self.device = electronicload.ELECTRONICLOAD()
-                self.device = self.device.electronicload
-                self.device_type = "electronicload"
+                self.device = powersupply.POWERSUPPLY()
+                self.device = self.device.powersupply
+                self.device_type = "powersupply"
             except:
                 print("No Supported Devices connected to computer bus")
                 self.quit()

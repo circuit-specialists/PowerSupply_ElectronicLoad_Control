@@ -59,6 +59,7 @@ class POWERSUPPLY:
             raise ValueError()
 
     def write(self, com_device, bytes):
+        print(bytes.encode())
         com_device.write(bytes.encode())
         time.sleep(.02)
         return com_device.read_all()

@@ -16,10 +16,12 @@ class ARRAY3721A:
         self.name = "Array3721A"
         self.inst.write("SYST:REM")
         self.channels = 1
+        self.amperage = 0.0
+        self.voltage = 0.0
 
     def getCurrent(self):
-        self.current = self.inst.query(":MEAS:CURR?")[:-1]
-        return self.current
+        self.amperage = self.inst.query(":MEAS:CURR?")[:-1]
+        return self.amperage
 
     def getVoltage(self):
         self.voltage = self.inst.query(":MEAS:VOLT?")[:-1]
