@@ -16,14 +16,12 @@ class GENERIC_SCPI:
         self.name = self.inst.query("*IDN?")
         self.inst.write("SYST:REM")
         self.channels = 1
+        self.amperage = 0.0
+        self.voltage = 0.0
 
     def getCurrent(self):
-        self.current = self.inst.query(":MEAS:CURR?")
-        return self.current
-
-    def getVoltage(self):
-        self.voltage = self.inst.query(":MEAS:VOLT?")
-        return self.voltage
+        self.amperage = self.inst.query(":MEAS:CURR?")[:-1]
+        return self.amperage
 
     def getIdentifier(self):
         return self.name

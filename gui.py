@@ -628,23 +628,24 @@ class GUI:
             self.device.quit()
 
         try:
-            self.device = powersupply.POWERSUPPLY()
-            self.device = self.device.powersupply
-            self.device_type = "powersupply"
-            self.device_type = "powersupply"
-            messagebox.showinfo("Power Supply",
+            self.device = electronicload.ELECTRONICLOAD()
+            self.device = self.device.electronicload
+            self.device_type = "electronicload"
+            self.device_type = "electronicload"
+            messagebox.showinfo("Electronic Load",
                                 "Device Detected: %s" % self.device.name)
-            if (self.device.name == "CSI305DB"):
-                self.addThread(self.device.control)
-            self.runThreads()
         except:
             try:
-                self.device = electronicload.ELECTRONICLOAD()
-                self.device = self.device.electronicload
-                self.device_type = "electronicload"
-                self.device_type = "electronicload"
-                messagebox.showinfo("Electronic Load",
+                self.device = powersupply.POWERSUPPLY()
+                self.device = self.device.powersupply
+                self.device_type = "powersupply"
+                self.device_type = "powersupply"
+                messagebox.showinfo("Power Supply",
                                     "Device Detected: %s" % self.device.name)
+                if (self.device.name == "CSI305DB"):
+                    self.addThread(self.device.control)
+                self.runThreads()
+
             except:
                 messagebox.showerror(
                     "Error",
@@ -664,7 +665,6 @@ class GUI:
             self.device.run = False
         except:
             pass
-            
 
     def variable_init(self):
         self.timestamps = []
