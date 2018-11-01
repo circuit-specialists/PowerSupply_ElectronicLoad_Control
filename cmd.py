@@ -31,14 +31,17 @@ class CMD:
         self.addThread(self.keys.inputHandler)
         if (self.run_type == 'a'):
             if (self.device_type == 'electronicload'):
-                self.setLogFile('')
+                self.setLogFile('electronicload_log')
             self.loadCSVFile()
+            self.run_log = True
+            self.addThread(self.logfileThread)
+            self.addThread(self.outputThread)
             self.addThread(self.runCSV)
         elif (self.run_type == 'm'):
             self.getParameters(prompt=True)
             self.addThread(self.runManual)
         else:
-            self.quit()    
+            self.quit()
 
         if (self.device.name == "CSI305DB"):
             self.addThread(self.device.control)
@@ -70,7 +73,7 @@ class CMD:
                 self.device_type = "powersupply"
             except:
                 print("No Supported Devices connected to computer bus")
-                self.quit()
+                sys.exit()
 
         print(self.device.name)
 
@@ -87,6 +90,7 @@ class CMD:
         self.file_lines = self.file_lines[1:]
 
     def setLogFile(self, filename):
+        print(filename)
         if (filename != "" or filename != None):
             self.log_file = open("%s.csv" % filename, "w")
         else:
@@ -94,54 +98,67 @@ class CMD:
         self.log_file.writelines(str("timestamp,voltage,current,power\n"))
         print("Input Log-Time interval. Default is 1s")
         self.write_interval = self.getInput()
-        if (self.write_interval == ""):
+        if (self.write_interval == None or self.write_interval == ""):
             self.write_interval = 1.0
+        else:
+            self.write_interval = float(self.write_interval)
 
     def runCSV(self):
-        # set time between file saves for logging
-        if (self.device_type == "electronicload"):
-            wait_read_time = 0.0
-            last_read_time = time.time()
-            wait_write_time = float(self.write_interval)
-            last_write_time = time.time()
-            start_time = time.time()
-
-        count = 0
-        for i in self.file_lines:
+        while(self.run_log):
             # input handler
             input_temp = self.keys.getInput()
             if (input_temp == 'q'):
                 self.quit()
+        print("Finished auto run mode")
+        self.quit()
 
-            # csv file loop
-            line = self.file_lines[count]
-            if (self.device.channels > 1):
-                self.device.setVoltage(line.split(',')[1], i)
-                self.device.setAmperage(line.split(',')[2], i)
-                self.device.setOutput(int(line.split(',')[3]), i)
-            else:
-                if (self.device_type == "powersupply"):
-                    self.device.setVoltage(line.split(',')[1])
-                    self.device.setAmperage(line.split(',')[2])
-                    self.device.setOutput(int(line.split(',')[3]))
-                    time.sleep(float(line.split(',')[0]))
-                    count += 1
-                elif (self.device_type == "electronicload"):
-                    if (last_read_time + wait_read_time < time.time()):
-                        last_read_time = time.time()
+    def outputThread(self):
+        for line in self.file_lines:
+            try:
+                # csv file loop
+                if (self.device.channels > 1):
+                    self.device.setVoltage(line.split(',')[1], line)
+                    self.device.setAmperage(line.split(',')[2], line)
+                    self.device.setOutput(int(line.split(',')[3]), line)
+                else:
+                    if (self.device_type == "powersupply"):
+                        self.device.setVoltage(line.split(',')[1])
+                        self.device.setAmperage(line.split(',')[2])
+                        self.device.setOutput(int(line.split(',')[3]))
+                        time.sleep(float(line.split(',')[0]))
+                    elif (self.device_type == "electronicload"):
                         self.device.setMode(line.split(',')[1])
                         self.device.setCurrent(line.split(',')[2])
                         self.device.setOutput(int(line.split(',')[3]))
-                        wait_read_time = float(line.split(',')[0])
-                    if (last_write_time + wait_write_time < time.time()):
-                        self.log_file.writelines(
-                            str(time.time() - start_time) + "," +
-                            str(self.device.getVoltage()[:-1]) + "," +
-                            str(self.device.getCurrent()[:-1]) + "," +
-                            str(self.device.getPower()[:-1]) + "\n")
+                        time.sleep(float(line.split(',')[0]))
+            except:
+                pass
+        self.run_log = False
 
-        print("Finished auto run mode")
-        self.quit()
+    def logfileThread(self):
+        start_time = time.time()
+        while (self.run_log):
+            try:
+                try:
+                    currentVolts = self.device.getVoltage()[:-1]
+                except:
+                    currentVolts = "N/A"
+                try:
+                    currentAmps = self.device.getCurrent()[:-1]
+                except:
+                    currentAmps = "N/A"
+                try:
+                    currentPower = self.device.getPower()[:-1]
+                except:
+                    currentPower = "N/A"
+                self.log_file.writelines(
+                    str(time.time() - start_time) + "," +
+                    str(currentVolts) + "," +
+                    str(currentAmps) + "," +
+                    str(currentPower) + "\n")
+            except:
+                pass
+            time.sleep(self.write_interval)
 
     def runThreads(self):
         for th in self.threads:

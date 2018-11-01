@@ -87,4 +87,5 @@ class ARRAY3721A:
         self.inst.write(self.key)
 
     def quit(self):
+        self.turnOFF()
         self.inst.close()

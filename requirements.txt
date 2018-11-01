@@ -1,4 +1,5 @@
 ## Dependencies
 pyusb
 pyvisa
+pyvisa-py
 pyserial

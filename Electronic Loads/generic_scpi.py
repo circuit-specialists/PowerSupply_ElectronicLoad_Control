@@ -83,4 +83,5 @@ class GENERIC_SCPI:
         self.inst.write(self.key)
 
     def quit(self):
+        self.turnOFF()
         self.inst.close()
