@@ -37,9 +37,11 @@ class CMD:
         elif (self.run_type == 'm'):
             self.getParameters(prompt=True)
             self.addThread(self.runManual)
-            
+        else:
+            self.quit()    
+
         if (self.device.name == "CSI305DB"):
-                self.addThread(self.device.control)
+            self.addThread(self.device.control)
 
         self.runThreads()
 

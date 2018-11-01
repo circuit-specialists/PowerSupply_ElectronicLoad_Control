@@ -15,6 +15,7 @@ and constructor to this file as seen below
 """
 
 import generic_scpi
+import array3720a
 import array3721a
 
 
@@ -47,7 +48,9 @@ class ELECTRONICLOAD:
         except:
             raise ValueError('No Electronic loads found')
 
-        if (self.name == "ARRAY3721A"):
+        if (self.name == "ARRAY3720A"):
+            self.electronicload = array3720a.ARRAY3720A(self.inst)
+        elif (self.name == "ARRAY3721A"):
             self.electronicload = array3721a.ARRAY3721A(self.inst)
         else:
             self.electronicload = generic_scpi.GENERIC_SCPI(self.inst)
