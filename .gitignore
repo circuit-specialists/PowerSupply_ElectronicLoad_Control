@@ -1,5 +1,6 @@
 *.pyc
 *.json
+*.csv
 __pycache__/*
 Power\ Supplies/*.pyc
 Electronic\ Loads/*.pyc
