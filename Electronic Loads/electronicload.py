@@ -27,7 +27,6 @@ class ELECTRONICLOAD:
             self.files.append(files)
 
         self.rm = visa.ResourceManager()
-        self.idn = []
         self.threads = []
         # find all scpi devices
         self.device_count = 0
