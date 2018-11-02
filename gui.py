@@ -267,10 +267,16 @@ class GUI:
                 if (type == "TD"):
                     print()
                 elif (type == "V"):
-                    self.device.setVoltage(entry)
+                    if(self.device_type == 'powersupply'):
+                        self.device.setVoltage(entry)
+                    elif(self.device_type == 'electronicload'):
+                        messagebox.showerror("Error", "Voltage setting is not Loads")
                     self.device.voltage = entry
                 elif (type == "A"):
-                    self.device.setAmperage(entry)
+                    if(self.device_type == 'powersupply'):
+                        self.device.setAmperage(entry)
+                    elif(self.device_type == 'electronicload'):
+                        self.device.setCurrent(entry)
                     self.device.amperage = entry
                 elif (type == "O"):
                     self.device.setOutput(entry)
@@ -492,14 +498,21 @@ class GUI:
         max_amperage_y = 0.0
 
         if(loop_type == "RSL"):
-            self.device.setVoltage(parameters[1])
-            self.device.setAmperage(parameters[2])
-            self.device.setOutput(1)
             max_x = float(parameters[0])
-            max_voltage_y = float(parameters[1])
             max_amperage_y = float(parameters[2])
-            labels[2].config(text="Voltage:   %s(V)" % parameters[1])
             labels[3].config(text="Current:   %s(A)" % parameters[2])
+            labels[1].config(text="Length:   %s(s)" % max_x)
+            if(self.device_type == 'powersupply'):
+                self.device.setVoltage(parameters[1])
+                self.device.setAmperage(parameters[2])
+                max_voltage_y = float(parameters[1])
+                labels[2].config(text="Voltage:   %s(V)" % parameters[1])
+            elif(self.device_type == 'electronicload'):
+                max_voltage_y = float(self.device.getVoltage())
+                self.device.setMode(parameters[1])
+                labels[2].config(text="Mode:   %s" % parameters[1])
+                self.device.setCurrent(parameters[2])
+            self.device.setOutput(1)
         elif(loop_type == "CSVL"):
             last_read_time = start_time
             max_x = 0
