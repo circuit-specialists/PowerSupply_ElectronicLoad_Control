@@ -13,7 +13,7 @@ class GENERIC_SCPI:
     def __init__(self, visa_instance):
         # Connection to port
         self.inst = visa_instance
-        self.name = self.inst.query("*IDN?")
+        self.name = "Generic SCPI"
         self.inst.write("SYST:REM")
         self.channels = 1
         self.amperage = 0.0
@@ -30,9 +30,9 @@ class GENERIC_SCPI:
         self.power = self.inst.query(":MEAS:POW?")
         return self.power
 
-    def unknown(self):
-        self.unknown = self.inst.query("*cls")
-        return self.unknown
+    def getCLS(self):
+        self.cls = self.inst.query("*cls")
+        return self.cls
 
     def setLock(self):
         self.lock = self.inst.write("SYST:LOC")

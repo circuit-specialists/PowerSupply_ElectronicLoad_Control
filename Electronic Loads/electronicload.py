@@ -51,5 +51,6 @@ class ELECTRONICLOAD:
             self.electronicload = array3720a.ARRAY3720A(self.inst)
         elif (self.name == "ARRAY3721A"):
             self.electronicload = array3721a.ARRAY3721A(self.inst)
-        else:
+        elif (self.name != None or self.name != ""):
+            print(self.name)
             self.electronicload = generic_scpi.GENERIC_SCPI(self.inst)

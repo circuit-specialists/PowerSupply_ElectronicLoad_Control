@@ -4,7 +4,8 @@ One script to rule them all, one script to find the device, and one script to bi
 
 * Tested operating systems: Windows, Linux
 * Tested Power Supplies: CSI305DB, PPS2116A, PPS2320A, PPS3E004
-* Tested Electronic Loads: Array 3721A
+* Tested Electronic Loads: Array 3720A, Array 3721A
+* Theoretical Device compatibility: All Array Electronic Loads, All SCPI command devices
 
 ## Features
 
