@@ -41,63 +41,68 @@ class GUI:
         self.bottom.title('Circuit Specialists Power Control')
         self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()
+        self.drawManualFrames()
+
+    def drawManualFrames(self):
+        self.manual_control_frame = Frame(self.bottom)
+        self.manual_control_frame.pack(anchor="c")
+        self.parameter_frame = Frame(self.manual_control_frame)
+        self.parameter_frame.pack()
+        self.current_frame = Frame(self.manual_control_frame)
+        self.current_frame.pack()
+        self.power_label = Label(self.manual_control_frame)
+        self.power_label.pack()
+        self.output_frame = Frame(self.manual_control_frame)
+        self.output_frame.pack()
 
     def drawManualControls(self):
-        manual_control_frame = Frame(self.bottom)
-        manual_control_frame.pack(anchor="c")
-
         # Top Bar Controls
         if(self.device_type == 'powersupply'):
-            voltage_frame = Frame(manual_control_frame)
-            voltage_frame.pack()
-            self.voltage_label = Label(voltage_frame, text="Voltage: ")
-            self.voltage_label.pack(side=tkinter.LEFT, padx=5)
+            self.voltage_label = Label(self.parameter_frame, text="Voltage: ")
             voltage_bar = Spinbox(
-                voltage_frame, from_=0, to=32, format="%.2f", increment=0.01)
-            voltage_bar.pack(side=tkinter.LEFT)
-            Button(
-                voltage_frame,
+                self.parameter_frame, from_=0, to=32, format="%.2f", increment=0.01)
+            voltage_button = Button(
+                self.parameter_frame,
                 text="Set Volts",
-                command=lambda: self.getEntry(voltage_bar, "V")).pack(
-                    side=tkinter.LEFT, padx=5)
+                command=lambda: self.getEntry(voltage_bar, "V"))
+            if(self.first_pack):
+                self.voltage_label.pack(side=tkinter.LEFT, padx=5)
+                voltage_bar.pack(side=tkinter.LEFT)
+                voltage_button.pack(side=tkinter.LEFT, padx=5)
         elif(self.device_type == 'electronicload'):
-            mode_frame = Frame(manual_control_frame)
-            mode_frame.pack()
-            self.mode_label = Label(mode_frame, text="Mode: CCH")
-            self.mode_label.pack(side=tkinter.LEFT, padx=5)
+            self.mode_label = Label(self.parameter_frame, text="Mode: CCH")
             self.device.setMode('cch')
+            if(self.first_pack):
+                self.mode_label.pack(side=tkinter.LEFT, padx=5)
 
         # Amperage Controls
-        current_frame = Frame(manual_control_frame)
-        current_frame.pack()
-        self.current_label = Label(current_frame, text="Amperage: ")
-        self.current_label.pack(side=tkinter.LEFT)
+        self.current_label = Label(self.current_frame, text="Amperage: ")
         current_bar = Spinbox(
-            current_frame, from_=0, to=5.2, format="%.3f", increment=0.01)
-        current_bar.pack(side=tkinter.LEFT)
-        Button(
-            current_frame,
+            self.current_frame, from_=0, to=5.2, format="%.3f", increment=0.01)
+        current_button = Button(
+            self.current_frame,
             text="Set Amps",
-            command=lambda: self.getEntry(current_bar, "A")).pack(
-                side=tkinter.LEFT, padx=5)
+            command=lambda: self.getEntry(current_bar, "A"))
+        if(self.first_pack):
+            self.current_label.pack(side=tkinter.LEFT)
+            current_bar.pack(side=tkinter.LEFT)
+            current_button.pack(side=tkinter.LEFT, padx=5)
 
         # Power Label
-        self.power_label = Label(manual_control_frame)
-        self.power_label.pack()
         self.updatePower(self.voltage, self.amperage)
 
         # Output Label
-        output_frame = Frame(manual_control_frame)
-        output_frame.pack()
-        self.output_label = Label(output_frame, text="Output: Off")
-        self.output_label.pack(side=tkinter.LEFT)
-        Button(
-            output_frame, text="On",
-            command=lambda: self.updateOutput(1)).pack(side=tkinter.LEFT)
-        Button(
-            output_frame, text="Off",
-            command=lambda: self.updateOutput(0)).pack(
-                side=tkinter.LEFT, padx=5)
+        self.output_label = Label(self.output_frame, text="Output: Off")
+        output_on = Button(
+            self.output_frame, text="On",
+            command=lambda: self.updateOutput(1))
+        output_off = Button(self.output_frame, text="Off",
+                            command=lambda: self.updateOutput(0))
+        if(self.first_pack):
+            self.output_label.pack(side=tkinter.LEFT)
+            output_on.pack(side=tkinter.LEFT)
+            output_off = output_off.pack(side=tkinter.LEFT, padx=5)
+        self.first_pack = False
 
     def updateVoltage(self, voltage):
         self.voltage_label.config(text="Voltage: %.2fV" % (voltage))
@@ -111,7 +116,8 @@ class GUI:
 
     def updateOutput(self, state):
         if(self.device_type == 'electronicload'):
-            self.updatePower(float(self.device.getVoltage()), float(self.device.amperage))
+            self.updatePower(float(self.device.getVoltage()),
+                             float(self.device.amperage))
         elif(self.device_type == 'powersupply'):
             self.updatePower(self.device.voltage, self.device.amperage)
         try:
@@ -280,7 +286,8 @@ class GUI:
                     if(self.device_type == 'powersupply'):
                         self.device.setVoltage(entry)
                     elif(self.device_type == 'electronicload'):
-                        messagebox.showerror("User Error", "Voltage setting is not for Loads")
+                        messagebox.showerror(
+                            "User Error", "Voltage setting is not for Loads")
                     self.device.voltage = entry
                 elif (type == "A"):
                     if(self.device_type == 'powersupply'):
@@ -576,12 +583,12 @@ class GUI:
                     self.device.setVoltage(voltages[line_count])
                     self.device.setAmperage(amperages[line_count])
                     labels[2].config(text="Voltage:   %s(V)" %
-                                 voltages[line_count])
+                                     voltages[line_count])
                 elif (self.device_type == "electronicload"):
                     self.device.setMode(modes[line_count])
                     self.device.setCurrent(amperages[line_count])
                     labels[2].config(text="Mode:   %s" %
-                                 modes[line_count])
+                                     modes[line_count])
 
                 self.device.setOutput(int(outputs[line_count]))
                 labels[3].config(text="Current:   %s(A)" %
@@ -686,7 +693,7 @@ class GUI:
                 messagebox.showerror(
                     "Error",
                     "Sorry, no devices currently supported are found")
-        
+
         self.drawManualControls()
 
     def gotoURL(self, url):
@@ -719,6 +726,7 @@ class GUI:
         self.window_levels = []
         self.stop_loop = False
         self.stop_loop = False
+        self.first_pack = True
 
 
 if __name__ == "__main__":
