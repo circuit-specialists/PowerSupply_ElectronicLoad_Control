@@ -41,25 +41,31 @@ class GUI:
         self.bottom.title('Circuit Specialists Power Control')
         self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()
-        self.drawManualControls()
 
     def drawManualControls(self):
         manual_control_frame = Frame(self.bottom)
         manual_control_frame.pack(anchor="c")
 
-        # Voltage Controls
-        voltage_frame = Frame(manual_control_frame)
-        voltage_frame.pack()
-        self.voltage_label = Label(voltage_frame, text="Voltage: ")
-        self.voltage_label.pack(side=tkinter.LEFT, padx=5)
-        voltage_bar = Spinbox(
-            voltage_frame, from_=0, to=32, format="%.2f", increment=0.01)
-        voltage_bar.pack(side=tkinter.LEFT)
-        Button(
-            voltage_frame,
-            text="Set Volts",
-            command=lambda: self.getEntry(voltage_bar, "V")).pack(
-                side=tkinter.LEFT, padx=5)
+        # Top Bar Controls
+        if(self.device_type == 'powersupply'):
+            voltage_frame = Frame(manual_control_frame)
+            voltage_frame.pack()
+            self.voltage_label = Label(voltage_frame, text="Voltage: ")
+            self.voltage_label.pack(side=tkinter.LEFT, padx=5)
+            voltage_bar = Spinbox(
+                voltage_frame, from_=0, to=32, format="%.2f", increment=0.01)
+            voltage_bar.pack(side=tkinter.LEFT)
+            Button(
+                voltage_frame,
+                text="Set Volts",
+                command=lambda: self.getEntry(voltage_bar, "V")).pack(
+                    side=tkinter.LEFT, padx=5)
+        elif(self.device_type == 'electronicload'):
+            mode_frame = Frame(manual_control_frame)
+            mode_frame.pack()
+            self.mode_label = Label(mode_frame, text="Mode: CCH")
+            self.mode_label.pack(side=tkinter.LEFT, padx=5)
+            self.device.setMode('cch')
 
         # Amperage Controls
         current_frame = Frame(manual_control_frame)
@@ -104,6 +110,10 @@ class GUI:
                                 (voltage * amperage))
 
     def updateOutput(self, state):
+        if(self.device_type == 'electronicload'):
+            self.updatePower(float(self.device.getVoltage()), float(self.device.amperage))
+        elif(self.device_type == 'powersupply'):
+            self.updatePower(self.device.voltage, self.device.amperage)
         try:
             self.device.setOutput(state)
         except:
@@ -676,6 +686,8 @@ class GUI:
                 messagebox.showerror(
                     "Error",
                     "Sorry, no devices currently supported are found")
+        
+        self.drawManualControls()
 
     def gotoURL(self, url):
         webbrowser.open_new_tab(url)
