@@ -518,20 +518,31 @@ class GUI:
             max_x = 0
             line_count = 0
             timestamps = []
-            voltages = []
+            if(self.device_type == 'powersupply'):
+                voltages = []
+            elif(self.device_type == 'electronicload'):
+                modes = []
             amperages = []
             outputs = []
             for line in self.programme_file[1:]:
                 max_x += float(line.split(',')[0])
                 timestamps.append(line.split(',')[0])
-                voltages.append(line.split(',')[1])
                 amperages.append(line.split(',')[2])
                 outputs.append(line.split(',')[3])
-                if(float(line.split(',')[1]) > max_voltage_y):
-                    max_voltage_y = float(line.split(',')[1])
+                if(self.device_type == 'powersupply'):
+                    voltages.append(line.split(',')[1])
+                    if(float(line.split(',')[1]) > max_voltage_y):
+                        max_voltage_y = float(line.split(',')[1])
+                elif(self.device_type == 'electronicload'):
+                    modes.append(str(line.split(',')[1]))
+                    max_voltage_y = float(self.device.getVoltage())
+                    if(max_voltage_y < 1):
+                        max_voltage_y = 1
                 if(float(line.split(',')[2]) > max_amperage_y):
                     max_amperage_y = float(line.split(',')[2])
             labels[1].config(text="Length:   %s(s)" % max_x)
+            if(self.device_type == 'electronicload'):
+                self.device.setMode(modes[0])
 
         while (time.time() <= start_time + max_x):
             # update time ticker
@@ -554,13 +565,15 @@ class GUI:
                 if (self.device_type == "powersupply"):
                     self.device.setVoltage(voltages[line_count])
                     self.device.setAmperage(amperages[line_count])
+                    labels[2].config(text="Voltage:   %s(V)" %
+                                 voltages[line_count])
                 elif (self.device_type == "electronicload"):
-                    self.device.setMode(voltages[line_count])
+                    self.device.setMode(modes[line_count])
                     self.device.setCurrent(amperages[line_count])
+                    labels[2].config(text="Mode:   %s" %
+                                 modes[line_count])
 
                 self.device.setOutput(int(outputs[line_count]))
-                labels[2].config(text="Voltage:   %s(V)" %
-                                 voltages[line_count])
                 labels[3].config(text="Current:   %s(A)" %
                                  amperages[line_count])
                 line_count += 1
