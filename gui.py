@@ -270,7 +270,7 @@ class GUI:
                     if(self.device_type == 'powersupply'):
                         self.device.setVoltage(entry)
                     elif(self.device_type == 'electronicload'):
-                        messagebox.showerror("Error", "Voltage setting is not Loads")
+                        messagebox.showerror("User Error", "Voltage setting is not for Loads")
                     self.device.voltage = entry
                 elif (type == "A"):
                     if(self.device_type == 'powersupply'):
