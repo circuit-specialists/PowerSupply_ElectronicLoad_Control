@@ -674,7 +674,6 @@ class GUI:
             self.device = electronicload.ELECTRONICLOAD()
             self.device = self.device.electronicload
             self.device_type = "electronicload"
-            self.device_type = "electronicload"
             messagebox.showinfo("Electronic Load",
                                 "Device Detected: %s" % self.device.name)
         except:
@@ -682,18 +681,17 @@ class GUI:
                 self.device = powersupply.POWERSUPPLY()
                 self.device = self.device.powersupply
                 self.device_type = "powersupply"
-                self.device_type = "powersupply"
                 messagebox.showinfo("Power Supply",
                                     "Device Detected: %s" % self.device.name)
                 if (self.device.name == "CSI305DB"):
                     self.addThread(self.device.control)
-                self.runThreads()
 
             except:
                 messagebox.showerror(
                     "Error",
                     "Sorry, no devices currently supported are found")
 
+        self.runThreads()
         self.drawManualControls()
 
     def gotoURL(self, url):
