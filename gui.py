@@ -185,6 +185,7 @@ class GUI:
     def setEditMenu(self):
         editmenu = Menu(self.menubar, tearoff=0)
         editmenu.add_command(label="Find Device", command=self.deviceSelection)
+        editmenu.add_command(label="Select Device", command=self.manualDeviceSelect)
         editmenu.add_separator()
         editmenu.add_command(
             label="Run Single Loop", command=self.promptSingleLoop)
@@ -634,14 +635,11 @@ class GUI:
 
         # Enter usage variable
         if (self.device_type == "powersupply"):
-            usage = "Voltage"
-            usage_entry = self.createEntryBar(self.window_levels[0], usage)
+            usage_entry = self.createEntryBar(self.window_levels[0], "Voltage")
         elif (self.device_type == "electronicload"):
-            usage = "Mode"
-            usage_entry = self.createSpinBox(self.window_levels[0], usage)
+            usage_entry = self.createSpinBox(self.window_levels[0], "Mode")
         else:
-            usage = "Unknown"
-            usage_entry = self.createEntryBar(self.window_levels[0], usage)
+            usage_entry = self.createEntryBar(self.window_levels[0], "Unknown")
 
         # Enter Current
         current_entry = self.createEntryBar(self.window_levels[0], "Current: ")
@@ -689,10 +687,51 @@ class GUI:
             except:
                 messagebox.showerror(
                     "Error",
-                    "Sorry, no devices currently supported are found")
+                    "Sorry, no devices were automatically found")
 
         self.runThreads()
         self.drawManualControls()
+
+    def setDevice(self, device_name):
+        self.device_type = "powersupply"
+
+        if(device_name.get() == 'CSI305DB'):
+            self.device = powersupply.POWERSUPPLY.csi305db(self)
+        elif(device_name.get() == 'CSI3645A'):
+            self.device = powersupply.POWERSUPPLY.csi3645a(self)
+        self.destroyWindowLevel(0)
+
+        self.runThreads()
+        self.drawManualControls()
+
+    def manualDeviceSelect(self):
+        self.createTopWindow(250, 146, "Manual Device Select")
+        top_window = len(self.window_levels) - 1
+        north_frame = Frame(self.window_levels[top_window])
+        north_frame.pack(anchor="n", pady=5, padx=10)
+        south_frame = Frame(self.window_levels[top_window])
+        south_frame.pack(anchor="s", pady=5, padx=10)
+
+
+        label = Label(north_frame, text="Device Select")
+        label.pack(pady=5)
+        entry = Spinbox(north_frame, values=("CSI305DB", "CSI3645A"))
+        entry.pack(pady=5)
+
+        control_frame = Frame(south_frame)
+        control_frame.pack()
+
+        select = Button(
+            control_frame,
+            text="Select",
+            command=lambda: self.setDevice(entry))
+        select.pack(side=tkinter.LEFT, pady=5, padx=15)
+
+        cancel = Button(
+            control_frame,
+            text="Cancel",
+            command=lambda: self.destroyWindowLevel(top_window))
+        cancel.pack(side=tkinter.LEFT, pady=5)
 
     def gotoURL(self, url):
         webbrowser.open_new_tab(url)
