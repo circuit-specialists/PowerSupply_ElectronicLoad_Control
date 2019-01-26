@@ -17,38 +17,29 @@ class CSI3645A:
         self.channels = 1
         self.frame_start = 0xAA
         self.address = address
-        self.command = 0x00
-        self.l_current = 0x00
-        self.h_current = 0x00
-        self.l2_voltage = 0x00
-        self.h2_voltage = 0x00
-        self.l1_voltage = 0x00
-        self.h1_voltage = 0x00
-        self.l_power = 0x00
-        self.h_power = 0x00
-        self.l2_char = 0x00
-        self.h2_char = 0x00
-        self.l1_char = 0x00
-        self.h1_char = 0x00
+        self.command = 0
+        self.l_current = 0
+        self.h_current = 0
+        self.l2_max_voltage = 0xFF
+        self.h2_max_voltage = 0xFF
+        self.l1_max_voltage = 0xFF
+        self.h1_max_voltage = 0xFF
+        self.l_power = 0xFF
+        self.h_power = 0xFF
+        self.l2_voltage = 0
+        self.h2_voltage = 0
+        self.l1_voltage = 0
+        self.h1_voltage = 0
         self.new_address = self.address
         self.system_resv = [0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.initialize()
 
-    def constructFrame(self):
-        self.frame = [self.frame_start, self.address, self.command, self.l_current, self.h_current, 
-                      self.l2_voltage, self.h2_voltage, self.l1_voltage, self.h1_voltage, self.l_power, 
-                      self.h_power, self.l2_char, self.h2_char, self.l1_char, self.h1_char, self.new_address]
-
-        checksum = 0
-        for i in self.frame:
-            checksum += i
-
-        self.frame.extend(self.system_resv)
-        self.frame.extend([checksum % 256])
-
     def initialize(self):
         self.command = 0x82
         self.l_current = 0x02
+        self.writeFunction()
+        self.command = 0x80
+        self.l_current = 0
         self.writeFunction()
 
     def writeFunction(self):
@@ -57,60 +48,37 @@ class CSI3645A:
         time.sleep(.02)
         return self.com_device.read_all()
 
+    def constructFrame(self):
+        self.frame = [self.frame_start, self.address, self.command, self.l_current, self.h_current, 
+                      self.l2_max_voltage, self.h2_max_voltage, self.l1_max_voltage, self.h1_max_voltage, self.l_power, 
+                      self.h_power, self.l2_voltage, self.h2_voltage, self.l1_voltage, self.h1_voltage, self.new_address]
+
+        checksum = 0
+        for i in self.frame:
+            checksum += i
+
+        self.frame.extend(self.system_resv)
+        self.frame.extend([checksum % 256])
+        print(self.frame)
+
     def setVoltage(self, voltage):
         self.voltage = voltage
-        if("." in voltage):
-            try:
-                self.volts = int(voltage.split('.')[0])
-            except:
-                self.volts = 0
-            try:
-                self.hectoVolts = int(voltage.split('.')[1])
-            except:
-                self.hectoVolts = 0
-        else:
-            self.volts = int(voltage)
-            self.hectoVolts = 0
-
-        byte_string = b""
-        byte_string += b'\xAA'
-        byte_string += self.address.encode()
-        byte_string += b'\x80'
-        self.key += '{:04}'.format(self.volts)
-        self.key += '{:01}'.format(self.hectoVolts)
-        self.key += "\n"
+        voltage = int(voltage.replace('.', ''))
+        self.l2_voltage = int(voltage & 0xFF)
+        voltage >>= 8
+        self.h2_voltage = int(voltage & 0xFF)
+        voltage >>= 8
+        self.l1_voltage = int(voltage & 0xFF)
+        voltage >>= 8
+        self.h1_voltage = int(voltage & 0xFF)
         self.writeFunction()
 
     def setAmperage(self, amperage):
         self.amperage = amperage
-        if("." in amperage):
-            try:
-                self.amps = int(amperage.split('.')[0])
-            except:
-                self.amps = 0
-            try:
-                self.milliamps = int(amperage.split('.')[1])
-            except:
-                self.milliamps = 0
-        else:
-            self.amps = int(amperage)
-            self.milliamps = 0
-
-        self.key = 'si'
-        #self.key += '0' + '{:<04}'.format(self.milliAmps)
-        self.key += "\n"
-        self.writeFunction()
-
-    def setCPUADDR(self, ADDR):
-        self.key = 'sa'
-        self.key += '{:04}'.format(ADDR)
-        self.key += "\n"
-        self.writeFunction()
-
-    def setCPUData(self, Data):
-        self.key += 'si'
-        self.key += '{:04}'.format(Data)
-        self.key += "\n"
+        amperage = int(self.amperage.replace('.', ''))
+        self.l_current = int(amperage & 0xFF)
+        amperage >>= 8
+        self.h_current = int(amperage & 0xFF)
         self.writeFunction()
 
     def setOutput(self, state):
@@ -121,14 +89,16 @@ class CSI3645A:
             self.turnOFF()
 
     def turnON(self):
-        self.command = b"\x82"
-        self.l_current = b"\x03"
+        self.command = 0x82
+        self.l_current = 3
         self.writeFunction()
+        time.sleep(.4)
 
     def turnOFF(self):
-        self.command = b"\x82"
-        self.l_current = b"\x02"
+        self.command = 0x82
+        self.l_current = 2
         self.writeFunction()
+        time.sleep(.4)
 
     def measureVoltage(self):
         self.key = "rv\n"
@@ -144,30 +114,13 @@ class CSI3645A:
             int(self.amperage[:2]), '.', int(self.amperage[2:-1])))
         return self.amperage
 
-    def reboot(self):
-        self.key = "rb\n"
+    def unsetPC(self):
+        self.command = 0x82
+        self.l_current = 0
         self.writeFunction()
-
-    def getAddress(self):
-        self.key = "re\n"
-        self.writeFunction()
-
-    def presetCurrent(self):
-        self.key = "ri\n"
-        self.writeFunction()
-
-    def getDeviceSafeguard(self):
-        self.key = "rp\n"
-        self.writeFunction()
-
-    def measureStatus(self):
-        self.key = "rs\n"
-        self.writeFunction()
-
-    def presetVoltage(self):
-        self.key = "ru\n"
-        self.preset_voltage = self.writeFunction()
 
     def quit(self):
         self.turnOFF()
+        time.sleep(.2)
+        self.unsetPC()
         self.com_device.close()

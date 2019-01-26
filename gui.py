@@ -698,7 +698,7 @@ class GUI:
         if(device_name.get() == 'CSI305DB'):
             self.device = powersupply.POWERSUPPLY.csi305db(self)
         elif(device_name.get() == 'CSI3645A'):
-            self.device = powersupply.POWERSUPPLY.csi3645a(self)
+            self.device = powersupply.POWERSUPPLY.csi3645a(self, 1)
         self.destroyWindowLevel(0)
 
         self.runThreads()

@@ -22,7 +22,15 @@ import electronicload
 
 class CMD:
     def __init__(self):
-        # last update v1.3
+        # if in test mode, else run normally
+        if(len(sys.argv) == 2 and sys.argv[1] == 'dev'):
+            self.dev_getDevice()
+        elif(len(sys.argv) == 3 and sys.argv[1] == 'dev'):
+            self.dev_Device(sys.argv[2])
+        else:
+            self.normalRun()
+
+    def normalRun(self):
         self.threads = []
         self.getDevice()
         self.device_output = 0
@@ -241,6 +249,16 @@ class CMD:
 
         self.quit()
 
+    def dev_getDevice(self):
+        print("Enter Device name")
+        device_name = self.getInput()
+        self.dev_Device(device_name)
+
+    def dev_Device(self, device):
+        self.device = powersupply.POWERSUPPLY(device.upper())
+        #self.device.powersupply.command = 0x80
+        self.device.powersupply.turnON()
+        self.device.powersupply.quit()
 
 if __name__ == "__main__":
     cmd = CMD()
