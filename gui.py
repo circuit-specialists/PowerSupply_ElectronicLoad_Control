@@ -694,11 +694,7 @@ class GUI:
 
     def setDevice(self, device_name):
         self.device_type = "powersupply"
-
-        if(device_name.get() == 'CSI305DB'):
-            self.device = powersupply.POWERSUPPLY.csi305db(self)
-        elif(device_name.get() == 'CSI3645A'):
-            self.device = powersupply.POWERSUPPLY.csi3645a(self, 1)
+        self.device = powersupply.POWERSUPPLY(device.upper())
         self.destroyWindowLevel(0)
 
         self.runThreads()
