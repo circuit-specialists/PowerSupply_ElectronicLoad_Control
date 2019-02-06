@@ -3,8 +3,6 @@
 written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
 """
-
-import os
 import visa
 import sys
 import time
@@ -14,18 +12,9 @@ Electronic Loads subdirectory following the same structure of other files, then 
 and constructor to this file as seen below
 """
 
-import generic_scpi
-import array3720a
-import array3721a
-
 
 class ELECTRONICLOAD:
     def __init__(self):
-        # find all devices defined
-        self.files = []
-        for files in os.listdir('./Electronic Loads'):
-            self.files.append(files)
-
         self.rm = visa.ResourceManager()
         self.threads = []
         # find all scpi devices
@@ -48,9 +37,12 @@ class ELECTRONICLOAD:
             raise ValueError('No Electronic loads found')
 
         if (self.name == "ARRAY3720A"):
+            import array3720a
             self.electronicload = array3720a.ARRAY3720A(self.inst)
         elif (self.name == "ARRAY3721A"):
+            import array3721a
             self.electronicload = array3721a.ARRAY3721A(self.inst)
         elif (self.name != None or self.name != ""):
+            import generic_scpi
             print(self.name)
             self.electronicload = generic_scpi.GENERIC_SCPI(self.inst)
