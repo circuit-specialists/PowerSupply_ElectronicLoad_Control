@@ -3,14 +3,15 @@
 One script to rule them all, one script to find the device, and one script to bind them all together
 
 * Tested operating systems: Windows, Linux
-* Tested Power Supplies: CSI305DB, PPS2116A, PPS2320A, PPS3E004, CSI3645A(testing*), CSI3005P(testing*)
+* Tested Power Supplies: CSI305DB, PPS2116A, PPS2320A, PPS3E004, CSI3645A(untested), CSI3005P(untested)
 * Tested Electronic Loads: Array 3720A, Array 3721A
+* Theoretical Operating Systems: Mac OS X
 * Theoretical Device compatibility: All Array Electronic Loads, All SCPI command devices
 
 ## Features
 
 * Autofinding Devices on COM bus
-* Run from GUI or command line (GUI currently in alpha)
+* Run from GUI or command line (GUI currently in beta)
 * Manual Voltage and Amperage control
 * Run predined csv with timing and power specs
 * Control Vendor specific functions
@@ -24,9 +25,9 @@ You first need to have python installed. If you don't, [download](https://www.py
 **_Program Usage_**
 
 * There are two modes. 
-    * The GUI version is current as of v1.3 alpha.
+    * The GUI version is currenttly in beta.
         * To run the GUI version, run `python gui.py`.
-    * The command line version is current as of v1.3.
+    * The command line version is 1.4.
         * To run the command line version, run `python cmd.py`.
 
 ###### GUI Help
@@ -43,4 +44,4 @@ If you chose `Manual Mode`, the program will prompt for the input values. Make s
 
 If you have a device that isn't listed, you can use the file titled `get_device_info.py` to get the information for the device, and send that information to jake@circuitspecialists.com and I can guess at the parameters for compatibility.
 
-To add a device yourself, place the device definitions and functions following the current structure as seen in "/Power Supplies/*.py", or "Electronic Loads/*.py" in the Power Supplies folder, then add the import/instantiation into powersupply.py or electronicload.py, whichever type of device you are adding along with the specs neccesary to interact with device.
+To add a device yourself, place the device definitions and functions following the current structure as seen in "/PowerSupplies/*.py", or "ElectronicLoads/*.py" in the Power Supplies folder, then add the import/instantiation into __init__.py file corresponding to the device you just added. Make sure to keep the same function names as all the other devices.

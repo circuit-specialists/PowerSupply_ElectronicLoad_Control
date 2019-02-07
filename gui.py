@@ -21,17 +21,13 @@ else:  # python 2
     from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox, Frame
 
 # Paths to devices and libraries
-sys.path.insert(0, './Power Supplies')
-sys.path.insert(0, './Electronic Loads')
-import powersupply
-import electronicload
+import PowerSupplies as powersupply
+import ElectronicLoads as electronicload
 
 
 class GUI:
     def __init__(self):
-        # 1337
-        # (0|]3
-        self.version = "alpha"
+        self.version = "beta"
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')

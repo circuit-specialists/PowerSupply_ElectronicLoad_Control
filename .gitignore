@@ -1,6 +1,12 @@
 *.pyc
 *.json
 *.csv
-__pycache__/*
-Power\ Supplies/*.pyc
-Electronic\ Loads/*.pyc
+__pycache__
+PowerSupplies/*.pyc
+ElectronicLoads/*.pyc
+PowerSupplies/__pycache__
+ElectronicLoads/__pycache__
+dist
+build
+.vscode
+*.spec
