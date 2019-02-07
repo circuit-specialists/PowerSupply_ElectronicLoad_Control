@@ -44,4 +44,4 @@ If you chose `Manual Mode`, the program will prompt for the input values. Make s
 
 If you have a device that isn't listed, you can use the file titled `get_device_info.py` to get the information for the device, and send that information to jake@circuitspecialists.com and I can guess at the parameters for compatibility.
 
-To add a device yourself, place the device definitions and functions following the current structure as seen in "/PowerSupplies/*.py", or "ElectronicLoads/*.py" in the Power Supplies folder, then add the import/instantiation into __init__.py file corresponding to the device you just added. Make sure to keep the same function names as all the other devices.
+To add a device yourself, place the device definitions and functions following the current structure as seen in PowerSupplies and ElectronicLoads directories. Then add the import/instantiation into __init__.py file corresponding to the device you just added. Make sure to keep the same function names as all the other devices.
