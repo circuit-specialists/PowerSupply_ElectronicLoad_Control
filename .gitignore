@@ -1,3 +1,4 @@
+.*
 *.pyc
 *.json
 *.csv
@@ -8,5 +9,4 @@ PowerSupplies/__pycache__
 ElectronicLoads/__pycache__
 dist
 build
-.vscode
 *.spec
