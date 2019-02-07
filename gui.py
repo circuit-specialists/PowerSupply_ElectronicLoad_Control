@@ -694,7 +694,7 @@ class GUI:
 
     def setDevice(self, device_name):
         self.device_type = "powersupply"
-        self.device = powersupply.POWERSUPPLY(device.upper())
+        self.device = powersupply.POWERSUPPLY(device_name.upper())
         self.destroyWindowLevel(0)
 
         self.runThreads()
