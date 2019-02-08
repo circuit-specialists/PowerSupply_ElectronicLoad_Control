@@ -31,9 +31,11 @@ class GUI:
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
-        self.bottom.tk.call(
-            'wm', 'iconphoto', self.bottom._w,
-            tkinter.Image("photo", file="CircuitSpecialists.gif"))
+        try:
+            self.bottom.tk.call(
+                'wm', 'iconphoto', self.bottom._w, file="CircuitSpecialists.gif")
+        except:
+            pass
         self.bottom.title('Circuit Specialists Power Control')
         self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()

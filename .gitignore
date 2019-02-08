@@ -1,12 +1,8 @@
 .*
-*.pyc
-*.json
 *.csv
-__pycache__
-PowerSupplies/*.pyc
-ElectronicLoads/*.pyc
-PowerSupplies/__pycache__
-ElectronicLoads/__pycache__
 dist
 build
 *.spec
+__pycache__
+PowerSupplies/__pycache__
+ElectronicLoads/__pycache__
