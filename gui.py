@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import ElectronicLoads as electronicload
 import PowerSupplies as powersupply
+import CircuitIcon
 """
 written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
@@ -31,11 +32,9 @@ class GUI:
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
-        try:
-            self.bottom.tk.call('wm', 'iconphoto', self.bottom._w, tkinter.Image(
-                "photo", file="CircuitSpecialists.gif"))
-        except:
-            pass
+        self.icon = CircuitIcon.ICON().data
+        self.bottom.tk.call('wm', 'iconphoto', self.bottom._w,
+                            tkinter.Image("photo", data=self.icon))
         self.bottom.title('Circuit Specialists Power Control')
         self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()
@@ -399,7 +398,7 @@ class GUI:
         top.title(title)
         top.protocol("WM_DELETE_WINDOW", lambda: self.destroyWindow(top))
         top.tk.call('wm', 'iconphoto', top._w,
-                    tkinter.Image("photo", file="CircuitSpecialists.gif"))
+                    tkinter.Image("photo", data=self.icon))
         self.window_levels.append(top)
 
     def destroyWindow(self, window):
