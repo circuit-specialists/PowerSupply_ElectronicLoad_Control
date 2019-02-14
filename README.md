@@ -13,9 +13,9 @@ One script to rule them all, one script to find the device, and one script to bi
 * Autofinding Devices on COM bus
 * Run from GUI or command line (GUI currently in beta)
 * Manual Voltage and Amperage control
-* Run predined csv with timing and power specs
-* Control Vendor specific functions
-* (future) GUI graph for Voltage, Amperage, Power
+* Run predefined csv files with timing and power specs
+* Control Device specific functions
+* GUI graph for Voltage, Amperage, Power
 
 ## Documentation
 **_Install Instructions_**
