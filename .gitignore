@@ -3,6 +3,7 @@
 dist
 build
 *.spec
+setup.py
 __pycache__
 PowerSupplies/__pycache__
 ElectronicLoads/__pycache__

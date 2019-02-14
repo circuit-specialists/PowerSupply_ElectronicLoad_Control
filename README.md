@@ -19,15 +19,18 @@ One script to rule them all, one script to find the device, and one script to bi
 
 ## Documentation
 **_Install Instructions_**
+### Windows Executable
+You only need to [download](https://github.com/circuit-specialists/PowerSupply_ElectronicLoad_Control/releases/download/v1.0/CSPSELC.exe) and run the release binary. No other installation neccesary.
 
-You first need to have python installed. If you don't, [download](https://www.python.org/downloads/) it here. Next, download this [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo. Once you have the repo, unzip the repo to a folder run `pip install -r requirements.txt` to install the dependencies. Once finish you can run the main.py. (FYI, log file is about 1KB per second)
+### Manual Installation
+You first need to have python installed. If you don't, [download](https://www.python.org/downloads/)  and install python. Make sure you have the PATH environment variable checked at the beginning of the installation. Once you have that instaleld, download the [zipped](https://github.com/circuit-specialists/Power-Suply-and-Electronic-Load-Control/archive/master.zip) repo, which is our program. Once you have the repo, unzip the repo to a folder and run from your OS terminal while inside the repo directory, `pip install -r requirements.txt` to install the dependencies. Once finish you can run the main.py. (FYI, log file is about 1KB per second)
 
 **_Program Usage_**
 
 * There are two modes. 
     * The GUI version is currenttly in beta.
         * To run the GUI version, run `python gui.py`.
-    * The command line version is 1.4.
+    * The command line version is stable.
         * To run the command line version, run `python cmd.py`.
 
 ###### GUI Help
