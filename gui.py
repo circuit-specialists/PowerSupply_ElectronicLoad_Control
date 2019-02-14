@@ -1,4 +1,6 @@
 #!/usr/bin/python
+import ElectronicLoads as electronicload
+import PowerSupplies as powersupply
 """
 written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
@@ -21,8 +23,6 @@ else:  # python 2
     from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox, Frame
 
 # Paths to devices and libraries
-import PowerSupplies as powersupply
-import ElectronicLoads as electronicload
 
 
 class GUI:
@@ -32,8 +32,8 @@ class GUI:
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
         try:
-            self.bottom.tk.call(
-                'wm', 'iconphoto', self.bottom._w, file="CircuitSpecialists.gif")
+            self.bottom.tk.call('wm', 'iconphoto', self.bottom._w, tkinter.Image(
+                "photo", file="CircuitSpecialists.gif"))
         except:
             pass
         self.bottom.title('Circuit Specialists Power Control')
@@ -183,7 +183,8 @@ class GUI:
     def setEditMenu(self):
         editmenu = Menu(self.menubar, tearoff=0)
         editmenu.add_command(label="Find Device", command=self.deviceSelection)
-        editmenu.add_command(label="Select Device", command=self.manualDeviceSelect)
+        editmenu.add_command(label="Select Device",
+                             command=self.manualDeviceSelect)
         editmenu.add_separator()
         editmenu.add_command(
             label="Run Single Loop", command=self.promptSingleLoop)
@@ -705,7 +706,6 @@ class GUI:
         north_frame.pack(anchor="n", pady=5, padx=10)
         south_frame = Frame(self.window_levels[top_window])
         south_frame.pack(anchor="s", pady=5, padx=10)
-
 
         label = Label(north_frame, text="Device Select")
         label.pack(pady=5)
