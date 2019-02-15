@@ -23,9 +23,6 @@ else:  # python 2
     import tkMessageBox as messagebox
     from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox, Frame
 
-# Paths to devices and libraries
-
-
 class GUI:
     def __init__(self):
         self.version = "beta"
@@ -54,7 +51,7 @@ class GUI:
 
     def drawManualControls(self):
         # Top Bar Controls
-        if(self.device_type == 'powersupply'):
+        if(self.device.type == 'powersupply'):
             self.voltage_label = Label(self.parameter_frame, text="Voltage: ")
             voltage_bar = Spinbox(
                 self.parameter_frame, from_=0, to=32, format="%.2f", increment=0.01)
@@ -66,7 +63,7 @@ class GUI:
                 self.voltage_label.pack(side=tkinter.LEFT, padx=5)
                 voltage_bar.pack(side=tkinter.LEFT)
                 voltage_button.pack(side=tkinter.LEFT, padx=5)
-        elif(self.device_type == 'electronicload'):
+        elif(self.device.type == 'electronicload'):
             self.mode_label = Label(self.parameter_frame, text="Mode: CCH")
             self.device.setMode('cch')
             if(self.first_pack):
@@ -109,13 +106,13 @@ class GUI:
 
     def updatePower(self, voltage, amperage):
         self.power_label.config(text="Power: %.3f Watts" %
-                                (voltage * amperage))
+                                (float(voltage) * float(amperage)))
 
     def updateOutput(self, state):
-        if(self.device_type == 'electronicload'):
+        if(self.device.type == 'electronicload'):
             self.updatePower(float(self.device.getVoltage()),
                              float(self.device.amperage))
-        elif(self.device_type == 'powersupply'):
+        elif(self.device.type == 'powersupply'):
             self.updatePower(self.device.voltage, self.device.amperage)
         try:
             self.device.setOutput(state)
@@ -282,16 +279,16 @@ class GUI:
                 if (type == "TD"):
                     print()
                 elif (type == "V"):
-                    if(self.device_type == 'powersupply'):
+                    if(self.device.type == 'powersupply'):
                         self.device.setVoltage(entry)
-                    elif(self.device_type == 'electronicload'):
+                    elif(self.device.type == 'electronicload'):
                         messagebox.showerror(
                             "User Error", "Voltage setting is not for Loads")
                     self.device.voltage = entry
                 elif (type == "A"):
-                    if(self.device_type == 'powersupply'):
+                    if(self.device.type == 'powersupply'):
                         self.device.setAmperage(entry)
-                    elif(self.device_type == 'electronicload'):
+                    elif(self.device.type == 'electronicload'):
                         self.device.setCurrent(entry)
                     self.device.amperage = entry
                 elif (type == "O"):
@@ -337,7 +334,7 @@ class GUI:
         except:
             messagebox.showerror("Error", "Unable to open file")
 
-        if(self.device_type == "None"):
+        if(self.device.type == "None"):
             self.deviceSelection()
         self.runAutoWindow("CSVL", self.programme_file[1:])
 
@@ -518,12 +515,12 @@ class GUI:
             max_amperage_y = float(parameters[2])
             labels[3].config(text="Current:   %s(A)" % parameters[2])
             labels[1].config(text="Length:   %s(s)" % max_x)
-            if(self.device_type == 'powersupply'):
+            if(self.device.type == 'powersupply'):
                 self.device.setVoltage(parameters[1])
                 self.device.setAmperage(parameters[2])
                 max_voltage_y = float(parameters[1])
                 labels[2].config(text="Voltage:   %s(V)" % parameters[1])
-            elif(self.device_type == 'electronicload'):
+            elif(self.device.type == 'electronicload'):
                 max_voltage_y = float(self.device.getVoltage())
                 self.device.setMode(parameters[1])
                 labels[2].config(text="Mode:   %s" % parameters[1])
@@ -534,9 +531,9 @@ class GUI:
             max_x = 0
             line_count = 0
             timestamps = []
-            if(self.device_type == 'powersupply'):
+            if(self.device.type == 'powersupply'):
                 voltages = []
-            elif(self.device_type == 'electronicload'):
+            elif(self.device.type == 'electronicload'):
                 modes = []
             amperages = []
             outputs = []
@@ -545,11 +542,11 @@ class GUI:
                 timestamps.append(line.split(',')[0])
                 amperages.append(line.split(',')[2])
                 outputs.append(line.split(',')[3])
-                if(self.device_type == 'powersupply'):
+                if(self.device.type == 'powersupply'):
                     voltages.append(line.split(',')[1])
                     if(float(line.split(',')[1]) > max_voltage_y):
                         max_voltage_y = float(line.split(',')[1])
-                elif(self.device_type == 'electronicload'):
+                elif(self.device.type == 'electronicload'):
                     modes.append(str(line.split(',')[1]))
                     max_voltage_y = float(self.device.getVoltage())
                     if(max_voltage_y < 1):
@@ -557,7 +554,7 @@ class GUI:
                 if(float(line.split(',')[2]) > max_amperage_y):
                     max_amperage_y = float(line.split(',')[2])
             labels[1].config(text="Length:   %s(s)" % max_x)
-            if(self.device_type == 'electronicload'):
+            if(self.device.type == 'electronicload'):
                 self.device.setMode(modes[0])
 
         while (time.time() <= start_time + max_x):
@@ -566,11 +563,11 @@ class GUI:
                              (time.time() - start_time))
 
             # get measured values
-            if(self.device_type == "powersupply" and self.device.name != "CSI305DB"):
+            if(self.device.type == "powersupply" and self.device.name != "CSI305DB"):
                 type_parameter = self.device.measureVoltage()
                 amperage = self.device.measureAmperage()
                 voltage = type_parameter
-            elif(self.device_type == "electronicload" and self.device.name != "CSI305DB"):
+            elif(self.device.type == "electronicload" and self.device.name != "CSI305DB"):
                 type_parameter = self.device.mode
                 amperage = self.device.getCurrent()
                 voltage = self.device.getVoltage()
@@ -578,12 +575,12 @@ class GUI:
             if(loop_type == "CSVL" and time.time() >= last_read_time + wait_time):
                 last_read_time = time.time()
                 wait_time = float(timestamps[line_count])
-                if (self.device_type == "powersupply"):
+                if (self.device.type == "powersupply"):
                     self.device.setVoltage(voltages[line_count])
                     self.device.setAmperage(amperages[line_count])
                     labels[2].config(text="Voltage:   %s(V)" %
                                      voltages[line_count])
-                elif (self.device_type == "electronicload"):
+                elif (self.device.type == "electronicload"):
                     self.device.setMode(modes[line_count])
                     self.device.setCurrent(amperages[line_count])
                     labels[2].config(text="Mode:   %s" %
@@ -612,7 +609,7 @@ class GUI:
         self.threads.pop()
 
     def promptSingleLoop(self):
-        if(self.device_type == "None"):
+        if(self.device.type == "None"):
             self.deviceSelection()
 
         # pop-up window
@@ -623,7 +620,7 @@ class GUI:
 
         # Display Type of Device
         device_type_label = Label(
-            self.window_levels[0], text="Device Type: %s" % (self.device_type))
+            self.window_levels[0], text="Device Type: %s" % (self.device.type))
         device_type_label.pack(pady=5)
 
         # Enter Length of Time
@@ -632,9 +629,9 @@ class GUI:
         timelength_entry.focus_set()
 
         # Enter usage variable
-        if (self.device_type == "powersupply"):
+        if (self.device.type == "powersupply"):
             usage_entry = self.createEntryBar(self.window_levels[0], "Voltage")
-        elif (self.device_type == "electronicload"):
+        elif (self.device.type == "electronicload"):
             usage_entry = self.createSpinBox(self.window_levels[0], "Mode")
         else:
             usage_entry = self.createEntryBar(self.window_levels[0], "Unknown")
@@ -663,35 +660,33 @@ class GUI:
         return entry
 
     def deviceSelection(self):
-        if(self.device_type != "None"):
-            self.device.quit()
-
         try:
-            self.device = electronicload.ELECTRONICLOAD()
-            self.device = self.device.electronicload
-            self.device_type = "electronicload"
-            messagebox.showinfo("Electronic Load",
-                                "Device Detected: %s" % self.device.name)
+            self.device.quit()
         except:
             try:
-                self.device = powersupply.POWERSUPPLY()
-                self.device = self.device.powersupply
-                self.device_type = "powersupply"
-                messagebox.showinfo("Power Supply",
+                self.device = electronicload.BUS_INIT().device
+                self.device.type = "electronicload"
+                messagebox.showinfo("Electronic Load",
                                     "Device Detected: %s" % self.device.name)
-                if (self.device.name == "CSI305DB"):
-                    self.addThread(self.device.control)
-
             except:
-                messagebox.showerror(
-                    "Error",
-                    "Sorry, no devices were automatically found")
+                try:
+                    self.device = powersupply.BUS_INIT().device
+                    self.device.type = "powersupply"
+                    messagebox.showinfo("Power Supply",
+                                        "Device Detected: %s" % self.device.name)
+                    if (self.device.name == "CSI305DB"):
+                        self.addThread(self.device.control)
+
+                except:
+                    messagebox.showerror(
+                        "Error",
+                        "Sorry, no devices were automatically found")
 
         self.runThreads()
         self.drawManualControls()
 
     def setDevice(self, device_name):
-        self.device_type = "powersupply"
+        self.device.type = "powersupply"
         self.device = powersupply.POWERSUPPLY(device_name.upper())
         self.destroyWindowLevel(0)
 
@@ -751,7 +746,6 @@ class GUI:
         self.voltage = 0
         self.amperage = 0
         self.output = 0
-        self.device_type = "None"
         self.threads = []
         self.window_levels = []
         self.stop_loop = False

@@ -14,6 +14,7 @@ class GENERIC_SCPI:
         # Connection to port
         self.inst = visa_instance
         self.name = "Generic SCPI"
+        self.type = "electronicload"
         self.inst.write("SYST:REM")
         self.channels = 1
         self.amperage = 0.0

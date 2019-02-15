@@ -14,7 +14,11 @@ class PPS2116A:
     def __init__(self, com_device):
         self.com_device = com_device
         self.name = "PPS2116A"
+        self.type = "powersupply"
         self.channels = 1
+        self.setVoltage("0")
+        self.setAmperage("0")
+        self.setOutput(0)
 
     def getChannels(self):
         return self.channels

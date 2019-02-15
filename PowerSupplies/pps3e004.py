@@ -14,7 +14,11 @@ class PPS3E004:
     def __init__(self, com_device):
         self.com_device = com_device
         self.name = "PPS3E004"
+        self.type = "powersupply"
         self.channels = 1
+        self.setVoltage("0")
+        self.setAmperage("0")
+        self.setOutput(0)
 
     def setVoltage(self, voltage):
         self.voltage = voltage

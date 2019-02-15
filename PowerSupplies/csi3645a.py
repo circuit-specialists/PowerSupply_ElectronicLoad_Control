@@ -14,7 +14,14 @@ class CSI3645A:
     def __init__(self, address, com_device):
         self.com_device = com_device
         self.name = "CSI3645A"
+        self.type = "powersupply"
         self.channels = 1
+        self.initialize()
+        self.setVoltage("0")
+        self.setAmperage("0")
+        self.setOutput(0)
+
+    def setVariables(self):
         self.frame_start = 0xAA
         self.address = address
         self.command = 0
@@ -32,9 +39,9 @@ class CSI3645A:
         self.h1_voltage = 0
         self.new_address = self.address
         self.system_resv = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        self.initialize()
 
     def initialize(self):
+        self.setVariables()
         self.command = 0x82
         self.l_current = 0x02
         self.writeFunction()

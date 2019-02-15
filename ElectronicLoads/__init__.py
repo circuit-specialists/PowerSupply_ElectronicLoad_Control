@@ -11,9 +11,12 @@ To add electronic load, simply add the object class python script for the electr
 Electronic Loads subdirectory following the same structure of other files, then add the import
 and constructor to this file as seen below
 """
+from ElectronicLoads import array3720a
+from ElectronicLoads import array3721a
+from ElectronicLoads import generic_scpi
 
 
-class ELECTRONICLOAD:
+class BUS_INIT:
     def __init__(self):
         self.rm = visa.ResourceManager()
         self.threads = []
@@ -26,7 +29,7 @@ class ELECTRONICLOAD:
                 self.idn = self.inst.query("*IDN?")
                 break
             except:
-                pass
+                self.inst.close()
 
         self.inst.timeout = 500
         try:
@@ -34,15 +37,13 @@ class ELECTRONICLOAD:
                 self.idn).split(',')[1]
             self.com_port = "COM" + str(self.inst.interface_number)
         except:
+            self.inst.close()
             raise ValueError('No Electronic loads found')
 
         if (self.name == "ARRAY3720A"):
-            import array3720a
-            self.electronicload = array3720a.ARRAY3720A(self.inst)
+            self.device = array3720a.ARRAY3720A(self.inst)
         elif (self.name == "ARRAY3721A"):
-            import array3721a
-            self.electronicload = array3721a.ARRAY3721A(self.inst)
+            self.device = array3721a.ARRAY3721A(self.inst)
         elif (self.name != None or self.name != ""):
-            import generic_scpi
             print(self.name)
-            self.electronicload = generic_scpi.GENERIC_SCPI(self.inst)
+            self.device = generic_scpi.GENERIC_SCPI(self.inst)

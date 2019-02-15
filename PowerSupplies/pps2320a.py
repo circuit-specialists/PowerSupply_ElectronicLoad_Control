@@ -14,10 +14,14 @@ class PPS2320A:
     def __init__(self, com_device):
         self.com_device = com_device
         self.name = "PPS2320A"
+        self.type = "powersupply"
         self.channels = 2
         self.com_device.write('o2\n'.encode())
         time.sleep(.02)
         self.com_device.read_all()
+        self.setVoltage("0")
+        self.setAmperage("0")
+        self.setOutput(0)
 
     def setVoltage(self, voltage, channel):
         self.voltage = voltage

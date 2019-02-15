@@ -14,6 +14,7 @@ class ARRAY3720A:
         # Connection to port
         self.inst = visa_instance
         self.name = "Array3720A"
+        self.type = "electronicload"
         self.inst.write("SYST:REM")
         self.channels = 1
         self.amperage = 0.0

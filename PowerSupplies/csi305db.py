@@ -14,10 +14,12 @@ class CSI305DB:
     def __init__(self, com_device):
         self.com_device = com_device
         self.name = "CSI305DB"
+        self.type = "powersupply"
         self.channels = 1
         self.output_key = 'NY'
         self.setVoltage("0")
         self.setAmperage("0")
+        self.setOutput(0)
 
     def setVoltage(self, voltage):
         self.voltage = voltage

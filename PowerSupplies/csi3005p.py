@@ -14,10 +14,12 @@ class CSI3005P:
         # Connection to port
         self.inst = visa_instance
         self.name = "CSI3005P"
+        self.type = "powersupply"
         self.inst.write("SYST:REM")
         self.channels = 1
-        self.amperage = 0.0
-        self.voltage = 0.0
+        self.setVoltage("0")
+        self.setAmperage("0")
+        self.setOutput(0)
 
     def getID(self):
         return self.inst.query("*IDN?\n")[-1]
