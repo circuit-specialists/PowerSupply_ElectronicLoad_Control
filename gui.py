@@ -32,7 +32,7 @@ class GUI:
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
-        self.icon = CircuitIcon.ICON().data
+        self.icon = CircuitIcon.IMG().data
         self.bottom.tk.call('wm', 'iconphoto', self.bottom._w,
                             tkinter.Image("photo", data=self.icon))
         self.bottom.title('Circuit Specialists Power Control')
