@@ -17,6 +17,9 @@ One script to rule them all, one script to find the device, and one script to bi
 * Control Device specific functions
 * GUI graph for Voltage, Amperage, Power
 
+## In Development
+* Walkthrough to create a csv file with neccesary fields
+
 ## Documentation
 **_Install Instructions_**
 ### Windows Executable
