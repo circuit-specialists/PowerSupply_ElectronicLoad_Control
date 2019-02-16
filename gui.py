@@ -1,7 +1,7 @@
 #!/usr/bin/python
 import ElectronicLoads as electronicload
 import PowerSupplies as powersupply
-import CircuitIcon
+import lib
 """
 written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
@@ -29,9 +29,13 @@ class GUI:
         self.variable_init()
         self.help_url = "https://circuit-specialists.github.io/PowerSupply_ElectronicLoad_Control/"
         self.bottom = tkinter.Tk(className=' cs power control')
-        self.icon = CircuitIcon.IMG().data
+        self.libs = lib.RESOURCES()
         self.bottom.tk.call('wm', 'iconphoto', self.bottom._w,
-                            tkinter.Image("photo", data=self.icon))
+                            tkinter.Image("photo", data=self.libs.gif_icon))
+        if(sys.platform == 'win32'):
+            self.bottom.iconbitmap(self.libs.win_icon)
+        else:
+            self.bottom.iconbitmap(self.libs.unix_icon)
         self.bottom.title('Circuit Specialists Power Control')
         self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()
@@ -294,7 +298,7 @@ class GUI:
                 elif (type == "O"):
                     self.device.setOutput(entry)
                     self.device.output = entry
-                elif (type == 'ccsv'):
+                elif (type == 'CCSV'):
                     print()
                 elif (type == "ELM"):
                     self.device.setMode(entry)
@@ -368,8 +372,8 @@ class GUI:
 
     def createCSVFile(self):
         self.createTopWindow(400, 400, "Create Run CSV")
-        entry_type = "ccsv"
-        fields = self.createEntryBar(self.window_levels[0], "something")
+        entry_type = "CCSV"
+        fields = self.createEntryBar(self.window_levels[0], entry_type)
 
         Button(
             self.window_levels[0],
@@ -395,7 +399,7 @@ class GUI:
         top.title(title)
         top.protocol("WM_DELETE_WINDOW", lambda: self.destroyWindow(top))
         top.tk.call('wm', 'iconphoto', top._w,
-                    tkinter.Image("photo", data=self.icon))
+                    tkinter.Image("photo", data=self.libs.gif_icon))
         self.window_levels.append(top)
 
     def destroyWindow(self, window):

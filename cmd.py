@@ -6,9 +6,9 @@ licensed as GPLv3
 
 import time
 import threading
-import keyboard
 import sys
 import os
+from lib import keyboard
 
 # Path to CSV Files
 sys.path.insert(0, './Example CSV')

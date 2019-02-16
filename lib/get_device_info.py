@@ -15,7 +15,7 @@ import PowerSupplies as powersupply
 
 
 class SCPI_ID:
-    def __init__(self, device_type):
+    def __init__(self):
         if(device_type == 'electronicload'):
             # find all devices defined
             self.files = []
