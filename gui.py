@@ -369,7 +369,7 @@ class GUI:
     def createCSVFile(self):
         self.createTopWindow(400, 400, "Create Run CSV")
         entry_type = "ccsv"
-        fields = self.createEntryBar(self.window_levels[0])
+        fields = self.createEntryBar(self.window_levels[0], "something")
 
         Button(
             self.window_levels[0],
@@ -686,8 +686,7 @@ class GUI:
         self.drawManualControls()
 
     def setDevice(self, device_name):
-        self.device.type = "powersupply"
-        self.device = powersupply.POWERSUPPLY(device_name.upper())
+        self.device = powersupply.BUS_INIT(device_name.upper()).device
         self.destroyWindowLevel(0)
 
         self.runThreads()
