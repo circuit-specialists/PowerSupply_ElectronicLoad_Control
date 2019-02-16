@@ -33,7 +33,7 @@ You first need to have python installed. If you don't, [download](https://www.py
 * There are two modes. 
     * The GUI version is currenttly in beta.
         * To run the GUI version, run `python gui.py`.
-    * The command line version is stable.
+    * The command line version is stable, but only runs on USB devices.
         * To run the command line version, run `python cmd.py`.
 
 ###### GUI Help

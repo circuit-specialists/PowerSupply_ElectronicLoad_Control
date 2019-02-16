@@ -14,10 +14,8 @@ import os
 sys.path.insert(0, './Example CSV')
 
 # Path to devices
-sys.path.insert(0, './Power Supplies')
-sys.path.insert(0, './Electronic Loads')
-import powersupply
-import electronicload
+import ElectronicLoads as electronicload
+import PowerSupplies as powersupply
 
 
 class CMD:
@@ -38,7 +36,7 @@ class CMD:
         self.keys = keyboard.KEYBOARD()
         self.addThread(self.keys.inputHandler)
         if (self.run_type == 'a'):
-            if (self.device_type == 'electronicload'):
+            if (self.device.type == 'electronicload'):
                 self.setLogFile('electronicload_log')
             self.loadCSVFile()
             self.run_log = True
@@ -50,9 +48,6 @@ class CMD:
             self.addThread(self.runManual)
         else:
             self.quit()
-
-        if (self.device.name == "CSI305DB"):
-            self.addThread(self.device.control)
 
         self.runThreads()
 
@@ -71,14 +66,10 @@ class CMD:
 
     def getDevice(self):
         try:
-            self.device = electronicload.ELECTRONICLOAD()
-            self.device = self.device.electronicload
-            self.device_type = "electronicload"
+            self.device = electronicload.BUS_INIT().device
         except:
             try:
-                self.device = powersupply.POWERSUPPLY()
-                self.device = self.device.powersupply
-                self.device_type = "powersupply"
+                self.device = powersupply.BUS_INIT().device
             except:
                 print("No Supported Devices connected to computer bus")
                 sys.exit()
@@ -129,12 +120,12 @@ class CMD:
                     self.device.setAmperage(line.split(',')[2], line)
                     self.device.setOutput(int(line.split(',')[3]), line)
                 else:
-                    if (self.device_type == "powersupply"):
+                    if (self.device.type == "powersupply"):
                         self.device.setVoltage(line.split(',')[1])
                         self.device.setAmperage(line.split(',')[2])
                         self.device.setOutput(int(line.split(',')[3]))
                         time.sleep(float(line.split(',')[0]))
-                    elif (self.device_type == "electronicload"):
+                    elif (self.device.type == "electronicload"):
                         self.device.setMode(line.split(',')[1])
                         self.device.setCurrent(line.split(',')[2])
                         self.device.setOutput(int(line.split(',')[3]))
@@ -201,7 +192,7 @@ class CMD:
 
         self.run_time = self.getLength(prompt)
 
-        if (self.device_type == "powersupply"):
+        if (self.device.type == "powersupply"):
             self.getVoltage(prompt)
             print('Voltage: %s' % self.device.voltage)
 
@@ -221,9 +212,9 @@ class CMD:
     def getCurrent(self, prompt):
         if (prompt):
             print("Input Amps in Amps.milliAmps")
-        if (self.device_type == "powersupply"):
+        if (self.device.type == "powersupply"):
             self.device.setAmperage(self.getInput())
-        elif (self.device_type == "electronicload"):
+        elif (self.device.type == "electronicload"):
             self.device.setCurrent = self.getInput()
 
     def flipOutput(self):
@@ -255,10 +246,9 @@ class CMD:
         self.dev_Device(device_name)
 
     def dev_Device(self, device):
-        self.device = powersupply.POWERSUPPLY(device.upper())
-        #self.device.powersupply.command = 0x80
-        self.device.powersupply.turnON()
-        self.device.powersupply.quit()
+        self.device = powersupply.BUS_INIT(device.upper()).device
+        self.device.turnON()
+        self.device.quit()
 
 if __name__ == "__main__":
     cmd = CMD()
