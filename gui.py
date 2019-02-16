@@ -32,10 +32,6 @@ class GUI:
         self.libs = lib.RESOURCES()
         self.bottom.tk.call('wm', 'iconphoto', self.bottom._w,
                             tkinter.Image("photo", data=self.libs.gif_icon))
-        if(sys.platform == 'win32'):
-            self.bottom.iconbitmap(self.libs.win_icon)
-        else:
-            self.bottom.iconbitmap(self.libs.unix_icon)
         self.bottom.title('Circuit Specialists Power Control')
         self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()
