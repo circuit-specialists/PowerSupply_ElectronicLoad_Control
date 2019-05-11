@@ -1,4 +1,10 @@
 #!/usr/bin/python
+from PowerSupplies import pps2320a
+from PowerSupplies import pps2116a
+from PowerSupplies import pps3e004
+from PowerSupplies import csi3645a
+from PowerSupplies import csi3005p
+from PowerSupplies import csi305db
 """
 written by Jake Pring from CircuitSpecialists.com
 licensed as GPLv3
@@ -13,12 +19,7 @@ To add powersupply, simply add the object class python script for the power supp
 Power Supplies subdirectory following the same structure of other files, then add the import
 and constructor to this file as seen below
 """
-from PowerSupplies import csi305db
-from PowerSupplies import csi3005p
-from PowerSupplies import csi3645a
-from PowerSupplies import pps3e004
-from PowerSupplies import pps2116a
-from PowerSupplies import pps2320a
+
 
 class BUS_INIT:
     def __init__(self, device_name=None):
@@ -56,29 +57,40 @@ class BUS_INIT:
             raise ValueError()
 
     def setDevice(self, device_name, device):
+        com_device = serial.Serial(
+            port=device,
+            baudrate=9600,
+            timeout=500,
+            parity=serial.PARITY_EVEN,
+            rtscts=0)
         if(device_name.upper() == 'CSI305DB'):
             try:
-                com_device = serial.Serial(
-                    port=device,
-                    baudrate=9600,
-                    timeout=500,
-                    parity=serial.PARITY_EVEN,
-                    rtscts=0)
                 self.device = csi305db.CSI305DB(com_device)
             except:
-                print(p)
+                print("Failed %s:%s" % device_name, device)
         elif(device_name.upper() == 'CSI3645A'):
             address = 1
+            com_device.baudrate = 38400
             try:
-                com_device = serial.Serial(
-                    port=device,
-                    baudrate=38400,
-                    timeout=500,
-                    parity=serial.PARITY_EVEN,
-                    rtscts=0)
                 self.device = csi3645a.CSI3645A(address, com_device)
             except:
-                print(p)
+                print("Failed %s:%s" % device_name, device)
+        elif(device_name.upper() == 'PPS2116A'):
+            try:
+                self.device = pps2116a.PPS2116A(com_device)
+            except:
+                print("Failed %s:%s" % device_name, device)
+        elif(device_name.upper() == 'PPS2320A'):
+            try:
+                self.device = pps2320a.PPS2320A(com_device)
+            except:
+                print("Failed %s:%s" % device_name, device)
+        elif(device_name.upper() == 'PPS3E004'):
+            com_device.baudrate = 38400
+            try:
+                self.device = pps3e004.PPS3E004(com_device)
+            except:
+                print("Failed %s:%s" % device_name, device)
 
     def write(self, com_device, bytes):
         com_device.write(bytes.encode())

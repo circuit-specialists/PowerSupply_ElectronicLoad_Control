@@ -19,55 +19,45 @@ class PPS2320A:
         self.com_device.write('o2\n'.encode())
         time.sleep(.02)
         self.com_device.read_all()
-        self.setVoltage("0")
-        self.setAmperage("0")
+        self.setVoltage("00.00", 1)
+        self.setVoltage("00.00", 2)
+        self.setAmperage("0.000", 1)
+        self.setVoltage("00.00", 2)
         self.setOutput(0)
 
     def setVoltage(self, voltage, channel):
         self.voltage = voltage
         if("." in voltage):
-            try:
-                self.volts = int(voltage.split('.')[0])
-            except:
-                self.volts = 0
-            try:
-                self.hectoVolts = int(voltage.split('.')[1])
-            except:
-                self.hectoVolts = 0
+            self.volts = voltage.split('.')[0]
+            self.hectoVolts = voltage.split('.')[1]
         else:
-            self.volts = int(voltage)
+            self.volts = voltage
             self.hectoVolts = 0
 
         if(channel == 2):
             self.key = 'sa'
         else:
             self.key = 'su'
-        self.key += '{:02}'.format(self.volts)
-        self.key += '{:<02}'.format(self.hectoVolts)
+        self.key += '%02d' % int(self.volts)
+        self.key += '%02d' % int(self.hectoVolts)
         self.key += "\n"
         self.writeFunction()
 
     def setAmperage(self, amperage, channel):
         self.amperage = amperage
         if("." in amperage):
-            try:
-                self.amps = int(amperage.split('.')[0])
-            except:
-                self.amps = 0
-            try:
-                self.milliamps = int(amperage.split('.')[1])
-            except:
-                self.milliamps = 0
+            self.amps = amperage.split('.')[0]
+            self.milliAmps = amperage.split('.')[1]
         else:
-            self.amps = int(amperage)
-            self.milliamps = 0
+            self.amps = amperage
+            self.milliAmps = 0
 
         if(channel == 2):
             self.key = 'sd'
         else:
             self.key = 'si'
-        self.key += '{:01}'.format(self.amps)
-        self.key += '{:<03}'.format(self.milliAmps)
+        self.key += '%01d' % int(self.amps)
+        self.key += '%03d' % int(self.milliAmps)
         self.key += "\n"
         self.writeFunction()
 

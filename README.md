@@ -10,15 +10,16 @@ One script to rule them all, one script to find the device, and one script to bi
 
 ## Features
 
-* Autofinding Devices on COM bus
 * Run from GUI or command line (GUI currently in beta)
 * Manual Voltage and Amperage control
 * Run predefined csv files with timing and power specs
 * Control Device specific functions
 * GUI graph for Voltage, Amperage, Power
+* Video Streamer View with Volts and Amps
 
 ## In Development
 * Walkthrough to create a csv file with neccesary fields
+* Autofinding Devices on COM bus
 
 ## Documentation
 **_Install Instructions_**

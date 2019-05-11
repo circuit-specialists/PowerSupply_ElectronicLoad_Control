@@ -23,41 +23,29 @@ class PPS3E004:
     def setVoltage(self, voltage):
         self.voltage = voltage
         if("." in voltage):
-            try:
-                self.volts = int(voltage.split('.')[0])
-            except:
-                self.volts = 0
-            try:
-                self.hectoVolts = int(voltage.split('.')[1])
-            except:
-                self.hectoVolts = 0
+            self.volts = voltage.split('.')[0]
+            self.hectoVolts = voltage.split('.')[1]
         else:
-            self.volts = int(voltage)
+            self.volts = voltage
             self.hectoVolts = 0
 
         self.key = 'su'
-        self.key += '{:04}'.format(self.volts)
-        self.key += '{:01}'.format(self.hectoVolts)
+        self.key += '%04d' % int(self.volts)
+        self.key += '%01d' % int(self.hectoVolts)
         self.key += "\n"
         self.writeFunction()
 
     def setAmperage(self, amperage):
         self.amperage = amperage
         if("." in amperage):
-            try:
-                self.amps = int(amperage.split('.')[0])
-            except:
-                self.amps = 0
-            try:
-                self.milliamps = int(amperage.split('.')[1])
-            except:
-                self.milliamps = 0
+            self.amps = amperage.split('.')[0]
+            self.milliAmps = amperage.split('.')[1]
         else:
-            self.amps = int(amperage)
-            self.milliamps = 0
+            self.amps = amperage
+            self.milliAmps = 0
 
         self.key = 'si'
-        self.key += '0' + '{:<04}'.format(self.milliAmps)
+        self.key += '%04d' % int(self.milliAmps)
         self.key += "\n"
         self.writeFunction()
 

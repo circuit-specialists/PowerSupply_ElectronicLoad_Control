@@ -16,8 +16,8 @@ class PPS2116A:
         self.name = "PPS2116A"
         self.type = "powersupply"
         self.channels = 1
-        self.setVoltage("0")
-        self.setAmperage("0")
+        self.setVoltage("00.00")
+        self.setAmperage("0.000")
         self.setOutput(0)
 
     def getChannels(self):
@@ -26,42 +26,30 @@ class PPS2116A:
     def setVoltage(self, voltage):
         self.voltage = voltage
         if("." in voltage):
-            try:
-                self.volts = int(voltage.split('.')[0])
-            except:
-                self.volts = 0
-            try:
-                self.hectoVolts = int(voltage.split('.')[1])
-            except:
-                self.hectoVolts = 0
+            self.volts = voltage.split('.')[0]
+            self.hectoVolts = voltage.split('.')[1]
         else:
-            self.volts = int(voltage)
+            self.volts = voltage
             self.hectoVolts = 0
 
         self.key = 'su'
-        self.key += '{:02}'.format(self.volts)
-        self.key += '{:<02}'.format(self.hectoVolts)
+        self.key += '%02d' % int(self.volts)
+        self.key += '%02d' % int(self.hectoVolts)
         self.key += "\n"
         self.writeFunction()
 
     def setAmperage(self, amperage):
         self.amperage = amperage
         if("." in amperage):
-            try:
-                self.amps = int(amperage.split('.')[0])
-            except:
-                self.amps = 0
-            try:
-                self.milliAmps = int(amperage.split('.')[1])
-            except:
-                self.milliAmps = 0
+            self.amps = amperage.split('.')[0]
+            self.milliAmps = amperage.split('.')[1]
         else:
-            self.amps = int(amperage)
+            self.amps = amperage
             self.milliAmps = 0
 
         self.key = 'si'
-        self.key += '{:01}'.format(self.amps)
-        self.key += '{:<03}'.format(self.milliAmps)
+        self.key += '%01d' % int(self.amps)
+        self.key += '%03d' % int(self.milliAmps)
         self.key += "\n"
         self.writeFunction()
 

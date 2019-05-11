@@ -23,6 +23,7 @@ else:  # python 2
     import tkMessageBox as messagebox
     from Tkinter import Menu, Toplevel, Button, Entry, Label, Canvas, Spinbox, Frame
 
+
 class GUI:
     def __init__(self):
         self.version = "beta"
@@ -72,7 +73,7 @@ class GUI:
         # Amperage Controls
         self.current_label = Label(self.current_frame, text="Amperage: ")
         current_bar = Spinbox(
-            self.current_frame, from_=0, to=5.2, format="%.3f", increment=0.01)
+            self.current_frame, from_=0, to=5.2, format="%.3f", increment=0.001)
         current_button = Button(
             self.current_frame,
             text="Set Amps",
@@ -161,6 +162,7 @@ class GUI:
         self.menubar = Menu(self.bottom)
         self.setFileMenu()
         self.setEditMenu()
+        self.setViewMenu()
         self.setHelpMenu()
         self.bottom.config(menu=self.menubar)
 
@@ -178,7 +180,7 @@ class GUI:
 
     def setEditMenu(self):
         editmenu = Menu(self.menubar, tearoff=0)
-        editmenu.add_command(label="Find Device", command=self.deviceSelection)
+        editmenu.add_command(label="Auto Find", command=self.deviceSelection)
         editmenu.add_command(label="Select Device",
                              command=self.manualDeviceSelect)
         editmenu.add_separator()
@@ -193,6 +195,12 @@ class GUI:
             label="Mode",
             command=lambda: self.entryWindow("Electronic Load Mode"))
         self.menubar.add_cascade(label="Edit", menu=editmenu)
+
+    def setViewMenu(self):
+        viewmenu = Menu(self.menubar, tearoff=0)
+        viewmenu.add_command(label="Streamer View",
+                             command=lambda: self.streamerView())
+        self.menubar.add_cascade(label="View", menu=viewmenu)
 
     def setHelpMenu(self):
         helpmenu = Menu(self.menubar, tearoff=0)
@@ -254,6 +262,7 @@ class GUI:
             self.window_levels[0].destroy()
         except:
             entry = object.get()
+        print(entry)
 
         # set entry to variables
         try:
@@ -307,12 +316,6 @@ class GUI:
                 self.device.name
         except:
             messagebox.showerror("Error", "Device Not Connected")
-
-        # if prompt window open, close it
-        try:
-            self.destroyWindowLevel(0)
-        except:
-            self.destroyWindowLevel(1)
 
     def convertFileToList(self, csv_file):
         self.total_time = 0
@@ -401,7 +404,7 @@ class GUI:
     def destroyWindow(self, window):
         window.destroy()
         self.window_levels.remove(window)
-        self.stop_loop = False
+        self.stop_loop = True
 
     def destroyWindowLevel(self, level_number):
         try:
@@ -411,14 +414,12 @@ class GUI:
             pass
 
     def drawReticules(self, window_object):
-        self.canvas_width = int(self.window_width / 2)
+        print(window_object)
+        self.canvas_width = int(self.window_height / 2)
         self.canvas_height = int(self.window_height / 2)
         self.canvas = Canvas(
             window_object, width=self.canvas_width, height=self.canvas_height)
         self.canvas.pack()
-        # w.coords(i, new_xy) # change coordinates
-        # w.itemconfig(i, fill="blue") # change color
-        # (x1,y1,x2,y2)
         graph_x1 = 0
         graph_y1 = 0
         graph_x2 = int(self.canvas_width)
@@ -459,7 +460,6 @@ class GUI:
     def runAutoWindow(self, loop_type, parameters):
         # pop-up window
         self.createTopWindow(500, 400, "Running Mode")
-
         top_window = len(self.window_levels) - 1
         north_frame = Frame(self.window_levels[top_window])
         north_frame.pack(anchor="n", pady=30, padx=20)
@@ -483,14 +483,13 @@ class GUI:
 
         control_frame = Frame(south_frame)
         control_frame.pack()
-        start_button = Button(
-            control_frame, text="Start", command=lambda: self.runThreadedLoop(loop_type, parameters, labels=[elapsed_label, length_label, voltage_label, amperage_label]))
+        start_button = Button(control_frame, text="Start", command=lambda: self.runThreadedLoop(
+            loop_type, parameters, labels=[elapsed_label, length_label, voltage_label, amperage_label]))
         start_button.pack(side=tkinter.LEFT, padx=5)
-        stop_button = Button(
-            control_frame, text="Stop", command=self.stopLoop)
+        stop_button = Button(control_frame, text="Stop", command=self.stopLoop)
         stop_button.pack(side=tkinter.LEFT)
-        save_button = Button(
-            control_frame, text="Save", command=self.save_AS_CSVFile)
+        save_button = Button(control_frame, text="Save",
+                             command=self.save_AS_CSVFile)
         save_button.pack(side=tkinter.LEFT, padx=5)
 
     def stopLoop(self):
@@ -686,11 +685,53 @@ class GUI:
         self.drawManualControls()
 
     def setDevice(self, device_name):
-        self.device = powersupply.BUS_INIT(device_name.upper()).device
+        self.device = powersupply.BUS_INIT(device_name).device
         self.destroyWindowLevel(0)
 
         self.runThreads()
         self.drawManualControls()
+
+    def streamerView(self):
+        self.createTopWindow(400, 148, "CircuitSpecialists.com Streamer View")
+        top_window = len(self.window_levels) - 1
+
+        # Frame holders
+        volts_frame = Frame(self.window_levels[top_window])
+        volts_frame.pack(side=tkinter.LEFT, pady=5, padx=10)
+        amps_frame = Frame(self.window_levels[top_window])
+        amps_frame.pack(side=tkinter.LEFT, pady=5, padx=10)
+
+        section_width = 0
+        section_height = 100
+        Volts_label = Label(volts_frame, text="Voltage")
+        Volts_label.pack(pady=5)
+        Amps_label = Label(amps_frame, text="Amperage")
+        Amps_label.pack(pady=5)
+        self.volts_digits = Label(volts_frame, text="00.00", width=section_width, height=section_height, bg="black", fg="green")
+        self.volts_digits.config(font=("verdana", 44))
+        self.volts_digits.pack(pady=5)
+        self.amps_digits = Label(amps_frame, text="00.00", width=section_width, height=section_height, bg="black", fg="green")
+        self.amps_digits.config(font=("verdana", 44))
+        self.amps_digits.pack(pady=5)
+
+        self.addThread(lambda: self.updateDigitDisplay())
+        self.runThreads()
+
+    def updateDigitDisplay(self):
+        try:
+            if(self.device is not None):
+                self.stop_loop = False
+                while not self.stop_loop:
+                    try:
+                        self.volts_digits.config(text="%.2fV" % (self.device.measureVoltage()))
+                        self.amps_digits.config(text="%.2fV" % (self.device.measureCurrent()))
+                    except:
+                        pass
+
+                self.device.setOutput(0)
+                self.threads.pop()
+        except:
+            messagebox.showinfo("Error", "No Device Selected")
 
     def manualDeviceSelect(self):
         self.createTopWindow(250, 146, "Manual Device Select")
@@ -702,7 +743,7 @@ class GUI:
 
         label = Label(north_frame, text="Device Select")
         label.pack(pady=5)
-        entry = Spinbox(north_frame, values=("CSI305DB", "CSI3645A"))
+        entry = Spinbox(north_frame, values=(self.power_supplies))
         entry.pack(pady=5)
 
         control_frame = Frame(south_frame)
@@ -750,6 +791,19 @@ class GUI:
         self.stop_loop = False
         self.stop_loop = False
         self.first_pack = True
+
+        import os
+        # Get all current Power Supplies
+        self.power_supplies = []
+        for file in os.listdir("PowerSupplies"):
+            if(file.endswith(".py") and file != '__init__.py'):
+                self.power_supplies.append(file.split('.')[0].upper())
+
+        # Get all current Electronic Loads
+        self.electronic_loads = []
+        for file in os.listdir("ElectronicLoads"):
+            if(file.endswith(".py") and file != '__init__.py' and file != 'generic_scpi.py'):
+                self.electronic_loads.append(file.split('.')[0].upper())
 
 
 if __name__ == "__main__":
