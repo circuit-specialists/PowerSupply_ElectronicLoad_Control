@@ -36,18 +36,18 @@ class GUI:
         self.bottom.title('Circuit Specialists Power Control')
         self.setWindowSize(self.bottom, 700, 500)
         self.setMenuBar()
-        self.drawManualFrames()
+        self.drawMainFrame()
 
-    def drawManualFrames(self):
-        self.manual_control_frame = Frame(self.bottom)
-        self.manual_control_frame.pack(anchor="c")
-        self.parameter_frame = Frame(self.manual_control_frame)
+    def drawMainFrame(self):
+        self.main_frame = Frame(self.bottom)
+        self.main_frame.pack(anchor="c")
+        self.parameter_frame = Frame(self.main_frame)
         self.parameter_frame.pack()
-        self.current_frame = Frame(self.manual_control_frame)
+        self.current_frame = Frame(self.main_frame)
         self.current_frame.pack()
-        self.power_label = Label(self.manual_control_frame)
+        self.power_label = Label(self.main_frame)
         self.power_label.pack()
-        self.output_frame = Frame(self.manual_control_frame)
+        self.output_frame = Frame(self.main_frame)
         self.output_frame.pack()
 
     def drawManualControls(self):
@@ -180,7 +180,7 @@ class GUI:
 
     def setEditMenu(self):
         editmenu = Menu(self.menubar, tearoff=0)
-        editmenu.add_command(label="Auto Find", command=self.deviceSelection)
+        editmenu.add_command(label="Auto Detect", command=self.deviceSelection)
         editmenu.add_command(label="Select Device",
                              command=self.manualDeviceSelect)
         editmenu.add_separator()
@@ -193,7 +193,7 @@ class GUI:
         editmenu.add_separator()
         editmenu.add_command(
             label="Mode",
-            command=lambda: self.entryWindow("Electronic Load Mode"))
+            command=self.createLoadEntryWindow)
         self.menubar.add_cascade(label="Edit", menu=editmenu)
 
     def setViewMenu(self):
@@ -212,44 +212,45 @@ class GUI:
     def donothing(self):
         self.null = None
 
-    def setOutput(self):
-        self.device.setOutput(
-            messagebox.askyesno(
-                title="Output State", message="Turn On Output?"))
+    def getWindowLevel(self, window_title):
+        for window in self.window_levels:
+            if(window_title == window.title()):
+                return window
 
-    def entryWindow(self, parameter):
+    def createLoadEntryWindow(self):
         # pop-up window
-        self.createTopWindow(250, 80, parameter)
+        window = self.createTopWindow(250, 80, "Electronic Load Mode")
+        parameter = "Electronic Load Mode"
 
         # window parameters
         if (parameter == "Time Delay"):
-            Label(self.window_levels[0], text="Input Time Delay").pack()
+            Label(window, text="Input Time Delay").pack()
             entry_type = "TD"
         elif (parameter == "Voltage"):
-            Label(self.window_levels[0], text="Input Voltage Value").pack()
+            Label(window, text="Input Voltage Value").pack()
             entry_type = "V"
         elif (parameter == "Current"):
-            Label(self.window_levels[0], text="Input Current Value").pack()
+            Label(window, text="Input Current Value").pack()
             entry_type = "A"
         elif (parameter == "Electronic Load Mode"):
             entry_type = "ELM"
         elif (parameter == "Resistance"):
-            Label(self.window_levels[0], text="Input Resistance Value").pack()
+            Label(window, text="Input Resistance Value").pack()
             entry_type = "R"
 
         # window function
         if (entry_type != "ELM"):
-            entry_dialog = Entry(self.window_levels[0])
+            entry_dialog = Entry(window)
         else:
             entry_dialog = Spinbox(
-                self.window_levels[0], values=("CCH", "CCL", "CV", "CRM"))
+                window, values=("CCH", "CCL", "CV", "CRM"))
         entry_dialog.pack(padx=5)
 
         # Accept <enter> or okay button to get data
-        self.window_levels[0].bind(
+        window.bind(
             '<Return>', lambda: self.getEntry(entry_dialog, entry_type))
         Button(
-            self.window_levels[0],
+            window,
             text="OK",
             command=lambda: self.getEntry(entry_dialog, entry_type)).pack(
                 pady=5)
@@ -262,7 +263,6 @@ class GUI:
             self.window_levels[0].destroy()
         except:
             entry = object.get()
-        print(entry)
 
         # set entry to variables
         try:
@@ -331,15 +331,16 @@ class GUI:
             initialdir="./",
             title="Open file",
             filetypes=(("csv files", "*.csv"), ("all files", "*.*")))
+
         try:
             with open(self.programme_filename, "r") as f:
                 self.programme_file = f.readlines()
         except:
             messagebox.showerror("Error", "Unable to open file")
 
-        if(self.device.type == "None"):
+        if(self.device is not None):
             self.deviceSelection()
-        self.runAutoWindow("CSVL", self.programme_file[1:])
+            self.runAutoWindow("CSVL", self.programme_file[1:])
 
     def saveFile(self, log_file):
         log_file.writelines("Timestamp, Voltage, Current, Output\n")
@@ -370,12 +371,12 @@ class GUI:
                              "Error in saving %s" % (log_file))
 
     def createCSVFile(self):
-        self.createTopWindow(400, 400, "Create Run CSV")
+        window = self.createTopWindow(400, 400, "Create Run CSV")
         entry_type = "CCSV"
-        fields = self.createEntryBar(self.window_levels[0], entry_type)
+        fields = self.createEntryBar(window, entry_type)
 
         Button(
-            self.window_levels[0],
+            window,
             text="OK",
             command=lambda: self.getEntry(fields, entry_type)).pack(pady=5)
 
@@ -400,21 +401,16 @@ class GUI:
         top.tk.call('wm', 'iconphoto', top._w,
                     tkinter.Image("photo", data=self.libs.gif_icon))
         self.window_levels.append(top)
+        return top
 
     def destroyWindow(self, window):
-        window.destroy()
-        self.window_levels.remove(window)
-        self.stop_loop = True
-
-    def destroyWindowLevel(self, level_number):
         try:
-            self.window_levels[level_number].destroy()
-            self.window_levels.remove(self.window_levels[level_number])
+            window.destroy()
         except:
             pass
+        self.window_levels.remove(window)
 
     def drawReticules(self, window_object):
-        print(window_object)
         self.canvas_width = int(self.window_height / 2)
         self.canvas_height = int(self.window_height / 2)
         self.canvas = Canvas(
@@ -459,11 +455,10 @@ class GUI:
 
     def runAutoWindow(self, loop_type, parameters):
         # pop-up window
-        self.createTopWindow(500, 400, "Running Mode")
-        top_window = len(self.window_levels) - 1
-        north_frame = Frame(self.window_levels[top_window])
+        window = self.createTopWindow(500, 400, "Auto Run")
+        north_frame = Frame(window)
         north_frame.pack(anchor="n", pady=30, padx=20)
-        south_frame = Frame(self.window_levels[top_window])
+        south_frame = Frame(window)
         south_frame.pack(anchor="s", pady=30, padx=20)
 
         parameter_view_frame = Frame(north_frame)
@@ -493,13 +488,12 @@ class GUI:
         save_button.pack(side=tkinter.LEFT, padx=5)
 
     def stopLoop(self):
-        self.stop_loop = True
+        self.run_loop = False
 
     def runThreadedLoop(self, loop_type, parameters, labels):
         self.addThread(lambda: self.runLoop(
             loop_type, parameters, labels))
         self.runThreads()
-        self.stop_loop = False
 
     def runLoop(self, loop_type, parameters, labels):
         start_time = time.time()
@@ -556,7 +550,7 @@ class GUI:
             if(self.device.type == 'electronicload'):
                 self.device.setMode(modes[0])
 
-        while (time.time() <= start_time + max_x):
+        while (time.time() <= start_time + max_x) and (self.run_loop):
             # update time ticker
             labels[0].config(text="Elapsed:   %d(s)" %
                              (time.time() - start_time))
@@ -601,50 +595,47 @@ class GUI:
                 self.storeVariables(time.time() - start_time,
                                     type_parameter, amperage, self.device.output)
 
-            if(self.stop_loop):
-                break
-
         self.device.setOutput(0)
         self.threads.pop()
 
     def promptSingleLoop(self):
-        if(self.device.type == "None"):
+        if(self.device is None):
             self.deviceSelection()
-
-        # pop-up window
-        if (sys.version_info[0] < 3):
-            self.createTopWindow(250, 260, "Single Loop Settings")
         else:
-            self.createTopWindow(250, 225, "Single Loop Settings")
+            # pop-up window
+            if (sys.version_info[0] < 3):
+                window = self.createTopWindow(250, 260, "Single Loop Run")
+            else:
+                window = self.createTopWindow(250, 225, "Single Loop Run")
 
-        # Display Type of Device
-        device_type_label = Label(
-            self.window_levels[0], text="Device Type: %s" % (self.device.type))
-        device_type_label.pack(pady=5)
+            # Display Type of Device
+            device_type_label = Label(
+                window, text="Device Type: %s" % (self.device.type))
+            device_type_label.pack(pady=5)
 
-        # Enter Length of Time
-        timelength_entry = self.createEntryBar(self.window_levels[0],
-                                               "Length in (s): ")
-        timelength_entry.focus_set()
+            # Enter Length of Time
+            timelength_entry = self.createEntryBar(window,
+                                                "Length in (s): ")
+            timelength_entry.focus_set()
 
-        # Enter usage variable
-        if (self.device.type == "powersupply"):
-            usage_entry = self.createEntryBar(self.window_levels[0], "Voltage")
-        elif (self.device.type == "electronicload"):
-            usage_entry = self.createSpinBox(self.window_levels[0], "Mode")
-        else:
-            usage_entry = self.createEntryBar(self.window_levels[0], "Unknown")
+            # Enter usage variable
+            if (self.device.type == "powersupply"):
+                usage_entry = self.createEntryBar(window, "Voltage")
+            elif (self.device.type == "electronicload"):
+                usage_entry = self.createSpinBox(window, "Mode")
+            else:
+                usage_entry = self.createEntryBar(window, "Unknown")
 
-        # Enter Current
-        current_entry = self.createEntryBar(self.window_levels[0], "Current: ")
+            # Enter Current
+            current_entry = self.createEntryBar(window, "Current: ")
 
-        # Submit values and run
-        time_usage_current = [timelength_entry, usage_entry, current_entry]
-        runLoopwindow = Button(
-            self.window_levels[0],
-            text="Run Loop",
-            command=lambda: self.getEntry(time_usage_current, "RSL"))
-        runLoopwindow.pack(pady=5)
+            # Submit values and run
+            time_usage_current = [timelength_entry, usage_entry, current_entry]
+            runLoopwindow = Button(
+                window,
+                text="Run Loop",
+                command=lambda: self.getEntry(time_usage_current, "RSL"))
+            runLoopwindow.pack(pady=5)
 
     def createSpinBox(self, window_object, Label_Title):
         Label(window_object, text=Label_Title).pack()
@@ -667,6 +658,8 @@ class GUI:
                 self.device.type = "electronicload"
                 messagebox.showinfo("Electronic Load",
                                     "Device Detected: %s" % self.device.name)
+                self.runThreads()
+                self.drawManualControls()
             except:
                 try:
                     self.device = powersupply.BUS_INIT().device
@@ -675,30 +668,25 @@ class GUI:
                                         "Device Detected: %s" % self.device.name)
                     if (self.device.name == "CSI305DB"):
                         self.addThread(self.device.control)
-
+                    self.runThreads()
+                    self.drawManualControls()
                 except:
                     messagebox.showerror(
                         "Error",
                         "Sorry, no devices were automatically found")
 
-        self.runThreads()
-        self.drawManualControls()
-
     def setDevice(self, device_name):
         self.device = powersupply.BUS_INIT(device_name).device
-        self.destroyWindowLevel(0)
-
         self.runThreads()
         self.drawManualControls()
 
     def streamerView(self):
-        self.createTopWindow(400, 148, "CircuitSpecialists.com Streamer View")
-        top_window = len(self.window_levels) - 1
+        window = self.createTopWindow(400, 148, "CircuitSpecialists.com Streamer View")
 
         # Frame holders
-        volts_frame = Frame(self.window_levels[top_window])
+        volts_frame = Frame(window)
         volts_frame.pack(side=tkinter.LEFT, pady=5, padx=10)
-        amps_frame = Frame(self.window_levels[top_window])
+        amps_frame = Frame(window)
         amps_frame.pack(side=tkinter.LEFT, pady=5, padx=10)
 
         section_width = 0
@@ -720,8 +708,8 @@ class GUI:
     def updateDigitDisplay(self):
         try:
             if(self.device is not None):
-                self.stop_loop = False
-                while not self.stop_loop:
+                self.run_loop = True
+                while self.run_loop:
                     try:
                         self.volts_digits.config(text="%.2fV" % (self.device.measureVoltage()))
                         self.amps_digits.config(text="%.2fV" % (self.device.measureCurrent()))
@@ -734,11 +722,10 @@ class GUI:
             messagebox.showinfo("Error", "No Device Selected")
 
     def manualDeviceSelect(self):
-        self.createTopWindow(250, 146, "Manual Device Select")
-        top_window = len(self.window_levels) - 1
-        north_frame = Frame(self.window_levels[top_window])
+        window = self.createTopWindow(250, 146, "Manual Device Select")
+        north_frame = Frame(window)
         north_frame.pack(anchor="n", pady=5, padx=10)
-        south_frame = Frame(self.window_levels[top_window])
+        south_frame = Frame(window)
         south_frame.pack(anchor="s", pady=5, padx=10)
 
         label = Label(north_frame, text="Device Select")
@@ -758,7 +745,7 @@ class GUI:
         cancel = Button(
             control_frame,
             text="Cancel",
-            command=lambda: self.destroyWindowLevel(top_window))
+            command=lambda: self.destroyWindow(window))
         cancel.pack(side=tkinter.LEFT, pady=5)
 
     def gotoURL(self, url):
@@ -771,10 +758,6 @@ class GUI:
 
     def startWindow(self):
         self.bottom.mainloop()
-        try:
-            self.device.run = False
-        except:
-            pass
 
     def variable_init(self):
         self.timestamps = []
@@ -788,9 +771,9 @@ class GUI:
         self.output = 0
         self.threads = []
         self.window_levels = []
-        self.stop_loop = False
-        self.stop_loop = False
+        self.run_loop = False
         self.first_pack = True
+        self.device = None
 
         import os
         # Get all current Power Supplies
