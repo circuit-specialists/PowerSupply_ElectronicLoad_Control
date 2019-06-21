@@ -256,66 +256,59 @@ class GUI:
                 pady=5)
 
     def getEntry(self, object, type, event=None):
+        print(len(object))
         try:
             length = object[0].get()
             voltage = object[1].get()
             current = object[2].get()
             self.window_levels[0].destroy()
+            entry_type = 3
         except:
             entry = object.get()
+            entry_type = 1
+
+        try:
+            self.device.name
+        except:
+            messagebox.showerror("Error", "Device Not Connected")
 
         # set entry to variables
-        try:
+        if(entry_type == 3):
             if (type == "V"):
                 self.voltage = float(entry)
                 self.updateVoltage(float(entry))
+                self.device.setVoltage(entry)
+                self.device.voltage = entry
             elif (type == "A"):
                 self.amperage = float(entry)
                 self.updateAmperage(float(entry))
-            elif (type == "O"):
+                if(self.device.type == 'powersupply'):
+                    self.device.setAmperage(entry)
+                elif(self.device.type == 'electronicload'):
+                    self.device.setCurrent(entry)
+                self.device.amperage = entry
+        else:
+            if (type == "O"):
                 self.updateOutput(entry)
+                self.device.setOutput(entry)
+                self.device.output = entry
             elif (type == "R"):
                 self.resistance = float(entry)
+                self.device.setResistance(entry)
             self.updatePower(self.voltage, self.amperage)
-            entry_failed = False
-        except:
-            messagebox.showerror("Error", "Not a valid input")
-            entry_failed = True
 
         # set device settings to entry variables
         try:
-            if (not entry_failed):
-                if (type == "TD"):
-                    print()
-                elif (type == "V"):
-                    if(self.device.type == 'powersupply'):
-                        self.device.setVoltage(entry)
-                    elif(self.device.type == 'electronicload'):
-                        messagebox.showerror(
-                            "User Error", "Voltage setting is not for Loads")
-                    self.device.voltage = entry
-                elif (type == "A"):
-                    if(self.device.type == 'powersupply'):
-                        self.device.setAmperage(entry)
-                    elif(self.device.type == 'electronicload'):
-                        self.device.setCurrent(entry)
-                    self.device.amperage = entry
-                elif (type == "O"):
-                    self.device.setOutput(entry)
-                    self.device.output = entry
-                elif (type == 'CCSV'):
-                    print()
-                elif (type == "ELM"):
-                    self.device.setMode(entry)
-                elif (type == "R"):
-                    self.device.setResistance(entry)
-                elif (type == "RSL"):
-                    self.runAutoWindow(type, parameters=[
-                                       length, voltage, current])
-            else:
-                self.device.name
+            if (type == 'CCSV'):
+                print()
+            elif (type == "ELM"):
+                self.device.setMode(entry)
+            elif (type == "RSL"):
+                self.runAutoWindow(type, parameters=[
+                                    length, voltage, current])
         except:
-            messagebox.showerror("Error", "Device Not Connected")
+            print("Failed on set device settings")
+            
 
     def convertFileToList(self, csv_file):
         self.total_time = 0
