@@ -16,6 +16,7 @@ import PowerSupplies as powersupply
 
 class SCPI_ID:
     def __init__(self):
+        device_type = 'electronicload'
         if(device_type == 'electronicload'):
             # find all devices defined
             self.files = []
@@ -33,6 +34,7 @@ class SCPI_ID:
                     pass
 
             self.inst.timeout = 500
+            print(self.inst.query("*IDN?"))
             print(self.idn)
             print()
             print(str(self.idn).split(',')[0] + str(self.idn).split(',')[1])

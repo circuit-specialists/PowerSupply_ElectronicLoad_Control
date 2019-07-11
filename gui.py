@@ -669,7 +669,15 @@ class GUI:
                         "Sorry, no devices were automatically found")
 
     def setDevice(self, device_name):
-        self.device = powersupply.BUS_INIT(device_name).device
+        device_name = device_name.get()
+        if(device_name in self.power_supplies):
+            self.device = powersupply.BUS_INIT(device_name).device
+        elif(device_name in self.electronic_loads):
+            self.device = electronicload.BUS_INIT(device_name).device
+        else:
+            messagebox.showerror(
+                        "Error",
+                        "Sorry, no such device exists")
         self.runThreads()
         self.drawManualControls()
 
@@ -723,7 +731,12 @@ class GUI:
 
         label = Label(north_frame, text="Device Select")
         label.pack(pady=5)
-        entry = Spinbox(north_frame, values=(self.power_supplies))
+        temp = []
+        for x in range(0, len(self.power_supplies)):
+            temp.append(self.power_supplies[x])
+        for x in range(0, len(self.electronic_loads)):
+            temp.append(self.electronic_loads[x])
+        entry = Spinbox(north_frame, values=(temp))
         entry.pack(pady=5)
 
         control_frame = Frame(south_frame)
