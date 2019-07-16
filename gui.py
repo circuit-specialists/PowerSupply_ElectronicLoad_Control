@@ -787,14 +787,14 @@ class GUI:
         self.power_supplies = []
         for index in indexes:
             if(imports[index][14:] > ''):
-                self.power_supplies.append(imports[index][14:])
+                self.power_supplies.append(str(imports[index][14:]).upper())
 
         # Get all current Electronic Loads
         indexes = [i for i, x in enumerate(imports) if "ElectronicLoads" in x]
         self.electronic_loads = []
         for index in indexes:
             if(imports[index][16:] > ''):
-                self.electronic_loads.append(imports[index][16:])
+                self.electronic_loads.append(str(imports[index][16:]).upper())
 
 
 if __name__ == "__main__":
