@@ -3,3 +3,4 @@ pyusb
 pyvisa
 pyvisa-py
 pyserial
+pypiwin32

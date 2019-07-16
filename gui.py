@@ -781,18 +781,20 @@ class GUI:
         self.first_pack = True
         self.device = None
 
-        import os
         # Get all current Power Supplies
+        imports = list(sys.modules.keys())
+        indexes = [i for i, x in enumerate(imports) if "PowerSupplies" in x]
         self.power_supplies = []
-        for file in os.listdir("PowerSupplies"):
-            if(file.endswith(".py") and file != '__init__.py'):
-                self.power_supplies.append(file.split('.')[0].upper())
+        for index in indexes:
+            if(imports[index][14:] > ''):
+                self.power_supplies.append(imports[index][14:])
 
         # Get all current Electronic Loads
+        indexes = [i for i, x in enumerate(imports) if "ElectronicLoads" in x]
         self.electronic_loads = []
-        for file in os.listdir("ElectronicLoads"):
-            if(file.endswith(".py") and file != '__init__.py' and file != 'generic_scpi.py'):
-                self.electronic_loads.append(file.split('.')[0].upper())
+        for index in indexes:
+            if(imports[index][16:] > ''):
+                self.electronic_loads.append(imports[index][16:])
 
 
 if __name__ == "__main__":

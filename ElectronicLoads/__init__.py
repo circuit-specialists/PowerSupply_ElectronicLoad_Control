@@ -14,7 +14,6 @@ Electronic Loads subdirectory following the same structure of other files, then 
 and constructor to this file as seen below
 """
 from ElectronicLoads import array3720a
-from ElectronicLoads import array3721a
 from ElectronicLoads import array371x
 from ElectronicLoads import generic_scpi
 
